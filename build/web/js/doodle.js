@@ -1,66 +1,276 @@
-    //here announce some variables
-        var c=document.getElementById("canvas");
-		var context=c.getContext("2d");
-		var c2=document.getElementById("canvasTop");
-		var context2=c2.getContext("2d");
-		var mulClickX=new Array();
-		var mulClickY=new Array();
-		var mulClickDrag=new Array();
-		var paint;
-        var touchable = 'createTouch' in document;
-		var type=0;
-		var recA=new Array(0,0);
-		var recB=new Array(0,0);
-		var drawRec=0;
-		context.strokeStyle="#cb3594";
-		context.lineJoin = "round";
-        context.lineWidth = 4;
-		context2.strokeStyle="#cb3594";
-		context2.lineJoin = "round";
-        context2.lineWidth = 4;
-        if (touchable) {
-            c2.addEventListener('touchstart', onTouchStart, false);
-            c2.addEventListener('touchmove', onTouchMove, false);
-            c2.addEventListener('touchend', onTouchEnd, false);
-        }
+//here announce some variables
+
+var doodle = {};
+
+doodle.init = function(){
+    
+    doodle.mulClick = {};
+    doodle.mulClick.init = function(){
+	doodle.mulClick.mulClickX=new Array();
+	doodle.mulClick.mulClickY=new Array();
+	doodle.mulClick.mulClickDrag=new Array();
+    }
+    
+    doodle.mulClick.init();
+
+    doodle.recClick = {};
+    doodle.recClick.init = function(){
+	doodle.recClick.recA=new Array(0,0);
+	doodle.recClick.recB=new Array(0,0);
+    }
+    
+    doodle.recClick.init();
+    doodle.drawRec=0;
+    doodle.c=document.getElementById("canvas");
+    doodle.context=doodle.c.getContext("2d");
+    doodle.c2=document.getElementById("canvasTop");
+    doodle.context2=doodle.c2.getContext("2d");
+
+    doodle.paint;
+    doodle.touchable = 'createTouch' in document;
+    doodle.type=0;
+    doodle.context.strokeStyle="#cb3594";
+    doodle.context.lineJoin = "round";
+    doodle.context.lineWidth = 4;
+    doodle.context2.strokeStyle="#cb3594";
+    doodle.context2.lineJoin = "round";
+    doodle.context2.lineWidth = 4;
+    if (doodle.touchable) {
+	doodle.c2.addEventListener('touchstart', onTouchStart, false);
+	doodle.c2.addEventListener('touchmove', onTouchMove, false);
+	doodle.c2.addEventListener('touchend', onTouchEnd, false);
+    }
+    
+    
+    //here deal with the operations in touch
+    $('#canvasTop').mousedown(function(e){    
+	//alert((e.pageX - this.offsetLeft)+" "+(e.pageY - this.offsetTop));
+	e.preventDefault();
+	doodle.paint = true;
+	doodle.mulClick.mulClickX[0]=new Array();
+	doodle.mulClick.mulClickY[0]=new Array();
+	doodle.mulClick.mulClickDrag[0]=new Array();
+	if (doodle.type==1||doodle.type==2)
+	{
+	    //context.save();
+	    doodle.recClick.recA.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+	    doodle.recClick.recB.splice(0,2,doodle.recClick.recA[0],doodle.recClick.recA[1]);
+	}
+	if (doodle.type==0)
+	{
+	    doodle.addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+	    doodle.sendReDraw(0, doodle.mulClick);
+	    doodle.redraw(0, doodle.mulClick); 
+	}
+	if (doodle.type==3)
+	{
+	    doodle.recClick.recA.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+	    doodle.recClick.recB.splice(0,2,doodle.recClick.recA[0],doodle.recClick.recA[1]);
+	}
+    });
+    $('#canvasTop').mousemove(function(e){
+	if(doodle.paint)
+	{
+	    if (doodle.type==1)
+	    {
+		//var oldStrokeStyle=context.strokeStyle;
+		//context.strokeStyle="FFFFFF";
+		//context.beginPath();
+		//DrawRect(context,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
+		doodle.context.clearRect(0,0,doodle.c.width,doodle.c.height);
+		//context.closePath()5;
+		//context.stroke();
+		//context.strokeStyle=oldStrokeStyle;
+		//context.restore();
+		//context.save();
+		doodle.context.beginPath();
+		DrawRect(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(e.pageX - this.offsetLeft,e.pageY - this.offsetTop));
+		doodle.context.closePath();
+		doodle.context.stroke();
+		doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);		
+	    }
+	    if (doodle.type==2)
+	    {
+		//var oldStrokeStyle=context.strokeStyle;
+		//context.strokeStyle="FFFFFF";
+		//context.beginPath();
+		//DrawCircle(context,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
+		doodle.context.clearRect(0,0,doodle.c.width,doodle.c.height);
+		//context.closePath();
+		//context.stroke();
+		//context.strokeStyle=oldStrokeStyle;
+		//context.restore();
+		//context.save();
+		doodle.context.beginPath();
+		doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+		DrawCircle(doodle.context,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
+		doodle.context.closePath();
+		doodle.context.stroke();	
+	    }
+	    if (doodle.type==0)
+	    {
+		doodle.addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+		doodle.sendReDraw(0, doodle.mulClick);
+		doodle.redraw(0, doodle.mulClick);
+	    }
+	}
+    });
+			
+    $('#canvasTop').mouseup(function(e){
+	doodle.context.clearRect(0,0,doodle.c.width,doodle.c.height);
+	doodle.paint = false;
+	doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+	if (doodle.type==3)
+	{
+	    doodle.context2.fillText(prompt("Input the Text"),e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+	}
+	else if(doodle.type > 0)
+	{
+	    doodle.sendDrawShape(doodle.type, doodle.recClick);
+	    doodle.drawToCanvasGraph(doodle.type, doodle.recClick);
+	}
+			    
+    });
+
+    $('#canvasTop').mouseleave(function(e){
+	doodle.paint = false;
+    });
+
+    //here deal with the operation in drawing the canvas
+    doodle.addClick = function(i, x, y, dragging){
+	doodle.mulClick.mulClickX[i].push(x);
+	doodle.mulClick.mulClickY[i].push(y);
+	doodle.mulClick.mulClickDrag[i].push(dragging);
+    }
+    
+    $("button#clearButton").click(
+	function (){
+	    /*context.save();
+		    c.width=c.width;
+			context.restore();*/
+	    doodle.context2.clearRect(0,0,doodle.c2.width,doodle.c2.height);
+	}
+	);
+    $("#Colors").change(
+	function (){
+	    var selectColor=document.getElementById("Colors");
+	    switch (selectColor.selectedIndex)
+	    {
+		case 0:
+		    doodle.context2.strokeStyle="#cb3594";
+		    doodle.context.strokeStyle="#cb3594";
+		    break;
+		case 1:
+		    doodle.context2.strokeStyle="#659b41";
+		    doodle.context.strokeStyle="#659b41";
+		    break;
+		case 2:
+		    doodle.context2.strokeStyle="#ffcf33";
+		    doodle.context.strokeStyle="#ffcf33";
+		    break;
+		case 3:
+		    doodle.context2.strokeStyle="#986928";
+		    doodle.context.strokeStyle="#986928";
+		    break;
+		case 4:
+		    doodle.context2.strokeStyle="#FFFFFF";
+		    doodle.context.strokeStyle="#FFFFFF";
+		    break;
+		default:
+		    doodle.context2.strokeStyle="#cb3594";
+		    doodle.context.strokeStyle="#cb3594";		
+	    }
+	}
+	);
+    $("#Sizes").change(
+	function (){
+	    var selectSize=document.getElementById("Sizes");
+	    switch (selectSize.selectedIndex)
+	    {
+		case 0:
+		    doodle.context2.lineWidth=4;
+		    doodle.context.lineWidth=4;
+		    break;
+		case 1:
+		    doodle.context2.lineWidth=7;
+		    doodle.context.lineWidth=7;
+		    break;
+		case 2:
+		    doodle.context2.lineWidth=10;
+		    doodle.context.lineWidth=10;
+		    break;
+		case 3:
+		    doodle.context2.lineWidth=15;
+		    doodle.context.lineWidth=15;
+		    break;
+		default:
+		    doodle.context2.lineWidth=4;
+		    doodle.context.lineWidth=4;		
+	    }
+	}
+	);
+    $("#Type").change(
+	function (){
+	    var selectType=document.getElementById("Type");
+	    switch (selectType.selectedIndex)
+	    {
+		case 0:
+		    doodle.type=0;
+		    break;
+		case 1:
+		    doodle.type=1;
+		    break;
+		case 2:
+		    doodle.type=2;
+		    break;
+		case 3:
+		    doodle.type=3;
+		    break;
+		default:
+		    doodle.type=0;		
+	    }
+	}
+	);
+}
 
 
-   //here deal with the operations in Click
-	function onTouchStart(event) {
-        //do stuff
-            paint=true;
-		    for (i=0;i<event.touches.length;i++){
-			   if (type==1||type==2)
-			   {
-			       if (event.touches.length==2)
-				   {
-				    drawRec=1;
-			        recA.splice(0,2,event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
-				    recB.splice(0,2,event.touches[1].pageX - this.offsetLeft, event.touches[1].pageY - this.offsetTop);
-				   }
-			   }
-			   if (type==0)
-			   {
-			       mulClickX[i]=new Array();
-		           mulClickY[i]=new Array();
-			       mulClickDrag[i]=new Array();
-			       addClick(i,event.touches[i].pageX - this.offsetLeft, event.touches[i].pageY - this.offsetTop);
-			       redraw(i);
-			   }
-			   if (type==3)
-			   {
-			       context.fillText(prompt("Input the Text"),event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
-			   }
-		    }
-        }
+//here deal with the operations in Click
+doodle.onTouchStart = function(event) {
+    //do stuff
+    doodle.paint=true;
+    for (i=0;i<event.touches.length;i++){
+	if (doodle.type==1||doodle.type==2)
+	{
+	    if (event.touches.length==2)
+	    {
+		doodle.drawRec=1;
+		doodle.recClick.recA.splice(0,2,event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
+		doodle.recClick.recB.splice(0,2,event.touches[1].pageX - this.offsetLeft, event.touches[1].pageY - this.offsetTop);
+	    }
+	} 
+	if (doodle.type==0)
+	{
+	    doodle.mulClick.mulClickX[i]=new Array();
+	    doodle.mulClick.mulClickY[i]=new Array();
+	    doodle.mulClick.mulClickDrag[i]=new Array();
+	    doodle.addClick(i,event.touches[i].pageX - this.offsetLeft, event.touches[i].pageY - this.offsetTop);
+	    doodle.sendReDraw(i, doodle.mulClick);
+	    doodle.redraw(i, doodle.mulClick);
+	}
+	if (doodle.type==3)
+	{
+	    doodle.context.fillText(prompt("Input the Text"),event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
+	}
+    }
+}
 
-        function onTouchMove(event) {
-        // Prevent the browser from doing its default thing (scroll, zoom)
-        //e.preventDefault();
-        event.preventDefault();
-        if(paint){
-	        for (i=0;i<event.touches.length;i++){	
-                /*if (type==1||type==2)
+doodle.onTouchMove = function(event) {
+    // Prevent the browser from doing its default thing (scroll, zoom)
+    //e.preventDefault();
+    event.preventDefault();
+    if(doodle.paint){
+	for (i=0;i<event.touches.length;i++){	
+	    /*if (type==1||type==2)
 				{
 				    if (drawRec==1)
 					{
@@ -69,9 +279,9 @@
 					}
 				    //do nothing
 				}*/
-				if (type==1||type==2)
-				{ 
-					/*var oldStrokeStyle=context.strokeStyle;
+	    if (doodle.type==1||doodle.type==2)
+	    { 
+		/*var oldStrokeStyle=context.strokeStyle;
 				    context.strokeStyle="FFFFFF";
 				    context.beginPath();
 					if (type==1)
@@ -87,268 +297,112 @@
 				    context.strokeStyle=oldStrokeStyle;
 					context.restore();
 					context.save();*/
-					context.clearRect(0,0,c.width,c.hegith);
-				    context.beginPath();
-					recA.splice(0,2,event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
-					recB.splice(0,2,event.touches[1].pageX - this.offsetLeft, event.touches[1].pageY - this.offsetTop);
-				    if (type==1)
-					{
-					    DrawRect(context,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
-					}
-					if (type==2)
-					{
-					    DrawCircle(context,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-					}
-					context.closePath();
-				    context.stroke();
-				}				
-                if (type==0)
-                {			
-		            addClick(i,event.touches[i].pageX - this.offsetLeft, event.touches[i].pageY - this.offsetTop,true);
-			        redraw(i);
-				}
-		    }
-        }
-        }
-
-        function onTouchEnd(event) {
-		if (drawRec==1)
+		doodle.context.clearRect(0,0,doodle.c.width,doodle.c.hegith);
+		doodle.context.beginPath();
+		doodle.recClick.recA.splice(0,2,event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
+		doodle.recClick.recB.splice(0,2,event.touches[1].pageX - this.offsetLeft, event.touches[1].pageY - this.offsetTop);
+		if (doodle.type==1)
 		{
-			context.beginPath();
-			if (type==1)
-			{
-			    context.clearRect(0,0,c2.width,c2.height);
-			    DrawRect(context2,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
-			}
-			if (type==2)
-			{
-			    context.clearRect(0,0,c2.width,c2.height);
-			    DrawCircle(context2,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-			}
-			context2.closePath();
-			context2.stroke();
+		    doodle.DrawRect(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
 		}
-            paint=false;
-			drawRec=0;
-        }
-		
-	//here deal with the operations in touch
-	$('#canvasTop').mousedown(function(e){    
-	        //alert((e.pageX - this.offsetLeft)+" "+(e.pageY - this.offsetTop));
-		    e.preventDefault();
-            paint = true;
-			mulClickX[0]=new Array();
-			mulClickY[0]=new Array();
-			mulClickDrag[0]=new Array();
-			if (type==1||type==2)
-			{
-			    //context.save();
-			    recA.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-				recB.splice(0,2,recA[0],recA[1]);
-			}
-			if (type==0)
-			{
-		        addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-                redraw(0); 
-			}
-			if (type==3)
-			{
-			    recA.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-				recB.splice(0,2,recA[0],recA[1]);
-			}
-		});
-	$('#canvasTop').mousemove(function(e){
-            if(paint)
-			{
-			   if (type==1)
-			   {
-				    //var oldStrokeStyle=context.strokeStyle;
-				    //context.strokeStyle="FFFFFF";
-				    //context.beginPath();
-				    //DrawRect(context,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
-					context.clearRect(0,0,c.width,c.height);
-					//context.closePath()5;
-				    //context.stroke();
-				    //context.strokeStyle=oldStrokeStyle;
-					//context.restore();
-					//context.save();
-				    context.beginPath();
-				    DrawRect(context,new Array(recA[0],recA[1]),new Array(e.pageX - this.offsetLeft,e.pageY - this.offsetTop));
-					context.closePath();
-				    context.stroke();
-					recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);		
-			   }
-			   if (type==2)
-			   {
-			        //var oldStrokeStyle=context.strokeStyle;
-				    //context.strokeStyle="FFFFFF";
-				    //context.beginPath();
-				    //DrawCircle(context,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-					context.clearRect(0,0,c.width,c.height);
-					//context.closePath();
-				    //context.stroke();
-				    //context.strokeStyle=oldStrokeStyle;
-					//context.restore();
-					//context.save();
-				    context.beginPath();
-					recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-				    DrawCircle(context,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-					context.closePath();
-				    context.stroke();	
-			   }
-			   if (type==0)
-			   {
-			        addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-                    redraw(0);
-			   }
-            }
-        });
-			
-	$('#canvasTop').mouseup(function(e){
-		    context.clearRect(0,0,c.width,c.height);
-            paint = false;
-			context2.beginPath();
-			recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-			if (type==1)
-			{
-			    DrawRect(context2,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
-			    //DrawRect(context2,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
-				//drawToCanvasGraph(1,recA,recB);
-				//context2.clearRect(0,0,c2.width,c2.height);
-			}
-			if (type==2)
-			{
-			    DrawCircle(context2,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-			    //DrawCircle(context2,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-			    //drawToCanvasGraph(2,recA,recB);
-				//context2.clearRect(0,0,c2.width,c2.height);
-			}
-			context2.closePath();
-			context2.stroke();
-			if (type==3)
-			{
-				context2.fillText(prompt("Input the Text"),e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-			}
-			    
-        });
-
-        $('#canvasTop').mouseleave(function(e){
-            paint = false;
-        });
-	//here deal with the operation in drawing the canvas
-	function addClick(i, x, y, dragging)
-        {
-            mulClickX[i].push(x);
-            mulClickY[i].push(y);
-            mulClickDrag[i].push(dragging);
-        }
-
-        function redraw(index)
+		if (doodle.type==2)
 		{
-            for(var i=0; i < mulClickX[index].length; i++)
-            {
-                context2.beginPath();
-                if(mulClickDrag[index][i] && i)
-				{
-                    context2.moveTo(mulClickX[index][i-1], mulClickY[index][i-1]);
-                }else
-				{
-                    context2.moveTo(mulClickX[index][i]-1, mulClickY[index][i]);
-                }
-                context2.lineTo(mulClickX[index][i], mulClickY[index][i]);
-                context2.closePath();
-                context2.stroke();
-            }
-        }
-       $("button#clearButton").click(
-	    function (){
-		    /*context.save();
-		    c.width=c.width;
-			context.restore();*/
-			context2.clearRect(0,0,c2.width,c2.height);
+		    doodle.DrawCircle(context,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
 		}
-	   );
-	   $("#Colors").change(
-	    function (){
-			var selectColor=document.getElementById("Colors");
-			    switch (selectColor.selectedIndex)
-				{
-			        case 0:
-				        context2.strokeStyle="#cb3594";context.strokeStyle="#cb3594";
-				    	break;
-			        case 1:
-				        context2.strokeStyle="#659b41";context.strokeStyle="#659b41";
-				    	break;
-				    case 2:
-				        context2.strokeStyle="#ffcf33";context.strokeStyle="#ffcf33";
-				    	break;
-			        case 3:
-				        context2.strokeStyle="#986928";context.strokeStyle="#986928";
-					    break;
-					case 4:
-					    context2.strokeStyle="#FFFFFF";context.strokeStyle="#FFFFFF";
-						break;
-				    default:
-				        context2.strokeStyle="#cb3594";context.strokeStyle="#cb3594";		
-			    }
-		}
-	   );
-	   $("#Sizes").change(
-	    function (){
-			var selectSize=document.getElementById("Sizes");
-	            switch (selectSize.selectedIndex)
-				{
-			        case 0:
-				        context2.lineWidth=4;context.lineWidth=4;
-					    break;
-			        case 1:
-				        context2.lineWidth=7;context.lineWidth=7;
-					    break;
-				    case 2:
-				        context2.lineWidth=10;context.lineWidth=10;
-					    break;
-			        case 3:
-				        context2.lineWidth=15;context.lineWidth=15;
-					    break;
-				    default:
-				        context2.lineWidth=4;context.lineWidth=4;		
-			    }
-		}
-	   );
-	   $("#Type").change(
-	    function (){
-			var selectType=document.getElementById("Type");
-	            switch (selectType.selectedIndex)
-				{
-			        case 0:
-				        type=0;
-					    break;
-			        case 1:
-				        type=1;
-					    break;
-				    case 2:
-				        type=2;
-					    break;
-				    case 3:
-					    type=3;
-						break;
-				    default:
-				        type=0;		
-			    }
-		}
-	   );
-//here deal with the transfering
-function drawToCanvasGraph(index,recA,recB)
-{
-    context.beginPath();
-	if (index==1)
-	{
-	    DrawRect(context,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
+		doodle.context.closePath();
+		doodle.context.stroke();
+	    }				
+	    if (doodle.type==0)
+	    {			
+		doodle.addClick(i,event.touches[i].pageX - this.offsetLeft, event.touches[i].pageY - this.offsetTop,true);
+		doodle.sendReDraw(i, doodle.mulClick);
+		doodle.redraw(i, doodle.mulClick);
+	    }
 	}
-	if (index==2)
-	{
-	    DrawCircle(context,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
-	}
-	context.closePath();
-	context.stroke();
+    }
 }
+
+doodle.onTouchEnd = function(event) {
+    if (doodle.drawRec==1)
+    {
+	doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
+	doodle.drawToCanvasGraph(doodle.type, doodle.recClick);
+//	doodle.context.beginPath();
+//	if (doodle.type==1)
+//	{
+//	    doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
+//	    doodle.DrawRect(doodle.context2,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
+//	}
+//	if (doodle.type==2)
+//	{
+//	    doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
+//	    doodle.DrawCircle(doodle.context2,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
+//	}
+//	doodle.context2.closePath();
+//	doodle.context2.stroke();
+    }
+    doodle.paint=false;
+    doodle.drawRec=0;
+}
+		
+
+
+doodle.redraw = function(index, click){
+    for(var i=0; i < click.mulClickX[index].length; i++)
+    {
+	doodle.context2.beginPath();
+	if(click.mulClickDrag[index][i] && i)
+	{
+	    doodle.context2.moveTo(click.mulClickX[index][i-1], click.mulClickY[index][i-1]);
+	}else
+	{
+	    doodle.context2.moveTo(click.mulClickX[index][i]-1, click.mulClickY[index][i]);
+	}
+	doodle.context2.lineTo(click.mulClickX[index][i], click.mulClickY[index][i]);
+	doodle.context2.closePath();
+	doodle.context2.stroke();
+    }
+}
+
+//here deal with the transfering
+doodle.drawToCanvasGraph = function(index,shapeClick)
+{
+    doodle.context2.beginPath();    
+    if (index==1)
+    {
+	DrawRect(doodle.context2,new Array(shapeClick.recA[0],shapeClick.recA[1]),new Array(shapeClick.recB[0],shapeClick.recB[1]));
+    //DrawRect(context2,new Array(recA[0],recA[1]),new Array(recB[0],recB[1]));
+    //drawToCanvasGraph(1,recA,recB);
+    //context2.clearRect(0,0,c2.width,c2.height);
+    }
+    if (index==2)
+    {
+	DrawCircle(doodle.context2,new Array((shapeClick.recA[0]+shapeClick.recB[0])/2,(shapeClick.recA[1]+shapeClick.recB[1])/2),ABLen(new Array(shapeClick.recB[0],shapeClick.recB[1]),new Array(shapeClick.recA[0],shapeClick.recA[1]))/2);
+    //DrawCircle(context2,new Array((recA[0]+recB[0])/2,(recA[1]+recB[1])/2),ABLen(new Array(recB[0],recB[1]),new Array(recA[0],recA[1]))/2);
+    //drawToCanvasGraph(2,recA,recB);
+    //context2.clearRect(0,0,c2.width,c2.height);
+    }
+    doodle.context2.closePath();
+    doodle.context2.stroke();
+}
+
+
+doodle.sendReDraw = function (index, click){
+    var tmp = click;
+    tmp.type = "doodleTable";
+    tmp.drawElement = "freeDraw";
+    tmp.index = index;
+    connection.sendMessage(JSON.stringify(tmp));
+}
+
+doodle.sendDrawShape = function(index, shapeClick)
+{
+    var tmp = shapeClick;
+    tmp.type = "doodleTable";
+    tmp.drawElement = "shape";
+    tmp.index = index;
+    connection.sendMessage(JSON.stringify(tmp));    
+}
+
+
+doodle.init();

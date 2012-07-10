@@ -23,12 +23,7 @@ connection.connect = (function(host) {
 
     connection.socket.onopen = function () {
 	logg('Info: WebSocket connection opened.');
-	var test = {
-	    "type" : "lalal",
-	    "yes":"hi"
-	}
-	logg(test);
-	connection.sendMessage(JSON.stringify(test));
+	setInterval("connection.sendMessage('')",1000 * 10);
     };
 
     connection.socket.onclose = function () {
@@ -36,10 +31,17 @@ connection.connect = (function(host) {
     };
 
     connection.socket.onmessage = function (message) {
-	logg(message.data);
-	var result = JSON.parse(message.data);
-	logg(result)
-	logg(message.data);
+	var socketData = JSON.parse(message.data);
+	//logg(socketData);
+	if(socketData.type == "doodleTable"){
+	    if(socketData.drawElement == "freeDraw"){
+		doodle.redraw(socketData.index, socketData);
+	    }
+	    else if(socketData.drawElement == "shape"){
+		doodle.drawToCanvasGraph(socketData.index, socketData);
+	    }
+	    
+	}
     };
 });
 

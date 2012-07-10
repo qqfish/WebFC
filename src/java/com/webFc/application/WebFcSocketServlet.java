@@ -43,9 +43,17 @@ public class WebFcSocketServlet extends WebSocketServlet {
 	private FcMessageInbound() {
 	    super();
 	}
+
 	@Override
 	protected void onOpen(WsOutbound outbound) {
+	    System.out.println(this.toString() + " ,new connection created");
 	    connections.add(this);
+	}
+
+	@Override
+	protected void onClose(int status) {
+	    System.out.println(this.toString() + "closed");
+	    connections.remove(this);
 	}
 
 	@Override
@@ -55,16 +63,19 @@ public class WebFcSocketServlet extends WebSocketServlet {
 
 	@Override
 	protected void onTextMessage(CharBuffer cb) throws IOException {
-	    broadcast(cb.toString());
+	    String str = cb.toString();
+	    if (str != null && !str.isEmpty()) {
+		broadcast(str);
+	    }
 	}
 
 	private void broadcast(String message) throws IOException {
 	    for (FcMessageInbound connection : connections) {
-		//if (!connection.equals(this)) {
+		if (!connection.equals(this)) {
 		    CharBuffer buffer = CharBuffer.wrap(message);
-		    System.out.println(connection.toString());
+		    //System.out.println(connection.toString());
 		    connection.getWsOutbound().writeTextMessage(buffer);
-		//}
+		}
 	    }
 	}
     }

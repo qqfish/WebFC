@@ -1,0 +1,54 @@
+<!DOCTYPE>
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+	<title>nav</title>
+	<link rel="stylesheet" href="css/jquery/ui/jquery.ui.all.css">
+	<script src="js/jquery/jquery.js"></script>
+	<script src="js/jquery/ui/jquery.ui.core.js"></script>
+	<script src="js/jquery/ui/jquery.ui.widget.js"></script>
+	<script src="js/jquery/ui/jquery.ui.mouse.js"></script>
+	<script src="js/jquery/ui/jquery.ui.draggable.js"></script>
+	<script src="js/jquery/ui/jquery.ui.droppable.js"></script>
+	<script src="js/toolbar.js"></script>
+	<link rel="stylesheet" href="css/default.css">
+	<link rel="stylesheet" href="css/toolbar.css">
+    </head>
+    <body>
+	<canvas id="canvas" height='700' width='1000'> </canvas>
+	<canvas id="canvasTop" height='700' width='1000'> </canvas>
+	<div id="toolbox" class="body">
+	    <ul id="content">
+		<li class="paint"><img src="image/mainMenu/drawing.png"></li>
+		<li><img src="image/mainMenu/tag.png"></li>
+		<li class="filelist"><img src="image/mainMenu/fileList.png"></li>
+		<li><img src="image/mainMenu/userList.png"></li>
+		<li class="upload"><img src="image/mainMenu/upload.png"></li>
+		<li>麦克风</li>
+		<li>音量</li>
+	    </ul>
+	    <ul id="paint" class="toolDetail">
+		<li class="content"><img src="image/drawingTools/pointer.png"></li>
+		<li><img src="image/drawingTools/pen.png"></li>
+		<li><img src="image/drawingTools/line.png"></li>
+		<li><img src="image/drawingTools/circle.png"></li>
+		<li><img src="image/drawingTools/rectangle.png"></li>
+		<li><img src="image/drawingTools/word.png"></li>
+		<li><img src="image/drawingTools/panel.png"></li>
+	    </ul>
+	    <ul id="filelist">
+
+	    </ul>
+	    <div id="upload">
+		<form name="myform" action="https://viewer.zoho.com/api/view.do" method="post" enctype="multipart/form-data">
+		    <input type="hidden" name="apikey"  value="e276fa67375967fc635f4e007ed81aaf"/>
+		    <input type="file"   name="file"  size="38"/>
+		    <input type="submit" name="submit"  value="Upload"/>
+		</form>
+		<div id="droppable"></div>
+	    </div>
+	    <div id="display">
+	    </div>
+	</div>
+    </body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE>
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+	<title>nav</title>
+	<link rel="stylesheet" href="jquery.ui.all.css">
+	<script src="jquery.js"></script>
+	<script src="jquery.ui.core.js"></script>
+	<script src="jquery.ui.widget.js"></script>
+	<script src="jquery.ui.mouse.js"></script>
+	<script src="jquery.ui.draggable.js"></script>
+	<script src="jquery.ui.droppable.js"></script>
+	<script>
+	    $(function() {
+		//滑过显示,滑出隐藏
+		$('#display').live('mouseenter',function (){
+		    $('#content').fadeIn();
+		});
+		$('#toolbox').live('mouseleave',function () {
+		    $('#content').fadeOut();
+		});
+		
+		//点击
+		$('.paint').click(function(){
+		    $('#content').hide();
+		    $('#paint').fadeIn();
+		})
+		
+		$('.content').click(function(){
+		    $('#paint').hide();
+		    $('#content').fadeIn();
+		})
+		
+		$('.filelist').click(function(){
+		    $('#filelist').load('',{action:'file'});
+		})
+		
+		$('.upload').click(function(){
+		    $('#toolbox').width('20%');
+		    $('#content').hide();
+		    $('#upload').fadeIn();
+		})
+		
+		//拖动
+		$( "#draggable" ).draggable({
+		    //appendTo: "body",
+		    //helper: "clone"
+		})
+		
+		//droppable
+		$("#droppable").droppable({
+		    accept:'.droppable'
+		})
+	    });
+	</script>
+	<style>
+	    @font-face{
+		font-family: 'clumsy';
+		src: url('clumsy-webfont.ttf'),
+		    url('clumsy-webfont.eot'); /* IE9+ */
+	    }
+	    
+	    *{
+		margin: 0;
+		padding: 0;
+	    }
+
+	    h1,p,span,li{font-family:clumsy,"Microsoft YaHei";}
+
+	    #message{
+		position:absolute;
+		left:2%;
+		bottom:0;
+		width:5%;
+	    }
+
+	    #toolbox{
+		position: absolute;
+		top : 0;
+		right: 0;
+		margin: 0;
+		padding: 0;
+		border:0;
+		font-size: 95%;
+		width: 10%;
+		height:95%;
+	    }
+	    ul{
+		height: 100%;
+		border: solid;
+		display:none;
+		padding:10%;
+	    }
+	    li{
+		list-style: none;
+		padding: 0 0 20px 0;
+		margin: 0;
+	    }
+
+	    #display{
+		position:fixed;
+		right:0;
+		bottom:0;
+		width:50px;
+		height:5%;
+	    }
+
+	    #droppable{
+		height:80%;
+		height:20%;
+		border:dashed;
+	    }
+
+	    #upload{
+		height:100%;
+		border: solid;
+		display:none;
+	    }
+	</style>
+    </head>
+    <body>
+	<h1>welcome</h1>
+	<p>qwertyuiopasdfghjklzxcvbnm</p>
+	<div id="message">
+	    <span>消息</span>
+	</div>
+	<div id="draggable">吼吼吼</div>
+	<div id="toolbox" class="body">
+	    <ul id="content">
+		<li class="paint"><img src="image\主菜单\绘图.png"></li>
+		<li><img src="image\主菜单\标签.png"></li>
+		<li class="filelist"><img src="image\主菜单\文件列表2.png"></li>
+		<li><img src="image\主菜单\成员列表.png"></li>
+		<li class="upload"><img src="image\主菜单\上传文件.png"></li>
+		<li>麦克风</li>
+		<li>音量</li>
+	    </ul>
+	    <ul id="paint" class="toolDetail">
+		<li class="content"><img src="image\绘图工具\指针.png"></li>
+		<li><img src="image\绘图工具\画笔.png"></li>
+		<li><img src="image\绘图工具\直线.png"></li>
+		<li><img src="image\绘图工具\椭圆.png"></li>
+		<li><img src="image\绘图工具\矩形.png"></li>
+		<li><img src="image\绘图工具\输入文字.png"></li>
+		<li><img src="image\绘图工具\调色盘.png"></li>
+	    </ul>
+	    <ul id="filelist">
+
+	    </ul>
+	    <div id="upload">
+		<form name="myform" action="https://viewer.zoho.com/api/view.do" method="post" enctype="multipart/form-data">
+		    <input type="hidden" name="apikey"  value="e276fa67375967fc635f4e007ed81aaf"/>
+		    <input type="file"   name="file"  size="38"/>
+		    <input type="submit" name="submit"  value="Upload"/>
+		</form>
+		<div id="droppable"></div>
+	    </div>
+	    <div id="display">
+	    </div>
+	</div>
+    </body>
+</html>

@@ -35,11 +35,7 @@ doodle.init = function(){
     doodle.context2.strokeStyle="#cb3594";
     doodle.context2.lineJoin = "round";
     doodle.context2.lineWidth = 4;
-    if (doodle.touchable) {
-	doodle.c2.addEventListener('touchstart', onTouchStart, false);
-	doodle.c2.addEventListener('touchmove', onTouchMove, false);
-	doodle.c2.addEventListener('touchend', onTouchEnd, false);
-    }
+    
     
     
     //here deal with the operations in touch
@@ -136,12 +132,7 @@ doodle.init = function(){
 	doodle.paint = false;
     });
 
-    //here deal with the operation in drawing the canvas
-    doodle.addClick = function(i, x, y, dragging){
-	doodle.mulClick.mulClickX[i].push(x);
-	doodle.mulClick.mulClickY[i].push(y);
-	doodle.mulClick.mulClickDrag[i].push(dragging);
-    }
+
     
     $("button#clearButton").click(
 	function (){
@@ -234,9 +225,37 @@ doodle.init = function(){
 }
 
 
+doodle.onBegin = function(){
+    if (doodle.touchable) {
+	doodle.c2.addEventListener('touchstart', onTouchStart, false);
+	doodle.c2.addEventListener('touchmove', onTouchMove, false);
+	doodle.c2.addEventListener('touchend', onTouchEnd, false);
+    }
+}
+
+doodle.onClose = function(){
+    
+    }
+    
+doodle.changeColor = function(color){
+    
+    }
+
+doodle.changeShape = function(shape){
+    
+    }
+
+//here deal with the operation in drawing the canvas
+doodle.addClick = function(i, x, y, dragging){
+    doodle.mulClick.mulClickX[i].push(x);
+    doodle.mulClick.mulClickY[i].push(y);
+    doodle.mulClick.mulClickDrag[i].push(dragging);
+}
+
 //here deal with the operations in Click
 doodle.onTouchStart = function(event) {
     //do stuff
+    event.preventDefault();
     doodle.paint=true;
     for (i=0;i<event.touches.length;i++){
 	if (doodle.type==1||doodle.type==2)
@@ -327,19 +346,19 @@ doodle.onTouchEnd = function(event) {
     {
 	doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
 	doodle.drawToCanvasGraph(doodle.type, doodle.recClick);
-//	doodle.context.beginPath();
-//	if (doodle.type==1)
-//	{
-//	    doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
-//	    doodle.DrawRect(doodle.context2,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
-//	}
-//	if (doodle.type==2)
-//	{
-//	    doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
-//	    doodle.DrawCircle(doodle.context2,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
-//	}
-//	doodle.context2.closePath();
-//	doodle.context2.stroke();
+    //	doodle.context.beginPath();
+    //	if (doodle.type==1)
+    //	{
+    //	    doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
+    //	    doodle.DrawRect(doodle.context2,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
+    //	}
+    //	if (doodle.type==2)
+    //	{
+    //	    doodle.context.clearRect(0,0,doodle.c2.width,doodle.c2.height);
+    //	    doodle.DrawCircle(doodle.context2,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
+    //	}
+    //	doodle.context2.closePath();
+    //	doodle.context2.stroke();
     }
     doodle.paint=false;
     doodle.drawRec=0;
@@ -393,6 +412,7 @@ doodle.sendReDraw = function (index, click){
     tmp.drawElement = "freeDraw";
     tmp.index = index;
     connection.sendMessage(JSON.stringify(tmp));
+//logg(JSON.stringify(tmp));
 }
 
 doodle.sendDrawShape = function(index, shapeClick)

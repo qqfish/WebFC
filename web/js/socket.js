@@ -32,7 +32,7 @@ connection.connect = (function(host) {
 
     connection.socket.onmessage = function (message) {
 	var socketData = JSON.parse(message.data);
-	//logg(socketData);
+	logg(socketData);
 	if(socketData.type == "doodleTable"){
 	    if(socketData.drawElement == "freeDraw"){
 		doodle.redraw(socketData.index, socketData);

@@ -1,0 +1,98 @@
+iframe {
+	height: 200px;
+	width: 350px;
+	background-color: transparent;
+	position: absolute;
+	top: 83px;
+	left: 20px;
+	z-index:1;
+}
+#nameList{
+	width: 79px;
+	position: absolute;
+	height: 203px;
+	left: 371px;
+	top: 3px;
+	position: absolute;
+}
+#input{
+	position: absolute;
+	width: 270px;
+	height: 24px;
+	left: 20px;
+	top: 229px;
+}
+select {
+	left: 298px;
+	top: 228px;
+	height: 20px;
+	position: absolute;
+}
+#send {
+	position: absolute;
+	left: 379px;
+	top: 227px;
+	width: 80px;
+	height: 21px;
+}
+#title {
+	position: absolute;
+	left: 27px;
+	top: 10px;
+	width: 175px;
+	height: 41px;
+}
+
+#tab {
+	overflow-y: scroll;
+	widows: 355px;
+	left: 16px;
+	top: 39px;
+	width: 380px;
+	height: 200px;
+}
+#dialog tbody .dia1 {
+	background-color:#CCC;
+	height:23px;
+}
+#dialog tbody .dia2 {
+	background-color:#FFF;
+	height:23px;
+}
+.chatWindow{
+	position:absolute;
+	bottom:0px;
+	left:0px;
+}
+.chatWindow #chatButton {
+	left: 23px;
+	top: 31px;
+	height: 21px;
+	width: 86px;
+	background-color: #36C;
+}
+.chatWindow #chatButton:hover{
+	background-color:#F00;
+}
+.chatWindow #chatButton:hover #fieldset{
+	left: 29px;
+}
+#frame{
+	display:none;
+	width: 453px;
+	height: 254px;
+	left: 19px;
+	top: 53px;
+	background-image: url(../../Documents/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%AB%99%E7%82%B9%202/QQ%E6%88%AA%E5%9B%BE20120710163539.png);
+}
+.namelist {
+	position: absolute;
+	left: 370px;
+	top: 18px;
+	width: 65px;
+	height: 171px;
+	overflow-y: scroll;
+	widows: 355px;
+	list-style: none;
+	margin: 0px;
+}

@@ -30,20 +30,23 @@ h1,p,span,li{font-family:clumsy,"Microsoft YaHei";}
     margin: 0;
     padding: 0;
     border:0;
-    font-size: 95%;
+    font-size: 80%;
     width: 10%;
     height:95%;
+    z-index: 1;
 }
 ul{
     height: 100%;
     border: solid;
     display:none;
     padding:10%;
+    z-index: 1;
 }
 li{
     list-style: none;
     padding: 0 0 20px 0;
     margin: 0;
+    z-index: 1;
 }
 
 #display{

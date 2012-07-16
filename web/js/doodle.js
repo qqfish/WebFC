@@ -19,14 +19,14 @@ doodle.init = function(){
     //here initial the size of canvas
     doodle.canvas=document.getElementById("canvas");
     doodle.canvasTop=document.getElementById("canvasTop");
-    doodle.context=canvas.getContext("2d");
-    doodle.contextTop=canvasTop.getContext("2d");
+    doodle.context=doodle.canvas.getContext("2d");
+    doodle.contextTop=doodle.canvasTop.getContext("2d");
     var width=document.body.clientWidth;
     var height=document.body.clientHeight;
-    canvas.width=width-20;
-    canvas.height=height-20;
-    canvasTop.width=width-20;
-    canvasTop.height=height-20;
+    doodle.canvas.width=width-20;
+    doodle.canvas.height=height-20;
+    doodle.canvasTop.width=width-20;
+    doodle.canvasTop.height=height-20;
     //the initialize of canvas have down
     doodle.mulClick = {};
     doodle.mulClick.init = function(){

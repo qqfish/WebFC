@@ -15,5 +15,9 @@ public class Data {
     public Data(){
 	super();
     }
+
+    public String getType() {
+	return type;
+    }
     
 }

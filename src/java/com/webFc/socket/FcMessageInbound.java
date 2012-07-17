@@ -7,6 +7,8 @@ package com.webFc.socket;
 import com.google.gson.Gson;
 import com.webFc.data.Data;
 import com.webFc.data.LoginRoom;
+import com.webFc.socket.MessageType.ErrorMessage;
+import com.webFc.socket.MessageType.doodlePic;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -55,14 +57,21 @@ public class FcMessageInbound extends MessageInbound {
 	    System.out.println(textData.getType());
 	    if (textData.getType().equals("LoginRoom")) {
 		LoginRoom lg = gson.fromJson(str, LoginRoom.class);
-		boolean result = rooms.loginRoom(lg.getIdRoom(), lg.getIdUser(), this);
-		System.out.println("login " + result);
-		if(result){
+		if (rooms.loginRoom(lg.getIdRoom(), lg.getIdUser(), this)) {
 		    idRoom = lg.getIdRoom();
 		    idUser = lg.getIdUser();
+		} else {
+		    ErrorMessage err = new ErrorMessage("enter room error");
+		    CharBuffer buffer = CharBuffer.wrap(gson.toJson(err));
+		    this.getWsOutbound().writeTextMessage(buffer);
 		}
 	    } else if (idRoom > 0 && idUser > 0) {
-		rooms.broadcast(idRoom, str);
+		if (textData.getType().equals("doodlePic")) {
+		    doodlePic dp = gson.fromJson(str, doodlePic.class);
+		    rooms.sendUserMessage(idRoom, dp.getTo(), str);
+		} else {
+		    rooms.broadcast(idRoom, str);
+		}
 	    }
 	}
     }

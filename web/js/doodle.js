@@ -502,6 +502,24 @@ doodle.sendDrawShape = function(index, shapeClick)
     connection.sendMessage(JSON.stringify(tmp));    
 }
 
+doodle.getDoodlePic = function(from){
+    var result = {};
+    result.type = "doodlePic";
+    var data = doodle.canvasTop.toDataURL();
+    //var b64 = data.substring( 22 ); 
+    result.data = data;
+    result.to = from;
+    return JSON.stringify(result);
+}
+
+doodle.restorePic = function(data){
+    var image = new Image();
+    image.src = data;
+    image.onload = function(){
+	doodle.contextTop.drawImage(image,0,0);
+    }
+}
+
 
 doodle.init();
 /*

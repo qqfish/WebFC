@@ -4,6 +4,8 @@
  */
 package com.webFc.socket;
 
+import com.google.gson.Gson;
+import com.webFc.socket.MessageType.requestPic;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.*;
@@ -24,8 +26,20 @@ public class RoomManager {
 	    super();
 	}
 
-	private boolean insertUser(int idUser, FcMessageInbound fmi) {
+	private boolean insertUser(int idUser, FcMessageInbound fmi) throws IOException {
 	    if (!users.containsKey(idUser)) {
+		List<String> rmArray = new ArrayList<String>();
+
+		Iterator<Map.Entry<Integer, FcMessageInbound>> iter = users.entrySet().iterator();
+		if (iter.hasNext()) {
+		    Gson gson = new Gson();
+		    Map.Entry<Integer, FcMessageInbound> entry = iter.next();
+		    FcMessageInbound val = entry.getValue();
+		    requestPic rp = new requestPic();
+		    rp.setFrom(idUser);
+		    CharBuffer buffer = CharBuffer.wrap(gson.toJson(rp));
+		    val.getWsOutbound().writeTextMessage(buffer);
+		}
 		users.put(idUser, fmi);
 		return true;
 	    } else {
@@ -74,7 +88,7 @@ public class RoomManager {
 	super();
     }
 
-    public boolean loginRoom(int idRoom, int idUser, FcMessageInbound fmi) {
+    public boolean loginRoom(int idRoom, int idUser, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (maps.containsKey(idRoom)) {
 	    //System.out.println("hello");
@@ -85,7 +99,7 @@ public class RoomManager {
 	}
     }
 
-    public boolean newRoom(int idRoom, int idUser, FcMessageInbound fmi) {
+    public boolean newRoom(int idRoom, int idUser, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (!maps.containsKey(idRoom)) {
 	    maps.put(idRoom, new UserMap());

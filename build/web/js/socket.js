@@ -39,8 +39,16 @@ connection.connect = (function(host) {
 	    }
 	    else if(socketData.drawElement == "shape"){
 		doodle.drawToCanvasGraph(socketData.index, socketData);
-	    }
-	    
+	    }	    
+	}
+	else if(socketData.type == "requestPic"){
+	    connection.sendMessage(doodle.getDoodlePic(socketData.from));
+	}
+	else if(socketData.type == "doodlePic"){
+	    doodle.restorePic(socketData.data);
+	}
+	else if (socketData.type == "ErrorMessage"){
+	    alert(socketData.errorWord);
 	}
     };
 });

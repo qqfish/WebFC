@@ -71,8 +71,8 @@ public class Room extends Data {
 	this.tableDoodle = tableDoodle;
     }
 
-    public void addFile(String fileName, boolean onTable, String username, int up, int left, int right, int bottom, String fileType) {
-	files.add(new FileShortInfo(fileName, onTable, username, up, left, right, bottom, fileType));
+    public void addFile(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType) {
+	files.add(new FileShortInfo(fileName, onTable, username, xFile, yFile, fileType));
     }
 
     public void addNote(int idNote, String noteContext, int x, int y) {

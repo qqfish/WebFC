@@ -15,16 +15,16 @@ import java.util.List;
 public class Room extends Data {
 
     private int idRoom;
-    private Image tableDoodle;
+    private String tableDoodle;
     private String owner;
     private List<FileShortInfo> files = new ArrayList();
-    private List<NoteInfo> notes = new ArrayList();
+    private List<RoomNoteInfo> notes = new ArrayList();
 
     public Room() {
 	type = "Room";
     }
 
-    public Room(int idRoom, Image tableDoodle, String owner) {
+    public Room(int idRoom, String tableDoodle, String owner) {
 	type = "Room";
 	this.idRoom = idRoom;
 	this.tableDoodle = tableDoodle;
@@ -39,11 +39,11 @@ public class Room extends Data {
 	this.files = files;
     }
 
-    public List<NoteInfo> getNotes() {
+    public List<RoomNoteInfo> getNotes() {
 	return notes;
     }
 
-    public void setNotes(List<NoteInfo> notes) {
+    public void setNotes(List<RoomNoteInfo> notes) {
 	this.notes = notes;
     }
 
@@ -55,7 +55,7 @@ public class Room extends Data {
 	return owner;
     }
 
-    public Image getTableDoodle() {
+    public String getTableDoodle() {
 	return tableDoodle;
     }
 
@@ -67,7 +67,7 @@ public class Room extends Data {
 	this.owner = owner;
     }
 
-    public void setTableDoodle(Image tableDoodle) {
+    public void setTableDoodle(String tableDoodle) {
 	this.tableDoodle = tableDoodle;
     }
 
@@ -76,6 +76,6 @@ public class Room extends Data {
     }
 
     public void addNote(int idNote, String noteContext, int x, int y) {
-	notes.add(new NoteInfo(idNote, noteContext, x, y));
+	notes.add(new RoomNoteInfo(idNote, noteContext, x, y));
     }
 }

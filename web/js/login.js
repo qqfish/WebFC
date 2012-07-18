@@ -12,5 +12,3 @@ login.init = function(){
     connection.sendMessage(JSON.stringify(login));
 }
 
-login.init();
-

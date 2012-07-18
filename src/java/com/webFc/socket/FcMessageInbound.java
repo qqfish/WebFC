@@ -14,6 +14,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 
@@ -39,7 +41,12 @@ public class FcMessageInbound extends MessageInbound {
 
     @Override
     protected void onClose(int status) {
-	System.out.println(this.toString() + "closed");
+	try {
+	    System.out.println(this.toString() + "closed");
+	    rooms.logoutRoom(idRoom, idUser);
+	} catch (IOException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	}
     }
 
     @Override
@@ -55,6 +62,7 @@ public class FcMessageInbound extends MessageInbound {
 	    Gson gson = new Gson();
 	    Data textData = gson.fromJson(str, Data.class);
 	    System.out.println(textData.getType());
+	    System.out.println(idRoom + " " + idUser);
 	    if (textData.getType().equals("LoginRoom")) {
 		LoginRoom lg = gson.fromJson(str, LoginRoom.class);
 		if (rooms.loginRoom(lg.getIdRoom(), lg.getIdUser(), this)) {
@@ -70,6 +78,7 @@ public class FcMessageInbound extends MessageInbound {
 		    doodlePic dp = gson.fromJson(str, doodlePic.class);
 		    rooms.sendUserMessage(idRoom, dp.getTo(), str);
 		} else {
+		    System.out.println("hello");
 		    rooms.broadcast(idRoom, str);
 		}
 	    }

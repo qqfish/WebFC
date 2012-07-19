@@ -15,7 +15,7 @@ public class ErrorMessage extends Data {
     String errorWord;
 
     public ErrorMessage(String errorWord) {
-	type = "Error";
+	type = "ErrorMessage";
 	this.errorWord = errorWord;
     }
 

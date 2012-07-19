@@ -12,17 +12,17 @@ import com.webFc.data.Data;
  */
 public class requestPic extends Data {
 
-    private int from;
+    private String from;
 
     public requestPic() {
 	type = "requestPic";
     }
     
-    public int getFrom() {
+    public String getFrom() {
 	return from;
     }
 
-    public void setFrom(int from) {
+    public void setFrom(String from) {
 	this.from = from;
     }
     

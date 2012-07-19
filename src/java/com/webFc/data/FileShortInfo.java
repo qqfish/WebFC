@@ -4,6 +4,8 @@
  */
 package com.webFc.data;
 
+import java.util.Date;
+
 /**
  *
  * @author fish
@@ -16,12 +18,15 @@ public class FileShortInfo extends Data {
     private int xFile;
     private int yFile;
     private String fileType;
+    private int rotate;
+    private String preview;
+    private Date editTime;
 
     public FileShortInfo() {
 	type = "FileShortInfo";
     }
 
-    public FileShortInfo(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType) {
+    public FileShortInfo(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType, int rotate, String preview, Date editTime) {
 	type = "FileShortInfo";
 	this.fileName = fileName;
 	this.onTable = onTable;
@@ -29,6 +34,32 @@ public class FileShortInfo extends Data {
 	this.xFile = xFile;
 	this.yFile = yFile;
 	this.fileType = fileType;
+	this.editTime = editTime;
+	this.preview = preview;
+    }
+
+    public Date getEditTime() {
+	return editTime;
+    }
+
+    public void setEditTime(Date editTime) {
+	this.editTime = editTime;
+    }
+
+    public String getPreview() {
+	return preview;
+    }
+
+    public void setPreview(String preview) {
+	this.preview = preview;
+    }
+
+    public int getRotate() {
+	return rotate;
+    }
+
+    public void setRotate(int rotate) {
+	this.rotate = rotate;
     }
 
     public int getxFile() {

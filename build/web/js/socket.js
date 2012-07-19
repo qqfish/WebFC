@@ -50,6 +50,9 @@ connection.connect = (function(host) {
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
 	}
+	else if (socketData.type == "AlertMessage"){
+	    alert(socketData.alertWord);
+	}
     };
 });
 

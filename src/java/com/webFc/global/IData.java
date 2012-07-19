@@ -23,5 +23,20 @@ public interface IData {
     FileNoteInfo getFileNote(int idFileNote);
     FileDetailInfo getDetailFile(int idFile);
     
-    //int new
+    int newRoom(String roomname, String user);
+    void saveRoom(int idRoom, String doodleOfTable);
+    
+    int newRoomNote(String context, int x, int y, int idRoom);
+    void updateRoomNote(int idRoomNote, String context, int x, int y);
+    void rmRoomNote(int idRoomNote);
+    
+    int newFileNote(String context, int x, int y, int idFile);
+    void updateFileNote(int idFileNote, String context, int x, int y);
+    void rmFileNote(int idFileNote);
+    
+    int newFile(String filename, String data, String user, String fileType);
+    void updateFileData(int idFile, String data, String filename);
+    void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate, String preview);
+    void rmFile(int idFile);
+    
 }

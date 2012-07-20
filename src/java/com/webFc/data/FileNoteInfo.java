@@ -8,27 +8,27 @@ package com.webFc.data;
  *
  * @author fish
  */
-public class NoteInfo extends Data {
+public class FileNoteInfo extends Data {
 
-    private int idNote;
+    private int idFileNote;
     private String noteContext;
     private int x;
     private int y;
 
-    public NoteInfo() {
-	type = "NoteInfo";
+    public FileNoteInfo() {
+	type = "FileNoteInfo";
     }
 
-    public NoteInfo(int idNote, String noteContext, int x, int y) {
-	type = "NoteInfo";
-	this.idNote = idNote;
+    public FileNoteInfo(int idFileNote, String noteContext, int x, int y) {
+	type = "FileNoteInfo";
+	this.idFileNote = idFileNote;
 	this.noteContext = noteContext;
 	this.x = x;
 	this.y = y;
     }
 
-    public void setIdNote(int idNote) {
-	this.idNote = idNote;
+    public void setIdFileNote(int idFileNote) {
+	this.idFileNote = idFileNote;
     }
 
     public void setNoteContext(String noteContext) {
@@ -43,8 +43,8 @@ public class NoteInfo extends Data {
 	this.y = y;
     }
 
-    public int getIdNote() {
-	return idNote;
+    public int getIdFileNote() {
+	return idFileNote;
     }
 
     public String getNoteContext() {

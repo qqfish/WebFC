@@ -8,39 +8,34 @@ package com.webFc.data;
  *
  * @author fish
  */
-public class LoginRoom extends Data{
-    
+public class LoginRoom extends Data {
+
     private int idRoom;
-    private int idUser;
-    
-    public LoginRoom(){
+    private String username;
+
+    public LoginRoom() {
 	type = "LoginRoom";
     }
 
-    public LoginRoom(int idRoom, int idUser) {
+    public LoginRoom(int idRoom, String username) {
 	type = "LoginRoom";
 	this.idRoom = idRoom;
-	this.idUser = idUser;
+	this.username = username;
     }
-    
-    
 
     public int getIdRoom() {
 	return idRoom;
-    }
-
-    public int getIdUser() {
-	return idUser;
     }
 
     public void setIdRoom(int idRoom) {
 	this.idRoom = idRoom;
     }
 
-    public void setIdUser(int idUser) {
-	this.idUser = idUser;
+    public String getUsername() {
+	return username;
     }
-    
-    
-    
+
+    public void setUsername(String username) {
+	this.username = username;
+    }
 }

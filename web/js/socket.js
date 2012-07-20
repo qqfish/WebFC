@@ -62,6 +62,9 @@ connection.connect = (function(host) {
 	else if ( socketData.type == "bye" && started ){
 		 onRemoteHangup();
 	}
+	else if (socketData.type == "AlertMessage"){
+	    alert(socketData.alertWord);
+	}
     };
 });
 

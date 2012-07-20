@@ -12,7 +12,7 @@ import com.webFc.data.Data;
  */
 public class doodlePic extends Data{
     private String data;
-    private int to;
+    private String to;
 
     public doodlePic() {
 	type = "doodlePic";
@@ -28,11 +28,11 @@ public class doodlePic extends Data{
 	this.data = data;
     }
 
-    public int getTo() {
+    public String getTo() {
 	return to;
     }
 
-    public void setTo(int to) {
+    public void setTo(String to) {
 	this.to = to;
     }
     

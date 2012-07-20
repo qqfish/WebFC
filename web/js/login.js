@@ -7,7 +7,7 @@ login = {};
 
 login.init = function(){
     login.type = "LoginRoom";
-    login.idUser = prompt( "输入用户id "); 
+    login.username = prompt( "输入用户id "); 
     login.idRoom = prompt("输入房间id");
     connection.sendMessage(JSON.stringify(login));
 }

@@ -7,13 +7,17 @@ package com.webFc.socket;
 import com.google.gson.Gson;
 import com.webFc.data.Data;
 import com.webFc.data.LoginRoom;
+import com.webFc.socket.MessageType.AlertMessage;
 import com.webFc.socket.MessageType.ErrorMessage;
+import com.webFc.socket.MessageType.SaveTableDoodle;
 import com.webFc.socket.MessageType.doodlePic;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 
@@ -24,11 +28,11 @@ import org.apache.catalina.websocket.WsOutbound;
 public class FcMessageInbound extends MessageInbound {
 
     private static RoomManager rooms = new RoomManager();
-    int idUser;
+    String username;
     int idRoom;
 
     public FcMessageInbound() {
-	idUser = -1;
+	username = "";
 	idRoom = -1;
     }
 
@@ -39,7 +43,12 @@ public class FcMessageInbound extends MessageInbound {
 
     @Override
     protected void onClose(int status) {
-	System.out.println(this.toString() + "closed");
+	try {
+	    System.out.println(this.toString() + "closed");
+	    rooms.logoutRoom(idRoom, username);
+	} catch (IOException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	}
     }
 
     @Override
@@ -50,29 +59,59 @@ public class FcMessageInbound extends MessageInbound {
     @Override
     protected void onTextMessage(CharBuffer cb) throws IOException {
 	String str = cb.toString();
-	System.out.println(str);
+	//System.out.println(str);
 	if (str != null && !str.isEmpty()) {
 	    Gson gson = new Gson();
 	    Data textData = gson.fromJson(str, Data.class);
-	    System.out.println(textData.getType());
+	    //System.out.println(textData.getType());
+	    //System.out.println(idRoom + " " + username);
 	    if (textData.getType().equals("LoginRoom")) {
 		LoginRoom lg = gson.fromJson(str, LoginRoom.class);
-		if (rooms.loginRoom(lg.getIdRoom(), lg.getIdUser(), this)) {
+		if (rooms.loginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
 		    idRoom = lg.getIdRoom();
-		    idUser = lg.getIdUser();
+		    username = lg.getUsername();
 		} else {
-		    ErrorMessage err = new ErrorMessage("enter room error");
-		    CharBuffer buffer = CharBuffer.wrap(gson.toJson(err));
-		    this.getWsOutbound().writeTextMessage(buffer);
+		    if (rooms.firstLoginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
+			idRoom = lg.getIdRoom();
+			username = lg.getUsername();
+		    } else {
+			ErrorMessage e = new ErrorMessage("failed to login");
+			CharBuffer buffer = CharBuffer.wrap(gson.toJson(e));
+			this.getWsOutbound().writeTextMessage(buffer);
+		    }
 		}
-	    } else if (idRoom > 0 && idUser > 0) {
+	    } else if (idRoom > 0 && !username.isEmpty()) {
 		if (textData.getType().equals("doodlePic")) {
 		    doodlePic dp = gson.fromJson(str, doodlePic.class);
-		    rooms.sendUserMessage(idRoom, dp.getTo(), str);
+		    roomToUser(dp.getTo(), str);
+		} else if (textData.getType().equals("SaveTableDoodle")) {
+		    SaveTableDoodle std = gson.fromJson(str, SaveTableDoodle.class);
+		    if (rooms.saveRoomDoodle(idRoom, std.getDoodleOfTable())) {
+			AlertMessage e = new AlertMessage("save complete");
+			CharBuffer buffer = CharBuffer.wrap(gson.toJson(e));
+			this.getWsOutbound().writeTextMessage(buffer);
+		    } else {
+			ErrorMessage e = new ErrorMessage("failed to save");
+			CharBuffer buffer = CharBuffer.wrap(gson.toJson(e));
+			this.getWsOutbound().writeTextMessage(buffer);
+		    }
 		} else {
-		    rooms.broadcast(idRoom, str);
+		    //System.out.println("hello");
+		    roomBroadcast(str);
 		}
 	    }
+	}
+    }
+
+    private void roomBroadcast(String message) throws IOException {
+	if (idRoom > 0) {
+	    rooms.broadcast(idRoom, message);
+	}
+    }
+
+    private void roomToUser(String username, String message) throws IOException {
+	if (idRoom > 0) {
+	    rooms.sendUserMessage(idRoom, username, message);
 	}
     }
 }

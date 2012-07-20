@@ -421,10 +421,10 @@ public class DataProxy implements IData {
 	}
     }
 
-//    public static void main(String arg[]) throws SQLException {
-//	DataProxy d = new DataProxy();
-//	int id = d.newRoom("123", "123");
-//	d.saveRoom(id, "haha");
-//	System.out.println(d.getRoomInfo(id).getTableDoodle());
-//    }
+    public static void main(String arg[]) throws SQLException {
+	DataProxy d = new DataProxy();
+	int id = d.newRoom("123", "2b");
+	d.saveRoom(id, "haha");
+	System.out.println(d.getRoomInfo(id).getTableDoodle());
+    }
 }

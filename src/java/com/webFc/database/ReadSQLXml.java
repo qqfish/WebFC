@@ -24,7 +24,7 @@ public class ReadSQLXml {
 	try {
 	    DocumentBuilder dombuilder = domfac.newDocumentBuilder();
 	    System.out.println(System.getProperty("user.dir"));
-	    InputStream is = new FileInputStream("/home/fish/work/java/WebFC/sql.xml");
+	    InputStream is = new FileInputStream("E:/Workspaces/Github/WebFC/sql.xml");
 	    Document doc = dombuilder.parse(is);
 	    Element root = doc.getDocumentElement();
 	    NodeList sql = root.getChildNodes();

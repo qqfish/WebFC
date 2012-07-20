@@ -59,14 +59,14 @@ public class FcMessageInbound extends MessageInbound {
     @Override
     protected void onTextMessage(CharBuffer cb) throws IOException {
 	String str = cb.toString();
-	//System.out.println(str);
+	System.out.println(str);
 	if (str != null && !str.isEmpty()) {
 	    Gson gson = new Gson();
 	    Data textData = gson.fromJson(str, Data.class);
 	    //System.out.println(textData.getType());
 	    //System.out.println(idRoom + " " + username);
 	    if (textData.getType().equals("LoginRoom")) {
-		LoginRoom lg = gson.fromJson(str, LoginRoom.class);
+		LoginRoom lg = gson.fromJson(str, LoginRoom.class);		
 		if (rooms.loginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
 		    idRoom = lg.getIdRoom();
 		    username = lg.getUsername();

@@ -10,6 +10,7 @@
 	<script src="js/jquery/ui/jquery.ui.mouse.js"></script>
 	<script src="js/jquery/ui/jquery.ui.draggable.js"></script>
 	<script src="js/jquery/ui/jquery.ui.droppable.js"></script>
+	<script src="js/jquery/ui/jquery.ui.progressbar.js"></script>
 	<script src="js/toolbar.js"></script>
 	<script src="js/socket.js"></script>
 	<script src="js/login.js"></script>
@@ -34,11 +35,11 @@
 		<li onclick="login.init();">登录</li>
 	    </ul>
 	    <ul id="paint" class="toolDetail">
-		<li class="content"><img id="usePointer"src="image/drawingTools/pointer.png"></li>
+		<li class="content"><img id="usePointer" src="image/drawingTools/pointer.png"></li>
 		<li><img id="usePen" src="image/drawingTools/pen.png"></li>
 		<li><img id="drawLine" src="image/drawingTools/line.png"></li>
 		<li><img id="drawCircle" src="image/drawingTools/circle.png"></li>
-		<li><img id="drawRec"src="image/drawingTools/rectangle.png"></li>
+		<li><img id="drawRec" src="image/drawingTools/rectangle.png"></li>
 		<li><img id="drawWord" src="image/drawingTools/word.png"></li>
 		<li><img id="back" src="image/drawingTools/panel.png"></li>
 	    </ul>
@@ -46,12 +47,12 @@
 
 	    </ul>
 	    <div id="upload">
-		<form name="myform" action="https://viewer.zoho.com/api/view.do" method="post" enctype="multipart/form-data">
-		    <input type="hidden" name="apikey"  value="e276fa67375967fc635f4e007ed81aaf"/>
-		    <input type="file"   name="file"  size="38"/>
-		    <input type="submit" name="submit"  value="Upload"/>
-		</form>
-		<div id="droppable"></div>
+                <form>
+                    <input type="file" id="file">
+                    <input type="button" id="sub" value="上传">
+                    <div id="progressbar"></div>
+                </form>
+                <script src="js/upload.js"></script>
 	    </div>
 	    <div id="display">
 	    </div>
@@ -97,10 +98,10 @@
 		<option>red</option>
 		<option>blue</option>
 	    </select>
-	    <input id="input" placeholder="Input area" name="input" type="text"></input>
-	    <input id="send" name="send" type="button" value="send"></input>
+	    <input id="input" placeholder="Input area" name="input" type="text">
+	    <input id="send" name="send" type="button" value="send">
 	</fieldset>
 	<canvas id="chatButton" ></canvas>
+        <script type="text/javascript" src="js/doodle.js"></script>
     </body>
-<script type="text/javascript" src="js/doodle.js"></script>
 </html>

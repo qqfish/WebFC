@@ -7,6 +7,7 @@ package com.webFc.socket;
 import com.google.gson.Gson;
 import com.webFc.data.Data;
 import com.webFc.data.LoginRoom;
+import com.webFc.data.UploadFileInfo;
 import com.webFc.socket.MessageType.ErrorMessage;
 import com.webFc.socket.MessageType.doodlePic;
 import java.io.IOException;
@@ -77,7 +78,9 @@ public class FcMessageInbound extends MessageInbound {
 		if (textData.getType().equals("doodlePic")) {
 		    doodlePic dp = gson.fromJson(str, doodlePic.class);
 		    rooms.sendUserMessage(idRoom, dp.getTo(), str);
-		} else {
+		}else if(textData.getType().equals("uploadFile")){
+                    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
+                }else {
 		    System.out.println("hello");
 		    rooms.broadcast(idRoom, str);
 		}

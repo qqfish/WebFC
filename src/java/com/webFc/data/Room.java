@@ -4,8 +4,8 @@
  */
 package com.webFc.data;
 
-import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,9 +14,11 @@ import java.util.List;
  */
 public class Room extends Data {
 
+    private String roomName;
     private int idRoom;
     private String tableDoodle;
     private String owner;
+    private Date lastTime;
     private List<FileShortInfo> files = new ArrayList();
     private List<RoomNoteInfo> notes = new ArrayList();
 
@@ -24,11 +26,29 @@ public class Room extends Data {
 	type = "Room";
     }
 
-    public Room(int idRoom, String tableDoodle, String owner) {
+    public Room(String roomName, int idRoom, String tableDoodle, String owner, Date lastTime) {
 	type = "Room";
+	this.roomName = roomName;
 	this.idRoom = idRoom;
 	this.tableDoodle = tableDoodle;
 	this.owner = owner;
+	this.lastTime = lastTime;
+    }
+
+    public String getRoomName() {
+	return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+	this.roomName = roomName;
+    }
+
+    public Date getLastTime() {
+	return lastTime;
+    }
+
+    public void setLastTime(Date lastTime) {
+	this.lastTime = lastTime;
     }
 
     public List<FileShortInfo> getFiles() {
@@ -71,8 +91,8 @@ public class Room extends Data {
 	this.tableDoodle = tableDoodle;
     }
 
-    public void addFile(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType) {
-	files.add(new FileShortInfo(fileName, onTable, username, xFile, yFile, fileType));
+    public void addFile(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType, int rotate, String preview, Date editTime) {
+	files.add(new FileShortInfo(fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime));
     }
 
     public void addNote(int idNote, String noteContext, int x, int y) {

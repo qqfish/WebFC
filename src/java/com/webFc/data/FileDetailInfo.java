@@ -4,6 +4,7 @@
  */
 package com.webFc.data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,10 +13,12 @@ import java.util.List;
  */
 public class FileDetailInfo extends Data{
     int idFile;
+    String fileName;
     String fileData;
     String owner;
     String doodleOfFile;
     String fileType;
+    Date editTime;
     
     List<FileNoteInfo> fileNotes;
 
@@ -23,13 +26,31 @@ public class FileDetailInfo extends Data{
 	type = "FileDetailInfo";
     }
 
-    public FileDetailInfo(int idFile, String fileData, String owner, String doodleOfFile, String fileType) {
+    public FileDetailInfo(String fileName, int idFile, String fileData, String owner, String doodleOfFile, String fileType, Date time) {
 	type = "FileDetailInfo";
+	this.fileName = fileName;
 	this.idFile = idFile;
 	this.fileData = fileData;
 	this.owner = owner;
 	this.doodleOfFile = doodleOfFile;
 	this.fileType = fileType;
+	this.editTime = time;
+    }
+
+    public Date getEditTime() {
+	return editTime;
+    }
+
+    public void setEditTime(Date editTime) {
+	this.editTime = editTime;
+    }
+
+    public String getFileName() {
+	return fileName;
+    }
+
+    public void setFileName(String fileName) {
+	this.fileName = fileName;
     }
     
     

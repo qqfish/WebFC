@@ -4,7 +4,6 @@
  */
 package com.webFc.database;
 
-import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory;
 import com.webFc.data.FileDetailInfo;
 import com.webFc.data.FileNoteInfo;
 import com.webFc.data.Room;
@@ -13,6 +12,7 @@ import com.webFc.global.IData;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.rowset.serial.SerialBlob;
 
 /**
  *
@@ -29,6 +29,7 @@ public class DataProxy implements IData {
 	r.getInfo();
 	url += r.getHost();
 	url += "?unicode=true&characterEncoding=UTF-8&user=" + r.getUsername() + "&password=" + r.getPassword();
+	System.out.println(url);
 	con = DriverManager.getConnection(url);
     }
 
@@ -80,9 +81,11 @@ public class DataProxy implements IData {
 	    ps.setInt(1, idRoom);
 	    ResultSet rs = ps.executeQuery();
 	    if (rs.next()) {
+		result.setRoomName(rs.getString("roomName"));
 		result.setIdRoom(rs.getInt("idRoom"));
 		result.setOwner(rs.getString("roomOwner"));
-		result.setTableDoodle(rs.getString("tableDoodle"));
+		result.setTableDoodle(rs.getString("doodleOfTable"));
+		result.setLastTime(rs.getDate("lastTime"));
 		String sql2 = "SELECT * FROM RoomNote WHERE idRoom=?";
 		PreparedStatement ps2 = con.prepareStatement(sql2);
 		ps2.setInt(1, idRoom);
@@ -105,7 +108,10 @@ public class DataProxy implements IData {
 		    int xFile = rs3.getInt("xFile");
 		    int yFile = rs3.getInt("yFile");
 		    String fileType = rs3.getString("fileType");
-		    result.addFile(fileName, onTable, username, xFile, yFile, fileType);
+		    int rotate = rs3.getInt("rotate");
+		    String preview = rs3.getString("preview");
+		    Date editTime = rs3.getDate("editTime");
+		    result.addFile(fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime);
 		}
 		ps2.close();
 		ps3.close();
@@ -170,11 +176,13 @@ public class DataProxy implements IData {
 	    ps.setInt(1, idFile);
 	    ResultSet rs = ps.executeQuery();
 	    if (rs.next()) {
+		result.setFileName(rs.getString("fileName"));
 		result.setDoodleOfFile(rs.getString("doodleOfFile"));
 		result.setFileData(rs.getString("fileData"));
 		result.setFileType(rs.getString("fileType"));
 		result.setIdFile(rs.getInt("idFile"));
 		result.setOwner(rs.getString("fileOwner"));
+		result.setEditTime(rs.getDate("editTime"));
 		String sql2 = "SELECT * FROM FileNote WHERE idFile=?";
 		PreparedStatement ps2 = con.prepareStatement(sql2);
 		ps2.setInt(1, idFile);
@@ -200,7 +208,7 @@ public class DataProxy implements IData {
     @Override
     public void createUser(String email, String password) {
 	try {
-	    String sql = "INSERT INTO User(email, password) VALUES (?,?)";
+	    String sql = "INSERT INTO User (email, password) VALUES (?,?)";
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    ps.setString(1, email);
 	    ps.setString(2, password);
@@ -209,9 +217,214 @@ public class DataProxy implements IData {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
-    
-    public static void main(String arg[]){
-	//DataProxy d = new DataProxy();
-	//d.
+
+    @Override
+    public int newRoom(String roomname, String user) {
+	int result = -1;
+	try {
+	    String sql = "INSERT INTO Room (roomName, roomOwner, lastTime) VALUES (?,?,?)";
+	    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    ps.setString(1, roomname);
+	    ps.setString(2, user);
+	    java.util.Date date = new java.util.Date();
+	    Timestamp st = new Timestamp(date.getTime());
+	    ps.setTimestamp(3, st);
+	    ps.executeUpdate();
+	    ResultSet rs = ps.getGeneratedKeys();
+	    if (rs.next()) {
+		result = rs.getInt(1);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
     }
+
+    @Override
+    public void saveRoom(int idRoom, String doodleOfTable) {
+	try {
+	    String sql = "UPDATE Room SET doodleOfTable=?, lastTime=? WHERE idRoom=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    Blob b = new SerialBlob(doodleOfTable.getBytes());
+	    ps.setBlob(1, b);
+	    java.util.Date date = new java.util.Date();
+	    Timestamp st = new Timestamp(date.getTime());
+	    ps.setTimestamp(2, st);
+	    ps.setInt(3, idRoom);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public int newRoomNote(String context, int x, int y, int idRoom) {
+	int result = -1;
+	try {
+	    String sql = "INSERT INTO RoomNote (noteContext, x, y, idRoom) VALUES (?,?,?,?)";
+	    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    ps.setString(1, context);
+	    ps.setInt(2, x);
+	    ps.setInt(3, y);
+	    ps.setInt(4, idRoom);
+	    ps.executeUpdate();
+	    ResultSet rs = ps.getGeneratedKeys();
+	    if (rs.next()) {
+		result = rs.getInt(1);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
+    }
+
+    @Override
+    public void updateRoomNote(int idRoomNote, String context, int x, int y) {
+	try {
+	    String sql = "UPDATE RoomNote SET noteContext=?, x=?, y=? WHERE idRoomNote=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setString(1, context);
+	    ps.setInt(2, x);
+	    ps.setInt(3, y);
+	    ps.setInt(3, idRoomNote);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public void rmRoomNote(int idRoomNote) {
+	try {
+	    String sql = "DELETE FROM RoomNote WHERE idRoomNote=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setInt(1, idRoomNote);
+	    ps.executeUpdate();
+	    ps.close();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public int newFileNote(String context, int x, int y, int idFile) {
+	int result = -1;
+	try {
+	    String sql = "INSERT INTO FileNote (noteContext, x, y, idFile) VALUES (?,?,?,?)";
+	    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    ps.setString(1, context);
+	    ps.setInt(2, x);
+	    ps.setInt(3, y);
+	    ps.setInt(4, idFile);
+	    ps.executeUpdate();
+	    ResultSet rs = ps.getGeneratedKeys();
+	    if (rs.next()) {
+		result = rs.getInt(1);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
+    }
+
+    @Override
+    public void updateFileNote(int idFileNote, String context, int x, int y) {
+	try {
+	    String sql = "UPDATE FileNote SET noteContext=?, x=?, y=? WHERE idFileNote=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setString(1, context);
+	    ps.setInt(2, x);
+	    ps.setInt(3, y);
+	    ps.setInt(4, idFileNote);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public void rmFileNote(int idFileNote) {
+	try {
+	    String sql = "DELETE FROM FileNote WHERE idFileNote=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setInt(1, idFileNote);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public int newFile(String filename, String data, String user, String fileType) {
+	int result = -1;
+	try {
+	    String sql = "INSERT INTO File (fileName, fileData, fileOwner, fileType) VALUES (?,?,?,?)";
+	    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    ps.setString(1, filename);
+	    Blob b = new SerialBlob(data.getBytes());
+	    ps.setBlob(2, b);
+	    ps.setString(3, user);
+	    ps.setString(4, fileType);
+	    ps.executeUpdate();
+	    ResultSet rs = ps.getGeneratedKeys();
+	    if (rs.next()) {
+		result = rs.getInt(1);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
+    }
+
+    @Override
+    public void updateFileData(int idFile, String data, String filename) {
+	try {
+	    String sql = "UPDATE File SET fileData=?, fileName=? WHERE idFile=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    Blob b = new SerialBlob(data.getBytes());
+	    ps.setBlob(1, b);
+	    ps.setString(2, filename);
+	    ps.setInt(3, idFile);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate, String preview) {
+	try {
+	    String sql = "UPDATE File SET onTable=?, xFile=?, yFile=?, rotate=?, preview=? WHERE idFile=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setBoolean(1, onTable);
+	    ps.setInt(2, xFile);
+	    ps.setInt(3, yFile);
+	    ps.setInt(4, rotate);
+	    Blob b = new SerialBlob(preview.getBytes());
+	    ps.setBlob(5, b);
+	    ps.setInt(6, idFile);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+    @Override
+    public void rmFile(int idFile) {
+	try {
+	    String sql = "DELETE FROM File WHERE idFile=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setInt(1, idFile);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
+
+//    public static void main(String arg[]) throws SQLException {
+//	DataProxy d = new DataProxy();
+//	int id = d.newRoom("123", "123");
+//	d.saveRoom(id, "haha");
+//	System.out.println(d.getRoomInfo(id).getTableDoodle());
+//    }
 }

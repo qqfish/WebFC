@@ -520,6 +520,13 @@ doodle.restorePic = function(data){
     }
 }
 
+doodle.saveTableDoodle = function(){
+    var result = {};
+    result.type = "SaveTableDoodle";
+    result.doodleOfTable = doodle.canvasTop.toDataURL();
+    connection.sendMessage(JSON.stringify(result));
+}
+
 
 doodle.init();
 /*

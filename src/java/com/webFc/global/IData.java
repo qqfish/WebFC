@@ -6,8 +6,8 @@ package com.webFc.global;
 
 import com.webFc.data.FileDetailInfo;
 import com.webFc.data.FileNoteInfo;
-import com.webFc.data.RoomNoteInfo;
 import com.webFc.data.Room;
+import com.webFc.data.RoomNoteInfo;
 
 /**
  *
@@ -34,7 +34,7 @@ public interface IData {
     void updateFileNote(int idFileNote, String context, int x, int y);
     void rmFileNote(int idFileNote);
     
-    int newFile(String filename, String data, String user, String fileType);
+    int newFile(String filename, String data, String user, String fileType, int idRoom);
     void updateFileData(int idFile, String data, String filename);
     void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate, String preview);
     void rmFile(int idFile);

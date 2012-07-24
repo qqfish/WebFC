@@ -7,6 +7,9 @@ package com.webFc.socket;
 import com.google.gson.Gson;
 import com.webFc.data.Data;
 import com.webFc.data.LoginRoom;
+import com.webFc.data.UploadFileInfo;
+import com.webFc.database.DataProxy;
+import com.webFc.global.IData;
 import com.webFc.socket.MessageType.AlertMessage;
 import com.webFc.socket.MessageType.ErrorMessage;
 import com.webFc.socket.MessageType.SaveTableDoodle;
@@ -14,6 +17,7 @@ import com.webFc.socket.MessageType.doodlePic;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.sql.SQLException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -66,7 +70,7 @@ public class FcMessageInbound extends MessageInbound {
 	    //System.out.println(textData.getType());
 	    //System.out.println(idRoom + " " + username);
 	    if (textData.getType().equals("LoginRoom")) {
-		LoginRoom lg = gson.fromJson(str, LoginRoom.class);		
+		LoginRoom lg = gson.fromJson(str, LoginRoom.class);
 		if (rooms.loginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
 		    idRoom = lg.getIdRoom();
 		    username = lg.getUsername();
@@ -94,6 +98,16 @@ public class FcMessageInbound extends MessageInbound {
 			ErrorMessage e = new ErrorMessage("failed to save");
 			CharBuffer buffer = CharBuffer.wrap(gson.toJson(e));
 			this.getWsOutbound().writeTextMessage(buffer);
+		    }
+		} else if (textData.getType().equals("uploadFile")) {
+		    System.out.println("a");
+		    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
+		    IData itf;
+		    try {
+			itf = new DataProxy();
+			itf.newFile(upi.getName(), upi.getContent(), username, upi.getFiletype(),idRoom);
+		    } catch (SQLException ex) {
+			Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
 		    }
 		} else {
 		    //System.out.println("hello");

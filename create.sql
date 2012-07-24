@@ -14,7 +14,7 @@ CREATE  TABLE IF NOT EXISTS `WebFc`.`User` (
   `email` VARCHAR(45) NOT NULL ,
   `password` VARCHAR(45) NOT NULL ,
   PRIMARY KEY (`email`) )
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 
 -- -----------------------------------------------------
@@ -35,7 +35,7 @@ CREATE  TABLE IF NOT EXISTS `WebFc`.`Room` (
     REFERENCES `WebFc`.`User` (`email` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 
 -- -----------------------------------------------------
@@ -69,7 +69,7 @@ CREATE  TABLE IF NOT EXISTS `WebFc`.`File` (
     REFERENCES `WebFc`.`Room` (`idRoom` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 
 -- -----------------------------------------------------
@@ -90,7 +90,7 @@ CREATE  TABLE IF NOT EXISTS `WebFc`.`RoomNote` (
     REFERENCES `WebFc`.`Room` (`idRoom` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 
 -- -----------------------------------------------------
@@ -111,7 +111,7 @@ CREATE  TABLE IF NOT EXISTS `WebFc`.`FileNote` (
     REFERENCES `WebFc`.`File` (`idFile` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = MyISAM;
 
 
 

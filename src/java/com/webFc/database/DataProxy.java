@@ -355,16 +355,20 @@ public class DataProxy implements IData {
     }
 
     @Override
-    public int newFile(String filename, String data, String user, String fileType) {
+    public int newFile(String filename, String data, String user, String fileType, int idRoom) {
 	int result = -1;
 	try {
-	    String sql = "INSERT INTO File (fileName, fileData, fileOwner, fileType) VALUES (?,?,?,?)";
+	    String sql = "INSERT INTO File (fileName, fileData, fileOwner, fileType, idRoom,editTime) VALUES (?,?,?,?,?,?)";
 	    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    ps.setString(1, filename);
 	    Blob b = new SerialBlob(data.getBytes());
 	    ps.setBlob(2, b);
 	    ps.setString(3, user);
 	    ps.setString(4, fileType);
+	    ps.setInt(5, idRoom);
+	    java.util.Date date = new java.util.Date();
+	    Timestamp st = new Timestamp(date.getTime());
+	    ps.setTimestamp(6, st);
 	    ps.executeUpdate();
 	    ResultSet rs = ps.getGeneratedKeys();
 	    if (rs.next()) {
@@ -379,12 +383,15 @@ public class DataProxy implements IData {
     @Override
     public void updateFileData(int idFile, String data, String filename) {
 	try {
-	    String sql = "UPDATE File SET fileData=?, fileName=? WHERE idFile=?";
+	    String sql = "UPDATE File SET fileData=?, fileName=?, editTime=? WHERE idFile=?";
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    Blob b = new SerialBlob(data.getBytes());
 	    ps.setBlob(1, b);
 	    ps.setString(2, filename);
-	    ps.setInt(3, idFile);
+	    ps.setInt(4, idFile);
+	     java.util.Date date = new java.util.Date();
+	    Timestamp st = new Timestamp(date.getTime());
+	    ps.setTimestamp(3, st);
 	    ps.executeUpdate();
 	} catch (SQLException ex) {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);

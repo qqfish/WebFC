@@ -4,7 +4,6 @@
  */
 package com.webFc.data;
 
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

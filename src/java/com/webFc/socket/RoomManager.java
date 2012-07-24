@@ -34,7 +34,7 @@ public class RoomManager {
 	}
 
 	private boolean insertUser(String username, FcMessageInbound fmi) throws IOException {
-	    if (!users.containsKey(username)) {
+	    if (!username.isEmpty() && !users.containsKey(username)) {
 		users.put(username, fmi);
 		return true;
 	    } else {

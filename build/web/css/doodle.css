@@ -1,38 +1,38 @@
 #canvas{
-        position: absolute;
-	z-index: 0;
-	top:10px;
-	left:10px;
-        bottom: 10px;
-        right: 10px;
-	border:1px solid #c3c3c3;
+    position: absolute;
+    z-index: 0;
+    top:10px;
+    left:10px;
+    bottom: 10px;
+    right: 10px;
+    border:1px solid #c3c3c3;
 }
 #canvasTop{
-	position: absolute;
-	z-index: 1;
-	left: 10px;
-	top:10px;
-	left:10px;
-        right: 10px;
-	border:1px solid #c3c3c3;
+    position: absolute;
+    z-index: 1;
+    left: 10px;
+    top:10px;
+    left:10px;
+    right: 10px;
+    border:1px solid #c3c3c3;
 }
 #clearButton{
     position:absolute;
-	left: 0px;
-	top: 700px;
+    left: 0px;
+    top: 700px;
 }
 #Type{
     position:absolute;
-	left: 100px;
-	top: 701px;
+    left: 100px;
+    top: 701px;
 }
 #Colors{
     position:absolute;
-	left: 200px;
-	top: 701px;
+    left: 200px;
+    top: 701px;
 }
 #Sizes{
     position:absolute;
-	left: 300px;
-	top: 701px;
+    left: 300px;
+    top: 701px;
 }

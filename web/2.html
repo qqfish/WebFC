@@ -1,0 +1,26 @@
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>nav</title>
+	<script src="js/jquery/jquery.js"></script>
+	<script src="js/socket.js"></script>
+	<script src="js/login.js"></script>
+	<style>video {
+	  border:5px solid black;
+	  width:320px;
+	  height:240px;
+	}
+	</style>
+    </head>
+    <body>
+	请先登录，谢谢！<br/>
+	<script src="js/mediaStream.js"></script>
+	<script>setTimeout( initialize ,1 );</script>
+	<video id="local" autoplay></video>
+	<video id="remote" autoplay></video><br/>
+	<input type="button" value="login" onclick="login.init();"/>
+	<input type="button" value="mediaStream.send()" onclick="mediaStream.send();"/>
+	<div id="footer">
+	</div>
+    </body>
+</html>

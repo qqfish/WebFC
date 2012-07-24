@@ -1,0 +1,24 @@
+/* 
+    Document   : drag
+    Created on : Jul 23, 2012, 3:54:13 PM
+    Author     : fish
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+#dragArea { 
+    display: block;
+    position: absolute;
+    top:10px;
+    left:10px;
+    bottom: 10px;
+    z-index: 0;
+    right: 10px;
+    border:1px solid #c3c3c3;
+}
+
+.dragElement{
+    height: 50px;
+    width: 50px;
+}
+

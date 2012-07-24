@@ -105,7 +105,7 @@ public class FcMessageInbound extends MessageInbound {
 
     private void roomBroadcast(String message) throws IOException {
 	if (idRoom > 0) {
-	    rooms.broadcast(idRoom, message);
+	    rooms.broadcast(idRoom, message, this);
 	}
     }
 

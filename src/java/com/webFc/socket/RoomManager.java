@@ -62,15 +62,17 @@ public class RoomManager {
 	    }
 	}
 
-	private void broadcast(String message) throws IOException {
+	private void broadcast(String message, FcMessageInbound current) throws IOException {
 	    List<String> rmArray = new ArrayList<String>();
 
 	    Iterator<Map.Entry<String, FcMessageInbound>> iter = users.entrySet().iterator();
 	    while (iter.hasNext()) {
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
 		FcMessageInbound val = entry.getValue();
-		CharBuffer buffer = CharBuffer.wrap(message);
-		val.getWsOutbound().writeTextMessage(buffer);
+		if (!val.equals(current)) {
+		    CharBuffer buffer = CharBuffer.wrap(message);
+		    val.getWsOutbound().writeTextMessage(buffer);
+		}
 	    }
 	}
 
@@ -112,7 +114,7 @@ public class RoomManager {
 	    try {
 		IData itf = new DataProxy();
 		Room result = itf.getRoomInfo(idRoom);
-		if(result.getRoomName().isEmpty()){
+		if (result.getRoomName().isEmpty()) {
 		    return false;
 		}
 		doodlePic dp = new doodlePic();
@@ -131,8 +133,7 @@ public class RoomManager {
 	return false;
     }
 
-    
-    public int createRoom(String roomname, String username){
+    public int createRoom(String roomname, String username) {
 	try {
 	    IData itf = new DataProxy();
 	    return itf.newRoom(roomname, username);
@@ -141,8 +142,8 @@ public class RoomManager {
 	}
 	return -1;
     }
-    
-    public boolean saveRoomDoodle(int idRoom, String doodleOfTable){
+
+    public boolean saveRoomDoodle(int idRoom, String doodleOfTable) {
 	try {
 	    IData itf = new DataProxy();
 	    itf.saveRoom(idRoom, doodleOfTable);
@@ -152,7 +153,7 @@ public class RoomManager {
 	}
 	return false;
     }
-    
+
     private boolean closeRoom(int idRoom) throws IOException {
 	if (maps.containsKey(idRoom)) {
 	    maps.remove(idRoom);
@@ -189,10 +190,10 @@ public class RoomManager {
 	}
     }
 
-    public boolean broadcast(int idRoom, String message) throws IOException {
+    public boolean broadcast(int idRoom, String message, FcMessageInbound current) throws IOException {
 	if (maps.containsKey(idRoom)) {
 	    UserMap m = maps.get(idRoom);
-	    m.broadcast(message);
+	    m.broadcast(message, current);
 	    return true;
 	} else {
 	    return false;

@@ -54,116 +54,122 @@ doodle.init = function(){
     
     //here start the touch model
     doodle.onBegin();
-    //start have done
+//start have done
 }
     
     
-    //here deal with the operations in touch
-    $('#canvasTop').mousedown(function(e){    
-	//alert((e.pageX - this.offsetLeft)+" "+(e.pageY - this.offsetTop));
-        if (doodle.type==5)
-            doodle.paint = false;
-        else doodle.paint=true;
-	doodle.mulClick.mulClickX[0]=new Array();
-	doodle.mulClick.mulClickY[0]=new Array();
-	doodle.mulClick.mulClickDrag[0]=new Array();
-        if (doodle.type==0)
-	{
-	    doodle.addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-	    doodle.sendReDraw(0, doodle.mulClick);
-	    doodle.redraw(0, doodle.mulClick); 
+//here deal with the operations in touch
+$('#canvasTop').mousedown(function(e){    
+    //alert((e.pageX - this.offsetLeft)+" "+(e.pageY - this.offsetTop));
+    if (doodle.type==5)
+	doodle.paint = false;
+    else doodle.paint=true;
+    doodle.mulClick.mulClickX[0]=new Array();
+    doodle.mulClick.mulClickY[0]=new Array();
+    doodle.mulClick.mulClickDrag[0]=new Array();
+    if (doodle.type==0)
+    {
+	doodle.addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+	doodle.sendReDraw(0, doodle.mulClick);
+	doodle.redraw(0, doodle.mulClick); 
+    }
+    if (doodle.type==1||doodle.type==2||doodle.type==3||doodle.type==4){
+	doodle.recClick.recA.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+	doodle.recClick.recB.splice(0,2,doodle.recClick.recA[0],doodle.recClick.recA[1]);
+    }
+});
+$('#canvasTop').mousemove(function(e){
+    if(doodle.paint)
+    {
+	switch (doodle.type){
+	    case 0:
+		doodle.addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+		doodle.sendReDraw(0, doodle.mulClick);
+		doodle.redraw(0, doodle.mulClick);
+		break;
+	    case 1:
+		doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
+		doodle.context.beginPath();
+		DrawRect(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(e.pageX - this.offsetLeft,e.pageY - this.offsetTop));
+		doodle.context.closePath();
+		doodle.context.stroke();
+		doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+		break;
+	    case 2:
+		doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
+		doodle.context.beginPath();
+		doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+		DrawCircle(doodle.context,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
+		doodle.context.closePath();
+		doodle.context.stroke();
+		break;
+	    case 3:
+		break;
+	    case 4:
+		doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
+		doodle.context.beginPath();
+		doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+		DrawLine(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(e.pageX - this.offsetLeft,e.pageY - this.offsetTop));
+		doodle.context.closePath();
+		doodle.context.stroke();
+		break;
+	    default:
 	}
-        if (doodle.type==1||doodle.type==2||doodle.type==3||doodle.type==4){
-            doodle.recClick.recA.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-	    doodle.recClick.recB.splice(0,2,doodle.recClick.recA[0],doodle.recClick.recA[1]);
-        }
-    });
-    $('#canvasTop').mousemove(function(e){
-	if(doodle.paint)
-	{
-            switch (doodle.type){
-                case 0:
-                    doodle.addClick(0,e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-		    doodle.sendReDraw(0, doodle.mulClick);
-		    doodle.redraw(0, doodle.mulClick);
-                    break;
-                case 1:
-                    doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
-                    doodle.context.beginPath();
-		    DrawRect(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(e.pageX - this.offsetLeft,e.pageY - this.offsetTop));
-		    doodle.context.closePath();
-		    doodle.context.stroke();
-		    doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-                    break;
-                case 2:
-                    doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
-                    doodle.context.beginPath();
-		    doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-		    DrawCircle(doodle.context,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
-		    doodle.context.closePath();
-		    doodle.context.stroke();
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
-                    doodle.context.beginPath();
-                    doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-                    DrawLine(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(e.pageX - this.offsetLeft,e.pageY - this.offsetTop));
-                    doodle.context.closePath();
-		    doodle.context.stroke();
-                    break;
-                default:
-            }
-	}
-    });
+    }
+});
 			
-    $('#canvasTop').mouseup(function(e){
-	doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
-	doodle.paint = false;
-	doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-	if (doodle.type==3)
-	{
-	    doodle.contextTop.fillText(prompt("Input the Text"),e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
-	}
-	else if(doodle.type > 0)
-	{
-	    doodle.sendDrawShape(doodle.type, doodle.recClick);
-	    doodle.drawToCanvasGraph(doodle.type, doodle.recClick);
-	}
+$('#canvasTop').mouseup(function(e){
+    doodle.context.clearRect(0,0,doodle.canvas.width,doodle.canvas.height);
+    doodle.paint = false;
+    doodle.recClick.recB.splice(0,2,e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+    if (doodle.type==3)
+    {
+	doodle.contextTop.fillText(prompt("Input the Text"),e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+    }
+    else if(doodle.type > 0)
+    {
+	doodle.sendDrawShape(doodle.type, doodle.recClick);
+	doodle.drawToCanvasGraph(doodle.type, doodle.recClick);
+    }
 			    
-    });
+});
 
-    $('#canvasTop').mouseleave(function(e){
-	doodle.paint = false;
-    });
+$('#canvasTop').mouseleave(function(e){
+    doodle.paint = false;
+});
 
 
-    //here rewrite the change mode
-    $('#usePointer').click(function(){
-        doodle.type=5;
-        document.getElementById("canvasTop").style.cursor="default";
-    });
-    $('#usePen').click(function(){
-        doodle.type=0;
-        document.getElementById("canvasTop").style.cursor="crosshair";
-    });
-    $('#drawRec').click(function(){
-        doodle.type=1;
-        document.getElementById("canvasTop").style.cursor="crosshair";
-    });
-    $('#drawCircle').click(function(){
-        doodle.type=2;
-        document.getElementById("canvasTop").style.cursor="crosshair";
-    });
-    $('#drawWord').click(function(){
-        doodle.type=3;
-        document.getElementById("canvasTop").style.cursor="text";
-    });
-    $('#drawLine').click(function(){
-        doodle.type=4;
-        document.getElementById("canvasTop").style.cursor="crosshair";
-    });
+//here rewrite the change mode
+$('#usePointer').click(function(){
+    doodle.type=5;
+    document.getElementById("canvasTop").style.cursor="default";
+    drag.enableDrag();
+});
+$('#usePen').click(function(){
+    doodle.type=0;
+    document.getElementById("canvasTop").style.cursor="crosshair";
+    drag.disableDrag();
+});
+$('#drawRec').click(function(){
+    doodle.type=1;
+    document.getElementById("canvasTop").style.cursor="crosshair";
+    drag.disableDrag();
+});
+$('#drawCircle').click(function(){
+    doodle.type=2;
+    document.getElementById("canvasTop").style.cursor="crosshair";
+    drag.disableDrag();
+});
+$('#drawWord').click(function(){
+    doodle.type=3;
+    document.getElementById("canvasTop").style.cursor="text";
+    drag.disableDrag();
+});
+$('#drawLine').click(function(){
+    doodle.type=4;
+    document.getElementById("canvasTop").style.cursor="crosshair";
+    drag.disableDrag();
+});
     
     
     
@@ -179,94 +185,94 @@ doodle.init = function(){
     
     
     
-    $("button#clearButton").click(
-	function (){
-	    /*context.save();
+$("button#clearButton").click(
+    function (){
+	/*context.save();
 		    c.width=c.width;
 			context.restore();*/
-	    doodle.contextTop.clearRect(0,0,doodle.canvasTop.width,doodle.canvasTop.height);
+	doodle.contextTop.clearRect(0,0,doodle.canvasTop.width,doodle.canvasTop.height);
+    }
+    );
+$("#Colors").change(
+    function (){
+	var selectColor=document.getElementById("Colors");
+	switch (selectColor.selectedIndex)
+	{
+	    case 0:
+		doodle.contextTop.strokeStyle="#cb3594";
+		doodle.context.strokeStyle="#cb3594";
+		break;
+	    case 1:
+		doodle.contextTop.strokeStyle="#659b41";
+		doodle.context.strokeStyle="#659b41";
+		break;
+	    case 2:
+		doodle.contextTop.strokeStyle="#ffcf33";
+		doodle.context.strokeStyle="#ffcf33";
+		break;
+	    case 3:
+		doodle.contextTop.strokeStyle="#986928";
+		doodle.context.strokeStyle="#986928";
+		break;
+	    case 4:
+		doodle.contextTop.strokeStyle="#FFFFFF";
+		doodle.context.strokeStyle="#FFFFFF";
+		break;
+	    default:
+		doodle.contextTop.strokeStyle="#cb3594";
+		doodle.context.strokeStyle="#cb3594";		
 	}
-	);
-    $("#Colors").change(
-	function (){
-	    var selectColor=document.getElementById("Colors");
-	    switch (selectColor.selectedIndex)
-	    {
-		case 0:
-		    doodle.contextTop.strokeStyle="#cb3594";
-		    doodle.context.strokeStyle="#cb3594";
-		    break;
-		case 1:
-		    doodle.contextTop.strokeStyle="#659b41";
-		    doodle.context.strokeStyle="#659b41";
-		    break;
-		case 2:
-		    doodle.contextTop.strokeStyle="#ffcf33";
-		    doodle.context.strokeStyle="#ffcf33";
-		    break;
-		case 3:
-		    doodle.contextTop.strokeStyle="#986928";
-		    doodle.context.strokeStyle="#986928";
-		    break;
-		case 4:
-		    doodle.contextTop.strokeStyle="#FFFFFF";
-		    doodle.context.strokeStyle="#FFFFFF";
-		    break;
-		default:
-		    doodle.contextTop.strokeStyle="#cb3594";
-		    doodle.context.strokeStyle="#cb3594";		
-	    }
+    }
+    );
+$("#Sizes").change(
+    function (){
+	var selectSize=document.getElementById("Sizes");
+	switch (selectSize.selectedIndex)
+	{
+	    case 0:
+		doodle.contextTop.lineWidth=4;
+		doodle.context.lineWidth=4;
+		break;
+	    case 1:
+		doodle.contextTop.lineWidth=7;
+		doodle.context.lineWidth=7;
+		break;
+	    case 2:
+		doodle.contextTop.lineWidth=10;
+		doodle.context.lineWidth=10;
+		break;
+	    case 3:
+		doodle.contextTop.lineWidth=15;
+		doodle.context.lineWidth=15;
+		break;
+	    default:
+		doodle.contextTop.lineWidth=4;
+		doodle.context.lineWidth=4;		
 	}
-	);
-    $("#Sizes").change(
-	function (){
-	    var selectSize=document.getElementById("Sizes");
-	    switch (selectSize.selectedIndex)
-	    {
-		case 0:
-		    doodle.contextTop.lineWidth=4;
-		    doodle.context.lineWidth=4;
-		    break;
-		case 1:
-		    doodle.contextTop.lineWidth=7;
-		    doodle.context.lineWidth=7;
-		    break;
-		case 2:
-		    doodle.contextTop.lineWidth=10;
-		    doodle.context.lineWidth=10;
-		    break;
-		case 3:
-		    doodle.contextTop.lineWidth=15;
-		    doodle.context.lineWidth=15;
-		    break;
-		default:
-		    doodle.contextTop.lineWidth=4;
-		    doodle.context.lineWidth=4;		
-	    }
+    }
+    );
+$("#Type").change(
+    function (){
+	var selectType=document.getElementById("Type");
+	switch (selectType.selectedIndex)
+	{
+	    case 0:
+		doodle.type=0;
+		break;
+	    case 1:
+		doodle.type=1;
+		break;
+	    case 2:
+		doodle.type=2;
+		break;
+	    case 3:
+		doodle.type=3;
+		break;
+	    default:
+		doodle.type=0;		
 	}
-	);
-    $("#Type").change(
-	function (){
-	    var selectType=document.getElementById("Type");
-	    switch (selectType.selectedIndex)
-	    {
-		case 0:
-		    doodle.type=0;
-		    break;
-		case 1:
-		    doodle.type=1;
-		    break;
-		case 2:
-		    doodle.type=2;
-		    break;
-		case 3:
-		    doodle.type=3;
-		    break;
-		default:
-		    doodle.type=0;		
-	    }
-	}
-	);
+    }
+    );
 
 
 doodle.onBegin = function(){
@@ -308,15 +314,15 @@ showTool.hide=true;
 /////////////////////////////////////////
 doodle.onTouchStart = function(event) {
     if (event.touches.length!=2){
-        showTool.show=false;
-        showTool.hide=false;
+	showTool.show=false;
+	showTool.hide=false;
     }        
     else {
-        showTool.show=true;
-        showTool.hide=true;
+	showTool.show=true;
+	showTool.hide=true;
     }
     if (doodle.type==5)
-        doodle.paint = false;
+	doodle.paint = false;
     else doodle.paint=true;
     for (i=0;i<event.touches.length;i++){
 	if (doodle.type==1||doodle.type==2||doodle.type==4)
@@ -357,18 +363,18 @@ doodle.onTouchMove = function(event) {
 		doodle.context.beginPath();
 		doodle.recClick.recA.splice(0,2,event.touches[0].pageX - this.offsetLeft, event.touches[0].pageY - this.offsetTop);
 		doodle.recClick.recB.splice(0,2,event.touches[1].pageX - this.offsetLeft, event.touches[1].pageY - this.offsetTop);
-                switch (doodle.type){
-                    case 1:
-                        DrawRect(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
-                        break;
-                    case 2:
-                        DrawCircle(doodle.context,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
-                        break;
-                    case 4:
-                        DrawLine(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
-                        break;
-                    default:
-                }
+		switch (doodle.type){
+		    case 1:
+			DrawRect(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
+			break;
+		    case 2:
+			DrawCircle(doodle.context,new Array((doodle.recClick.recA[0]+doodle.recClick.recB[0])/2,(doodle.recClick.recA[1]+doodle.recClick.recB[1])/2),ABLen(new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]),new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]))/2);
+			break;
+		    case 4:
+			DrawLine(doodle.context,new Array(doodle.recClick.recA[0],doodle.recClick.recA[1]),new Array(doodle.recClick.recB[0],doodle.recClick.recB[1]));
+			break;
+		    default:
+		}
 		doodle.context.closePath();
 		doodle.context.stroke();
 	    }				
@@ -378,8 +384,8 @@ doodle.onTouchMove = function(event) {
 		doodle.sendReDraw(i, doodle.mulClick);
 		doodle.redraw(i, doodle.mulClick);
 	    }    
-            showTool.x1.push(event.touches[0].pageX - this.offsetLeft);
-            showTool.x2.push(event.touches[1].pageX - this.offsetLeft);
+	    showTool.x1.push(event.touches[0].pageX - this.offsetLeft);
+	    showTool.x2.push(event.touches[1].pageX - this.offsetLeft);
 	}
     }
 }
@@ -399,44 +405,44 @@ doodle.onTouchEnd = function(event) {
         $('#content').fadeIn();
     }*/
     for (var i=1;i<showTool.x1.length;i++){
-        if (showTool.x1[i]>showTool.x1[i-1]){
-            showTool.show=false;
-        }
+	if (showTool.x1[i]>showTool.x1[i-1]){
+	    showTool.show=false;
+	}
     }
     for (var i=1;i<showTool.x1.length;i++){
-        if (showTool.x1[i]<showTool.x1[i-1]){
-            showTool.hide=false;
-        }
+	if (showTool.x1[i]<showTool.x1[i-1]){
+	    showTool.hide=false;
+	}
     }
     for (var i=1;i<showTool.x2.length;i++){
-        if (showTool.x2[i]>showTool.x2[i-1]){
-            showTool.show=false;
-        }
+	if (showTool.x2[i]>showTool.x2[i-1]){
+	    showTool.show=false;
+	}
     }
     for (var i=1;i<showTool.x2.length;i++){
-        if (showTool.x2[i]<showTool.x2[i-1]){
-            showTool.hide=false;
-        }
+	if (showTool.x2[i]<showTool.x2[i-1]){
+	    showTool.hide=false;
+	}
     }
     showTool.x1=[];
     showTool.x2=[];
     if (showTool.show){
-        $('#paint').fadeOut();
-        $('#content').fadeIn();
+	$('#paint').fadeOut();
+	$('#content').fadeIn();
     }
     if (showTool.hide){
-        $('#paint').fadeOut();
-        $('#content').fadeOut();
+	$('#paint').fadeOut();
+	$('#content').fadeOut();
     }
     ////////////////////////////////////
     doodle.context.clearRect(0,0,doodle.canvasTop.width,doodle.canvasTop.height);
     if (doodle.type==3)
     {
-	    doodle.contextTop.fillText(prompt("Input the Text"),e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
+	doodle.contextTop.fillText(prompt("Input the Text"),e.pageX - this.offsetLeft,e.pageY - this.offsetTop);
     }else
     if (doodle.drawRec==1)
     {
-        doodle.sendDrawShape(doodle.type, doodle.recClick);
+	doodle.sendDrawShape(doodle.type, doodle.recClick);
 	doodle.drawToCanvasGraph(doodle.type, doodle.recClick);
     }
     doodle.paint=false;
@@ -468,16 +474,16 @@ doodle.drawToCanvasGraph = function(index,shapeClick)
 {
     doodle.contextTop.beginPath();
     switch (index){
-        case 1:
-            DrawRect(doodle.contextTop,new Array(shapeClick.recA[0],shapeClick.recA[1]),new Array(shapeClick.recB[0],shapeClick.recB[1]));
-            break;
-        case 2:
-            DrawCircle(doodle.contextTop,new Array((shapeClick.recA[0]+shapeClick.recB[0])/2,(shapeClick.recA[1]+shapeClick.recB[1])/2),ABLen(new Array(shapeClick.recB[0],shapeClick.recB[1]),new Array(shapeClick.recA[0],shapeClick.recA[1]))/2);
-            break;
-        case 4:
-            DrawLine(doodle.contextTop,new Array(shapeClick.recA[0],shapeClick.recA[1]),new Array(shapeClick.recB[0],shapeClick.recB[1]));
-            break;
-        default:
+	case 1:
+	    DrawRect(doodle.contextTop,new Array(shapeClick.recA[0],shapeClick.recA[1]),new Array(shapeClick.recB[0],shapeClick.recB[1]));
+	    break;
+	case 2:
+	    DrawCircle(doodle.contextTop,new Array((shapeClick.recA[0]+shapeClick.recB[0])/2,(shapeClick.recA[1]+shapeClick.recB[1])/2),ABLen(new Array(shapeClick.recB[0],shapeClick.recB[1]),new Array(shapeClick.recA[0],shapeClick.recA[1]))/2);
+	    break;
+	case 4:
+	    DrawLine(doodle.contextTop,new Array(shapeClick.recA[0],shapeClick.recA[1]),new Array(shapeClick.recB[0],shapeClick.recB[1]));
+	    break;
+	default:
     }
     doodle.contextTop.closePath();
     doodle.contextTop.stroke();

@@ -24,16 +24,6 @@ requestPic : when a new user enter the room, the server send this message to a u
 
 SaveTableDoodle : save the current doodle of table
 
-beginDrag : begin drag the element on the table
-		element -- file or video
-		id
+drageMessage : message about drag
+		movement : begin or stop or move or save
 
-endDrag : end draging
-		element -- file or video
-		id
-
-moveDrag : moving draging
-		element -- file or video
-		id
-		x
-		y

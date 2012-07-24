@@ -10,10 +10,7 @@ import com.webFc.data.LoginRoom;
 import com.webFc.data.UploadFileInfo;
 import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
-import com.webFc.socket.MessageType.AlertMessage;
-import com.webFc.socket.MessageType.ErrorMessage;
-import com.webFc.socket.MessageType.SaveTableDoodle;
-import com.webFc.socket.MessageType.doodlePic;
+import com.webFc.socket.MessageType.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -105,9 +102,21 @@ public class FcMessageInbound extends MessageInbound {
 		    IData itf;
 		    try {
 			itf = new DataProxy();
-			itf.newFile(upi.getName(), upi.getContent(), username, upi.getFiletype(),idRoom);
+			itf.newFile(upi.getName(), upi.getContent(), username, upi.getFiletype(), idRoom);
 		    } catch (SQLException ex) {
 			Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		    }
+		} else if (textData.getType().equals("dragMessage")) {
+		    SaveDragFile sdf = gson.fromJson(str, SaveDragFile.class);
+		    if (sdf.getMovement().equals("save")) {
+			try {
+			    IData itf = new DataProxy();
+			    itf.updateTableFile(sdf.getId(), sdf.isOnTable(), sdf.getX(), sdf.getY(), sdf.getRotate());
+			} catch (SQLException ex) {
+			    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		    } else {
+			roomBroadcast(str);
 		    }
 		} else {
 		    //System.out.println("hello");

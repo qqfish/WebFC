@@ -68,6 +68,9 @@ connection.connect = (function(host) {
 	else if (socketData.type == "dragMessage"){
 	    drag.onmessage(socketData);
 	}
+	else if(socketData.type == "FileShortInfo"){
+	    drag.setFilePosition(socketData)
+	}
     };
 });
 

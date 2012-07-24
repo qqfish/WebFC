@@ -11,6 +11,7 @@
 	$(this).attr("moving",0);
 	$(this).attr("locking",1);
 	$(this).attr("selfMove",0);
+	//logg($(this).attr("idFile"));
     }
     
     $.fn.enableDrag = function () {
@@ -36,6 +37,7 @@
 		drag.stop(t);
 		if(t.attr("idFile") != "undefined"){
 		    drag.sendStopDrag(t.attr("idFile"), "file");
+		    drag.sendSaveDragFile(t.attr("idFile"), event.pageX - Rx, event.pageY - Ry, 0, "true")
 		}
 	    }
 	});
@@ -64,8 +66,8 @@ var drag = {};
 
 drag.move = function(ele,x,y){
     ele.css({
-	top: y, 
-	left: x
+	'top': y, 
+	'left': x
     });
 }
 
@@ -120,6 +122,18 @@ drag.sendMoveDrag = function(id, x, y, element){
     connection.sendMessage(JSON.stringify(result));
 }
 
+drag.sendSaveDragFile = function(id, x, y, rotate, onTable){
+    var result = {};
+    result.type = "dragMessage";
+    result.movement ="save";
+    result.id = id;
+    result.x = x;
+    result.y = y;
+    result.rotate = rotate;
+    result.onTable = onTable;
+    connection.sendMessage(JSON.stringify(result));
+}
+
 drag.onmessage = function(message){
     if(message.movement == "begin"){
 	if(message.element == "file"){
@@ -135,6 +149,22 @@ drag.onmessage = function(message){
 	if(message.element == "file"){
 	    drag.moveFile(message.id, message.x, message.y);
 	}
+    }
+}
+
+drag.setFilePosition = function(file){
+    var r = "rotate(" + file.rotate + "deg";
+    if(file.onTable){
+	var newEle = $("<div class='dragElement'>")
+	newEle.html(file.fileName).appendTo($("#mainTable")).css({
+	    '-webkit-transform':r,
+	    '-moz-transform':r
+	})
+	newEle.attr("idFile",file.idFile);
+	logg(newEle.attr("idFile"));
+	drag.moveFile(file.idFile, file.xFile, file.yFile);
+	drag.initDrag();
+	drag.enableDrag();
     }
 }
 

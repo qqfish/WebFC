@@ -5,6 +5,7 @@
 package com.webFc.socket;
 
 import com.google.gson.Gson;
+import com.webFc.data.FileShortInfo;
 import com.webFc.data.Room;
 import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
@@ -88,13 +89,13 @@ public class RoomManager {
     public boolean loginRoom(int idRoom, String username, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (maps.containsKey(idRoom)) {
+	    Gson gson = new Gson();
 	    UserMap m = maps.get(idRoom);
 	    //System.out.println("hello");
 	    List<String> rmArray = new ArrayList<String>();
 
 	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
 	    if (iter.hasNext()) {
-		Gson gson = new Gson();
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
 		FcMessageInbound val = entry.getValue();
 		requestPic rp = new requestPic();
@@ -102,6 +103,21 @@ public class RoomManager {
 		CharBuffer buffer = CharBuffer.wrap(gson.toJson(rp));
 		val.getWsOutbound().writeTextMessage(buffer);
 	    }
+
+	    try {
+		IData itf = new DataProxy();
+		Room r = itf.getRoomInfo(idRoom);
+		List<FileShortInfo> fsi = r.getFiles();
+		for (int i = 0; i < fsi.size(); i++) {
+		    if (fsi.get(i).isOnTable()) {
+			CharBuffer buffer = CharBuffer.wrap(gson.toJson(fsi.get(i)));
+			fmi.getWsOutbound().writeTextMessage(buffer);
+		    }
+		}
+	    } catch (SQLException ex) {
+		Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
+	    }
+
 	    return m.insertUser(username, fmi);
 	} else {
 	    return false;
@@ -122,6 +138,16 @@ public class RoomManager {
 		Gson gson = new Gson();
 		CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
 		fmi.getWsOutbound().writeTextMessage(buffer);
+
+		List<FileShortInfo> fsi = result.getFiles();
+
+		for (int i = 0; i < fsi.size(); i++) {
+		    if (fsi.get(i).isOnTable()) {
+			CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(fsi.get(i)));
+			fmi.getWsOutbound().writeTextMessage(buffer1);
+		    }
+		}
+
 		maps.put(idRoom, new UserMap());
 		//System.out.println(maps.containsKey(idRoom));
 		UserMap m = maps.get(idRoom);

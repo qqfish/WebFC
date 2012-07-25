@@ -12,14 +12,21 @@
 	<script src="js/jquery/ui/jquery.ui.droppable.js"></script>
 	<script src="js/toolbar.js"></script>
 	<script src="js/socket.js"></script>
+	<script src="js/drag.js"></script>
 	<script src="js/login.js"></script>
         <script type="text/javascript" src="js/drawCanvas.js"></script>
 	<link rel="stylesheet" href="css/default.css">
 	<link rel="stylesheet" href="css/toolbar.css">
 	<link rel="stylesheet" href="css/doodle.css">
 	<link rel="stylesheet" href="css/chat.css">
+	<link rel="stylesheet" href="css/drag.css">
     </head>
     <body>
+	<div id="dragArea">
+	    <div id="idFile_1"class="dragElement">
+		<p>hahah</p>
+	    </div>
+	</div>
 	<canvas id="canvas"> </canvas>
 	<canvas id="canvasTop"> </canvas>
 	<div id="toolbox" class="body">
@@ -103,5 +110,5 @@
 	</fieldset>
 	<canvas id="chatButton" ></canvas>
     </body>
-<script type="text/javascript" src="js/doodle.js"></script>
+    <script type="text/javascript" src="js/doodle.js"></script>
 </html>

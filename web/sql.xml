@@ -3,5 +3,5 @@
 <sql>
        	<host>localhost/WebFc</host>
 	<username>root</username>
-	<password>315121</password>
+	<password>123</password>
 </sql>

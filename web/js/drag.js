@@ -8,6 +8,41 @@
     //Author: hooyes
     
     $.fn.initDrag = function (){
+<<<<<<< HEAD
+	var element = this;
+	element.moving = false;
+	element.locking = true;	
+	element.abcd = "asd";
+    }
+    
+    $.fn.enableDrag = function () {
+	var element = this;
+	element.locking = false;
+	element.moving = false;
+	var Rx, Ry;
+	var t = $(this);
+	t.mousedown(function (event) {
+	    logg(element.abcd);
+	    if(!element.locking && !element.moving){
+		Rx = event.pageX - (parseInt(t.css("left")) || 0);
+		Ry = event.pageY - (parseInt(t.css("top")) || 0);
+		t.css("position", "absolute").css('cursor', 'move').fadeTo(20, 0.5);
+		element.moving = true;
+	    }
+	})
+	.mouseup(function (event) {
+	    if(!element.locking && element.moving){
+		element.moving = false;
+		t.fadeTo(20, 1);
+	    }
+	});
+	$(document).mousemove(function (event) {
+	    if (!element.locking && element.moving) {
+		t.css({
+		    top: event.pageY - Ry, 
+		    left: event.pageX - Rx
+		});
+=======
 	$(this).attr("moving",0);
 	$(this).attr("locking",1);
 	$(this).attr("selfMove",0);
@@ -49,21 +84,31 @@
 		if(t.attr("idFile") != "undefined"){
 		    drag.sendMoveDrag(t.attr("idFile"), x, y, "file")
 		}
+>>>>>>> upstream/master
 	    }
 	});
     }
     
     $.fn.disableDrag = function(){
+<<<<<<< HEAD
+	this.locking = true;
+	logg(this.locking);
+	var t = $(this);
+	t.fadeTo(20, 1);
+=======
 	var t = $(this)
 	t.attr("locking", 1);
 	//logg(this.locking);
 	t.fadeTo(20, 1);
 	t.css("z-index",1);
+>>>>>>> upstream/master
     }
 })(document);
 
 var drag = {};
 
+<<<<<<< HEAD
+=======
 drag.move = function(ele,x,y){
     ele.css({
 	'top': y, 
@@ -168,6 +213,7 @@ drag.setFilePosition = function(file){
     }
 }
 
+>>>>>>> upstream/master
 drag.initDrag = function(){
     $(".dragElement").initDrag();
 }
@@ -183,4 +229,8 @@ drag.disableDrag = function(){
 $(document).ready(function () {
     drag.initDrag();
     drag.enableDrag();
+<<<<<<< HEAD
+    drag.disableDrag();
+=======
+>>>>>>> upstream/master
 });

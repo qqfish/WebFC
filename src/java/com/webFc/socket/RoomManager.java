@@ -24,6 +24,7 @@ import java.util.logging.Logger;
  */
 public class RoomManager {
 
+
     Map<Integer, UserMap> maps = new TreeMap();
 
     private class UserMap {
@@ -70,6 +71,7 @@ public class RoomManager {
 	    while (iter.hasNext()) {
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
 		FcMessageInbound val = entry.getValue();
+		System.out.println(current.equals(val));
 		if (!val.equals(current)) {
 		    CharBuffer buffer = CharBuffer.wrap(message);
 		    val.getWsOutbound().writeTextMessage(buffer);

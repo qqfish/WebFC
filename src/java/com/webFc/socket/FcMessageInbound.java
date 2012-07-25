@@ -28,34 +28,35 @@ import org.apache.catalina.websocket.WsOutbound;
  */
 public class FcMessageInbound extends MessageInbound {
 
-    private static RoomManager rooms = new RoomManager();
-    String username;
-    int idRoom;
+	 private static RoomManager rooms = new RoomManager();
+	 String username;
+	 int idRoom;
 
-    public FcMessageInbound() {
-	username = "";
-	idRoom = -1;
-    }
+	 public FcMessageInbound() {
+		  username = "";
+		  idRoom = -1;
+	 }
 
-    @Override
-    protected void onOpen(WsOutbound outbound) {
-	System.out.println(this.toString() + " ,new connection created");
-    }
+	 @Override
+	 protected void onOpen(WsOutbound outbound) {
+		  System.out.println(this.toString() + " ,new connection created");
+	 }
 
-    @Override
-    protected void onClose(int status) {
-	try {
-	    System.out.println(this.toString() + "closed");
-	    rooms.logoutRoom(idRoom, username);
-	} catch (IOException ex) {
-	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
+	 @Override
+	 protected void onClose(int status) {
+		  try {
+				System.out.println(this.toString() + "closed");
+				rooms.logoutRoom(idRoom, username);
+		  } catch (IOException ex) {
+				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+	 }
 
-    @Override
-    protected void onBinaryMessage(ByteBuffer bb) throws IOException {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
+	 @Override
+	 protected void onBinaryMessage(ByteBuffer bb) throws IOException {
+		  throw new UnsupportedOperationException("Not supported yet.");
+	 }
+
 
     @Override
     protected void onTextMessage(CharBuffer cb) throws IOException {
@@ -132,9 +133,9 @@ public class FcMessageInbound extends MessageInbound {
 	}
     }
 
-    private void roomToUser(String username, String message) throws IOException {
-	if (idRoom > 0) {
-	    rooms.sendUserMessage(idRoom, username, message);
-	}
-    }
+	 private void roomToUser(String username, String message) throws IOException {
+		  if (idRoom > 0) {
+				rooms.sendUserMessage(idRoom, username, message);
+		  }
+	 }
 }

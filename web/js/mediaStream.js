@@ -74,7 +74,6 @@ function maybeStart(){
 		  pc.addStream(localStream);
 		  started = true;
 		  //Caller initiates offer to peer.
-		  doCall();
 	 }
 }
 	
@@ -152,7 +151,6 @@ function waitForRemoteVideo(){
 		  transitionToActive();
 	 } else {
 		  setTimeout(waitForRemoteVideo, 100);
-		  console.log("hehe");
 	 }
 }
 	

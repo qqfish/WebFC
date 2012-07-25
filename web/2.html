@@ -3,10 +3,6 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title>nav</title>
 	<script src="js/jquery/jquery.js"></script>
-<<<<<<< HEAD
-=======
-	<script src="js/socket.js"></script>
->>>>>>> upstream/master
 	<script src="js/login.js"></script>
 	<style>video {
 	  border:5px solid black;
@@ -17,7 +13,6 @@
     </head>
     <body>
 	请先登录，谢谢！<br/>
-<<<<<<< HEAD
 	<script src="js/socket_2.js"></script>
 	<script src="js/mediaStream.js"></script>
 	<video id="local" autoplay></video>
@@ -25,13 +20,7 @@
 	<input type="button" value="login" onclick="login.init();"/>
 	<input type="button" value="initialize" onclick="initialize()"/>
 	<input type="button" value="maybeStart" onclick="maybeStart()"/>
-=======
-	<script src="js/mediaStream.js"></script>
-	<script>setTimeout( initialize ,1 );</script>
-	<video id="local" autoplay></video>
-	<video id="remote" autoplay></video><br/>
-	<input type="button" value="login" onclick="login.init();"/>
->>>>>>> upstream/master
+	<input type="button" value="call" onclick="doCall()"/>
 	<input type="button" value="mediaStream.send()" onclick="mediaStream.send();"/>
 	<div id="footer">
 	</div>

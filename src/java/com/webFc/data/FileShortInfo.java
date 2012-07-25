@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class FileShortInfo extends Data {
 
+    private int idFile;
     private String fileName;
     private boolean onTable;
     private String username;
@@ -26,8 +27,9 @@ public class FileShortInfo extends Data {
 	type = "FileShortInfo";
     }
 
-    public FileShortInfo(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType, int rotate, String preview, Date editTime) {
+    public FileShortInfo(int idFile, String fileName, boolean onTable, String username, int xFile, int yFile, String fileType, int rotate, String preview, Date editTime) {
 	type = "FileShortInfo";
+	this.idFile = idFile;
 	this.fileName = fileName;
 	this.onTable = onTable;
 	this.username = username;
@@ -36,6 +38,14 @@ public class FileShortInfo extends Data {
 	this.fileType = fileType;
 	this.editTime = editTime;
 	this.preview = preview;
+    }
+
+    public int getIdFile() {
+	return idFile;
+    }
+
+    public void setIdFile(int idFile) {
+	this.idFile = idFile;
     }
 
     public Date getEditTime() {

@@ -4,7 +4,6 @@
  */
 package com.webFc.data;
 
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,8 +91,8 @@ public class Room extends Data {
 	this.tableDoodle = tableDoodle;
     }
 
-    public void addFile(String fileName, boolean onTable, String username, int xFile, int yFile, String fileType, int rotate, String preview, Date editTime) {
-	files.add(new FileShortInfo(fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime));
+    public void addFile(int idFile, String fileName, boolean onTable, String username, int xFile, int yFile, String fileType, int rotate, String preview, Date editTime) {
+	files.add(new FileShortInfo(idFile, fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime));
     }
 
     public void addNote(int idNote, String noteContext, int x, int y) {

@@ -4,10 +4,7 @@
  */
 package com.webFc.database;
 
-import com.webFc.data.FileDetailInfo;
-import com.webFc.data.FileNoteInfo;
-import com.webFc.data.Room;
-import com.webFc.data.RoomNoteInfo;
+import com.webFc.data.*;
 import com.webFc.global.IData;
 import java.sql.*;
 import java.util.logging.Level;
@@ -102,6 +99,7 @@ public class DataProxy implements IData {
 		    result.addNote(idNote, noteContext, x, y);
 		}
 		while (rs3.next()) {
+		    int idFile = rs3.getInt("idFile");
 		    String fileName = rs3.getString("fileName");
 		    boolean onTable = rs3.getBoolean("onTable");
 		    String username = rs3.getString("fileOwner");
@@ -111,7 +109,7 @@ public class DataProxy implements IData {
 		    int rotate = rs3.getInt("rotate");
 		    String preview = rs3.getString("preview");
 		    Date editTime = rs3.getDate("editTime");
-		    result.addFile(fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime);
+		    result.addFile(idFile, fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime);
 		}
 		ps2.close();
 		ps3.close();
@@ -355,16 +353,20 @@ public class DataProxy implements IData {
     }
 
     @Override
-    public int newFile(String filename, String data, String user, String fileType) {
+    public int newFile(String filename, String data, String user, String fileType, int idRoom) {
 	int result = -1;
 	try {
-	    String sql = "INSERT INTO File (fileName, fileData, fileOwner, fileType) VALUES (?,?,?,?)";
+	    String sql = "INSERT INTO File (fileName, fileData, fileOwner, fileType, idRoom,editTime) VALUES (?,?,?,?,?,?)";
 	    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    ps.setString(1, filename);
 	    Blob b = new SerialBlob(data.getBytes());
 	    ps.setBlob(2, b);
 	    ps.setString(3, user);
 	    ps.setString(4, fileType);
+	    ps.setInt(5, idRoom);
+	    java.util.Date date = new java.util.Date();
+	    Timestamp st = new Timestamp(date.getTime());
+	    ps.setTimestamp(6, st);
 	    ps.executeUpdate();
 	    ResultSet rs = ps.getGeneratedKeys();
 	    if (rs.next()) {
@@ -379,12 +381,15 @@ public class DataProxy implements IData {
     @Override
     public void updateFileData(int idFile, String data, String filename) {
 	try {
-	    String sql = "UPDATE File SET fileData=?, fileName=? WHERE idFile=?";
+	    String sql = "UPDATE File SET fileData=?, fileName=?, editTime=? WHERE idFile=?";
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    Blob b = new SerialBlob(data.getBytes());
 	    ps.setBlob(1, b);
 	    ps.setString(2, filename);
-	    ps.setInt(3, idFile);
+	    ps.setInt(4, idFile);
+	     java.util.Date date = new java.util.Date();
+	    Timestamp st = new Timestamp(date.getTime());
+	    ps.setTimestamp(3, st);
 	    ps.executeUpdate();
 	} catch (SQLException ex) {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -408,6 +413,22 @@ public class DataProxy implements IData {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
+    
+    @Override
+    public void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate){
+	try {
+	    String sql = "UPDATE File SET onTable=?, xFile=?, yFile=?, rotate=? WHERE idFile=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setBoolean(1, onTable);
+	    ps.setInt(2, xFile);
+	    ps.setInt(3, yFile);
+	    ps.setInt(4, rotate);
+	    ps.setInt(5, idFile);
+	    ps.executeUpdate();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+    }
 
     @Override
     public void rmFile(int idFile) {
@@ -419,6 +440,32 @@ public class DataProxy implements IData {
 	} catch (SQLException ex) {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
 	}
+    }
+    
+    @Override
+    public FileShortInfo getTableFile(int idFIle) {
+	FileShortInfo result = new FileShortInfo();
+	try {
+	    String sql = "SELECT * FROM File WHERE idFile=?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setInt(1, idFIle);
+	    ResultSet rs = ps.executeQuery();
+	    if(rs.next()){
+		result.setEditTime(rs.getDate("editTime"));
+		result.setFileName(rs.getString("fileName"));
+		result.setFileType(rs.getString("fileType"));
+		result.setOnTable(rs.getBoolean("onTable"));
+		result.setPreview(rs.getString("preview"));
+		result.setRotate(rs.getInt("rotate"));
+		result.setUsername(rs.getString("fileOwner"));
+		result.setxFile(rs.getInt("xFile"));
+		result.setyFile(rs.getInt("yFile"));
+		result.setIdFile(idFIle);
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
     }
 
     public static void main(String arg[]) throws SQLException {

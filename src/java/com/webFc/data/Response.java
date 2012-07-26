@@ -9,6 +9,7 @@ package com.webFc.data;
  * @author hp
  */
 public class Response {
+	 
     OpenFileInfo response;
 
     public Response(OpenFileInfo response) {

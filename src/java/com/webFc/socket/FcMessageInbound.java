@@ -34,36 +34,36 @@ import org.apache.http.impl.client.DefaultHttpClient;
  */
 public class FcMessageInbound extends MessageInbound {
 
-    private static RoomManager rooms = new RoomManager();
-    String username;
-    int idRoom;
-    Gson gson;
+	 private static RoomManager rooms = new RoomManager();
+	 String username;
+	 int idRoom;
+	 Gson gson;
 
-    public FcMessageInbound() {
-	username = "";
-	idRoom = -1;
-	gson = new Gson();
-    }
+	 public FcMessageInbound() {
+		  username = "";
+		  idRoom = -1;
+		  gson = new Gson();
+	 }
 
-    @Override
-    protected void onOpen(WsOutbound outbound) {
-	System.out.println(this.toString() + " ,new connection created");
-    }
+	 @Override
+	 protected void onOpen(WsOutbound outbound) {
+		  System.out.println(this.toString() + " ,new connection created");
+	 }
 
-    @Override
-    protected void onClose(int status) {
-	try {
-	    System.out.println(this.toString() + "closed");
-	    rooms.logoutRoom(idRoom, username);
-	} catch (IOException ex) {
-	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
+	 @Override
+	 protected void onClose(int status) {
+		  try {
+				System.out.println(this.toString() + "closed");
+				rooms.logoutRoom(idRoom, username);
+		  } catch (IOException ex) {
+				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+	 }
 
-    @Override
-    protected void onBinaryMessage(ByteBuffer bb) throws IOException {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
+	 @Override
+	 protected void onBinaryMessage(ByteBuffer bb) throws IOException {
+		  throw new UnsupportedOperationException("Not supported yet.");
+	 }
 
     @Override
     protected void onTextMessage(CharBuffer cb) throws IOException {
@@ -131,94 +131,103 @@ public class FcMessageInbound extends MessageInbound {
 			    roomBroadcast(gson.toJson(result));
 			}
 
-		    } catch (SQLException ex) {
-			Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-		    }
+						  } catch (SQLException ex) {
+								Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+						  }
 
-		} else if (textData.getType().equals("requestOpenFile")) {
-		    requestOpenFile rof = gson.fromJson(str, requestOpenFile.class);
-		    openFile(rof.getIdFile());
-		} else {
-		    //System.out.println("hello");
-		    roomBroadcast(str);
-		}
-	    }
-	}
-    }
+					 } else if (textData.getType().equals("requestOpenFile")) {
+						  requestOpenFile rof = gson.fromJson(str, requestOpenFile.class);
+						  openFile(rof.getIdFile());
+					 } else if (textData.getType().equals("answer") || textData.getType().equals("candidate") || textData.getType().equals("offer")) {
+						  callMessage cm = gson.fromJson(str, callMessage.class);
+						  System.out.println("1");
+						  if (cm.getSendTo() != null && !cm.getSendTo().isEmpty()) {
+								roomToUser(cm.getSendTo(), str);
+						  } else {
+								System.out.println("2");
+								roomBroadcast(str);
+						  }
+					 } else {
+						  //System.out.println("hello");
+						  roomBroadcast(str);
+					 }
+				}
+		  }
+	 }
 
-    private void roomBroadcast(String message) throws IOException {
-	if (idRoom > 0) {
-	    rooms.broadcast(idRoom, message, this);
-	}
-    }
+	 private void roomBroadcast(String message) throws IOException {
+		  if (idRoom > 0) {
+				rooms.broadcast(idRoom, message, this);
+		  }
+	 }
 
-    private void roomToUser(String username, String message) throws IOException {
-	if (idRoom > 0) {
-	    rooms.sendUserMessage(idRoom, username, message);
-	}
-    }
+	 private void roomToUser(String username, String message) throws IOException {
+		  if (idRoom > 0) {
+				rooms.sendUserMessage(idRoom, username, message);
+		  }
+	 }
 
-    private void sendBack(String message) throws IOException {
-	CharBuffer buffer = CharBuffer.wrap(message);
-	this.getWsOutbound().writeTextMessage(buffer);
-    }
+	 private void sendBack(String message) throws IOException {
+		  CharBuffer buffer = CharBuffer.wrap(message);
+		  this.getWsOutbound().writeTextMessage(buffer);
+	 }
 
-    private void loginRome(String str) throws IOException {
-	LoginRoom lg = gson.fromJson(str, LoginRoom.class);
-	if (rooms.loginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
-	    idRoom = lg.getIdRoom();
-	    username = lg.getUsername();
-	    if (rooms.getIdFile(idRoom) > 0) {
-		enterFile();
-	    } else {
-		enterRoom();
-	    }
-	} else {
-	    if (rooms.firstLoginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
-		idRoom = lg.getIdRoom();
-		username = lg.getUsername();
-		firstEnterRoom();
-	    } else {
-		ErrorMessage e = new ErrorMessage("failed to login");
-		sendBack(gson.toJson(e));
-		rooms.closeRoom(lg.getIdRoom());
-	    }
-	}
-    }
+	 private void loginRome(String str) throws IOException {
+		  LoginRoom lg = gson.fromJson(str, LoginRoom.class);
+		  if (rooms.loginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
+				idRoom = lg.getIdRoom();
+				username = lg.getUsername();
+				if (rooms.getIdFile(idRoom) > 0) {
+					 enterFile();
+				} else {
+					 enterRoom();
+				}
+		  } else {
+				if (rooms.firstLoginRoom(lg.getIdRoom(), lg.getUsername(), this)) {
+					 idRoom = lg.getIdRoom();
+					 username = lg.getUsername();
+					 firstEnterRoom();
+				} else {
+					 ErrorMessage e = new ErrorMessage("failed to login");
+					 sendBack(gson.toJson(e));
+					 rooms.closeRoom(lg.getIdRoom());
+				}
+		  }
+	 }
 
-    private boolean saveDoodle(doodlePic dp) {
-	try {
-	    IData itf = new DataProxy();
-	    if (rooms.getIdFile(idRoom) > 0) {
-		itf.saveFileDoodle(rooms.getIdFile(idRoom), dp.getData());
-	    } else {
-		itf.saveRoom(idRoom, dp.getData());
-	    }
-	    return true;
-	} catch (SQLException ex) {
-	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return false;
-    }
+	 private boolean saveDoodle(doodlePic dp) {
+		  try {
+				IData itf = new DataProxy();
+				if (rooms.getIdFile(idRoom) > 0) {
+					 itf.saveFileDoodle(rooms.getIdFile(idRoom), dp.getData());
+				} else {
+					 itf.saveRoom(idRoom, dp.getData());
+				}
+				return true;
+		  } catch (SQLException ex) {
+				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+		  return false;
+	 }
 
-    private void enterRoom() throws IOException {
-	try {
-	    IData itf = new DataProxy();
-	    Room r = itf.getRoomInfo(idRoom);
-	    List<FileShortInfo> fsi = r.getFiles();
-	    List<RoomNoteInfo> rni = r.getNotes();
-	    for (int i = 0; i < fsi.size(); i++) {
-		CharBuffer buffer = CharBuffer.wrap(gson.toJson(fsi.get(i)));
-		this.getWsOutbound().writeTextMessage(buffer);
-	    }
-	    for (int i = 0; i < rni.size(); i++) {
-		CharBuffer buffer = CharBuffer.wrap(gson.toJson(rni.get(i)));
-		this.getWsOutbound().writeTextMessage(buffer);
-	    }
-	} catch (SQLException ex) {
-	    Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
+	 private void enterRoom() throws IOException {
+		  try {
+				IData itf = new DataProxy();
+				Room r = itf.getRoomInfo(idRoom);
+				List<FileShortInfo> fsi = r.getFiles();
+				List<RoomNoteInfo> rni = r.getNotes();
+				for (int i = 0; i < fsi.size(); i++) {
+					 CharBuffer buffer = CharBuffer.wrap(gson.toJson(fsi.get(i)));
+					 this.getWsOutbound().writeTextMessage(buffer);
+				}
+				for (int i = 0; i < rni.size(); i++) {
+					 CharBuffer buffer = CharBuffer.wrap(gson.toJson(rni.get(i)));
+					 this.getWsOutbound().writeTextMessage(buffer);
+				}
+		  } catch (SQLException ex) {
+				Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+	 }
 
     private boolean firstEnterRoom() throws IOException {
 	try {
@@ -234,35 +243,35 @@ public class FcMessageInbound extends MessageInbound {
 	    CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
 	    this.getWsOutbound().writeTextMessage(buffer);
 
-	    List<FileShortInfo> fsi = result.getFiles();
-	    List<RoomNoteInfo> rni = result.getNotes();
-	    for (int i = 0; i < fsi.size(); i++) {
-		CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(fsi.get(i)));
-		this.getWsOutbound().writeTextMessage(buffer1);
-	    }
-	    for (int i = 0; i < rni.size(); i++) {
-		CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(rni.get(i)));
-		this.getWsOutbound().writeTextMessage(buffer1);
-	    }
-	} catch (SQLException ex) {
-	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return false;
-    }
+				List<FileShortInfo> fsi = result.getFiles();
+				List<RoomNoteInfo> rni = result.getNotes();
+				for (int i = 0; i < fsi.size(); i++) {
+					 CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(fsi.get(i)));
+					 this.getWsOutbound().writeTextMessage(buffer1);
+				}
+				for (int i = 0; i < rni.size(); i++) {
+					 CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(rni.get(i)));
+					 this.getWsOutbound().writeTextMessage(buffer1);
+				}
+		  } catch (SQLException ex) {
+				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+		  return false;
+	 }
 
-    private void enterFile() throws IOException {
-	try {
-	    IData itf = new DataProxy();
-	    FileDetailInfo r = itf.getDetailFile(rooms.getIdFile(idRoom));
-	    List<FileNoteInfo> rni = r.getFileNotes();
-	    for (int i = 0; i < rni.size(); i++) {
-		CharBuffer buffer = CharBuffer.wrap(gson.toJson(rni.get(i)));
-		this.getWsOutbound().writeTextMessage(buffer);
-	    }
-	} catch (SQLException ex) {
-	    Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
+	 private void enterFile() throws IOException {
+		  try {
+				IData itf = new DataProxy();
+				FileDetailInfo r = itf.getDetailFile(rooms.getIdFile(idRoom));
+				List<FileNoteInfo> rni = r.getFileNotes();
+				for (int i = 0; i < rni.size(); i++) {
+					 CharBuffer buffer = CharBuffer.wrap(gson.toJson(rni.get(i)));
+					 this.getWsOutbound().writeTextMessage(buffer);
+				}
+		  } catch (SQLException ex) {
+				Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+	 }
 
     private boolean firstEnterFile() throws IOException {
 	try {
@@ -287,17 +296,17 @@ public class FcMessageInbound extends MessageInbound {
 	return false;
     }
 
-    private int newFile(String str) throws IOException {
-	int result = -1;
-	try {
-	    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
-	    IData itf = new DataProxy();
-	    result = itf.newFile(upi.getName(), upi.getContent(), username, upi.getFiletype(), idRoom);
-	} catch (SQLException ex) {
-	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return result;
-    }
+	 private int newFile(String str) throws IOException {
+		  int result = -1;
+		  try {
+				UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
+				IData itf = new DataProxy();
+				result = itf.newFile(upi.getName(), upi.getContent(), username, upi.getFiletype(), idRoom);
+		  } catch (SQLException ex) {
+				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+		  return result;
+	 }
 
     private void openFile(int idFile) throws IOException {
 	try {
@@ -349,12 +358,12 @@ public class FcMessageInbound extends MessageInbound {
 	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
 	}
 
-    }
+	 }
 
-    private void closeFile(int idFile) {
-    }
+	 private void closeFile(int idFile) {
+	 }
 
-    private void oneByOne(List<Object> messages) throws IOException {
-	rooms.oneByOne(messages, idRoom);
-    }
+	 private void oneByOne(List<Object> messages) throws IOException {
+		  rooms.oneByOne(messages, idRoom);
+	 }
 }

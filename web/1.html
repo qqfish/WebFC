@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
     <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
@@ -15,29 +15,31 @@
 	<script src="js/socket.js"></script>
 	<script src="js/drag.js"></script>
 	<script src="js/login.js"></script>
+	<script src="js/note.js"></script>
         <script type="text/javascript" src="js/drawCanvas.js"></script>
 	<link rel="stylesheet" href="css/default.css">
 	<link rel="stylesheet" href="css/toolbar.css">
 	<link rel="stylesheet" href="css/doodle.css">
 	<link rel="stylesheet" href="css/chat.css">
 	<link rel="stylesheet" href="css/drag.css">
+	<link rel="stylesheet" href="css/note.css">
     </head>
     <body>
-	<div id="mainTable" class="body">
+	<div id="mainTable" class="body" >
 	    <canvas id="canvas"> </canvas>
 	    <canvas id="canvasTop"> </canvas>
 	</div>
 	<div id="toolbox" class="body">
 	    <ul id="content">
 		<li class="paint"><img src="image/mainMenu/drawing.png"></li>
-		<li><img src="image/mainMenu/tag.png"></li>
+		<li class="newTag"><img src="image/mainMenu/tag.png"></li>
 		<li class="filelist"><img src="image/mainMenu/fileList.png"></li>
 		<li><img src="image/mainMenu/userList.png"></li>
 		<li class="upload"><img src="image/mainMenu/upload.png"></li>
 		<li>麦克风</li>
 		<li>音量</li>
 		<li onclick="login.init();">登录</li>
-		<li onclick="doodle.saveTableDoodle();">保存</li>
+		<li onclick="doodle.saveDoodle();">保存</li>
 	    </ul>
 	    <ul id="paint" class="toolDetail">
 		<li class="content"><img id="usePointer" src="image/drawingTools/pointer.png"></li>

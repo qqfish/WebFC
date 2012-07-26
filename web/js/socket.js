@@ -69,7 +69,10 @@ connection.connect = (function(host) {
 	    drag.onmessage(socketData);
 	}
 	else if(socketData.type == "FileShortInfo"){
-	    drag.setFilePosition(socketData)
+	    drag.setFilePosition(socketData);
+	}
+	else if(socketData.type == "RoomNoteInfo" || socketData.type == "FileNoteInfo"){
+	    note.setNotePosition(socketData);
 	}
     };
 });

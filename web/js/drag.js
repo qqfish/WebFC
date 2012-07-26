@@ -16,6 +16,7 @@
     
     $.fn.enableDrag = function () {
 	var Rx, Ry;
+	var beginX, beginY;
 	var t = $(this);
 	t.attr("locking",0);
 	t.css("z-index",2);
@@ -23,11 +24,15 @@
 	    if(t.attr("locking") == 0 && t.attr("moving") == 0){
 		Rx = event.pageX - (parseInt(t.css("left")) || 0);
 		Ry = event.pageY - (parseInt(t.css("top")) || 0);
+		beginX = event.pageX;
+		beginY = event.pageY;
 		t.css('cursor', 'move')
 		drag.begin(t);
 		t.attr("selfMove",1);
-		if(t.attr("idFile") != "undefined"){
+		if(typeof(t.attr("idFile")) != "undefined"){
 		    drag.sendBeginDrag(t.attr("idFile"), "file");
+		} else if(typeof(t.attr("idNote")) != "undefined"){
+		    drag.sendBeginDrag(t.attr("idNote"),"note");
 		}
 	    }
 	})
@@ -35,9 +40,16 @@
 	    if(t.attr("locking") == 0 && t.attr("moving") == 1 && t.attr("selfMove") == 1){
 		t.attr("selfMove",0);
 		drag.stop(t);
-		if(t.attr("idFile") != "undefined"){
+		if(typeof(t.attr("idFile")) != "undefined"){
 		    drag.sendStopDrag(t.attr("idFile"), "file");
-		    drag.sendSaveDragFile(t.attr("idFile"), event.pageX - Rx, event.pageY - Ry, 0, "true")
+		    if(beginX != event.pageX || beginY != event.pageY){
+			drag.sendSaveDragFile(t.attr("idFile"), event.pageX - Rx, event.pageY - Ry, 0, "true");
+		    }
+		} else if(typeof(t.attr("idNote")) != "undefined"){
+		    drag.sendStopDrag(t.attr("idNote"), "note");
+		    if(beginX != event.pageX || beginY != event.pageY){
+			drag.sendSaveDragNote(t.attr("idNote"), event.pageX - Rx, event.pageY - Ry);
+		    }
 		}
 	    }
 	});
@@ -46,8 +58,10 @@
 		var x = event.pageX - Rx;
 		var y = event.pageY - Ry
 		drag.move(t, x, y);
-		if(t.attr("idFile") != "undefined"){
-		    drag.sendMoveDrag(t.attr("idFile"), x, y, "file")
+		if(typeof(t.attr("idFile")) != "undefined"){
+		    drag.sendMoveDrag(t.attr("idFile"), x, y, "file");
+		} else if(typeof(t.attr("idNote")) != "undefined"){
+		    drag.sendMoveDrag(t.attr("idNote"), x, y,"note");
 		}
 	    }
 	});
@@ -93,6 +107,19 @@ drag.beginFile = function(idFile){
     drag.begin($("[idFile=" + idFile + "].dragElement"));
 }
 
+drag.beginNote = function(idNote){
+    drag.begin($("[idNote=" + idNote + "].noteButton"));
+    logg($("[idNote=" + idNote + "].noteButton"));
+}
+
+drag.moveNote = function(idNote, x, y){
+    drag.move($("[idNote=" + idNote + "].noteButton"), x, y);
+}
+
+drag.stopNote = function(idNote){
+    drag.stop($("[idNote=" + idNote + "].noteButton"));
+}
+
 drag.sendBeginDrag = function(id, element){
     var result = {};
     result.type = "dragMessage";
@@ -129,58 +156,80 @@ drag.sendSaveDragFile = function(id, x, y, rotate, onTable){
     result.id = id;
     result.x = x;
     result.y = y;
+    result.element = "file";
     result.rotate = rotate;
     result.onTable = onTable;
     connection.sendMessage(JSON.stringify(result));
 }
 
+drag.sendSaveDragNote = function (id, x, y) {
+    var result = {};
+    result.type = "dragMessage";
+    result.movement = "save";
+    result.id = id;
+    result.x = x;
+    result.y = y;
+    result.element = "note";
+    connection.sendMessage(JSON.stringify(result));
+}
+
 drag.onmessage = function(message){
-    if(message.movement == "begin"){
-	if(message.element == "file"){
-	    drag.beginFile(message.id);
-	}
+if(message.movement == "begin"){
+    if(message.element == "file"){
+	drag.beginFile(message.id);
+    } else if(message.element == "note"){
+	drag.beginNote(message.id);
     }
-    else if(message.movement == "stop"){
-	if(message.element == "file"){
-	    drag.stopFile(message.id);
-	}
+}
+else if(message.movement == "stop"){
+    if(message.element == "file"){
+	drag.stopFile(message.id);
+    } else if(message.element == "note"){
+	drag.stopNote(message.id);
     }
-    else if(message.movement == "move"){
-	if(message.element == "file"){
-	    drag.moveFile(message.id, message.x, message.y);
-	}
+}
+else if(message.movement == "move"){
+    if(message.element == "file"){
+	drag.moveFile(message.id, message.x, message.y);
+    } else if(message.element == "note"){
+	drag.moveNote(message.id, message.x, message.y);
     }
+}
 }
 
 drag.setFilePosition = function(file){
-    var r = "rotate(" + file.rotate + "deg";
-    if(file.onTable){
-	var newEle = $("<div class='dragElement'>")
-	newEle.html(file.fileName).appendTo($("#mainTable")).css({
-	    '-webkit-transform':r,
-	    '-moz-transform':r
-	})
-	newEle.attr("idFile",file.idFile);
-	logg(newEle.attr("idFile"));
-	drag.moveFile(file.idFile, file.xFile, file.yFile);
-	drag.initDrag();
-	drag.enableDrag();
-    }
+var r = "rotate(" + file.rotate + "deg";
+if(file.onTable){
+    var newEle = $("<div class='dragElement'>")
+    newEle.html(file.fileName).appendTo($("#mainTable")).css({
+	left:file.xFile,
+	top:file.yFile,
+	'-webkit-transform':r,
+	'-moz-transform':r
+    })
+    newEle.attr("idFile",file.idFile);
+    //logg(newEle.attr("idFile"));
+    newEle.initDrag();
+    newEle.enableDrag();
+}
 }
 
 drag.initDrag = function(){
-    $(".dragElement").initDrag();
+$(".dragElement").initDrag();
+$(".noteButton").initDrag();
 }
 
 drag.enableDrag = function(){
-    $(".dragElement").enableDrag();
+$(".dragElement").enableDrag();
+$(".noteButton").enableDrag();
 }
 
 drag.disableDrag = function(){
-    $(".dragElement").disableDrag();
+$(".dragElement").disableDrag();
+$("noteButton").disableDrag();
 }
 
 $(document).ready(function () {
-    drag.initDrag();
-    drag.enableDrag();
+drag.initDrag();
+drag.enableDrag();
 });

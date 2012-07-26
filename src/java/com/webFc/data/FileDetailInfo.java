@@ -4,6 +4,7 @@
  */
 package com.webFc.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class FileDetailInfo extends Data{
 
     public FileDetailInfo() {
 	type = "FileDetailInfo";
+	fileNotes = new ArrayList();
     }
 
     public FileDetailInfo(String fileName, int idFile, String fileData, String owner, String doodleOfFile, String fileType, Date time) {
@@ -35,6 +37,7 @@ public class FileDetailInfo extends Data{
 	this.doodleOfFile = doodleOfFile;
 	this.fileType = fileType;
 	this.editTime = time;
+	fileNotes = new ArrayList();
     }
 
     public Date getEditTime() {

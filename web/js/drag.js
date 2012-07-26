@@ -211,7 +211,12 @@ drag.setFilePosition = function(file){
 	//logg(newEle.attr("idFile"));
 	newEle.initDrag();
 	newEle.enableDrag();
+	newEle.enableOpenFile();
     }
+}
+
+drag.clear = function(){
+    $(".dragElement").remove();
 }
 
 drag.initDrag = function(){

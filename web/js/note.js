@@ -147,6 +147,12 @@ note.newNote = function(){
     });
 }
 
+note.clear = function(){
+    $(".noteButton").remove();
+    $(".noteMessage").remove();
+    $(".noteMessageCor").remove();
+}
+
 $(document).ready(function () {
     note.init();
     $(".newTag").mouseup(function(event){

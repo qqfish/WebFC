@@ -25,22 +25,26 @@ import java.util.logging.Logger;
  */
 public class RoomManager {
 
-
     Map<Integer, UserMap> maps = new TreeMap();
     Gson gson;
 
     private class UserMap {
 
 	Map<String, FcMessageInbound> users = new TreeMap();
-	FcMessageInbound picHolder;
+	int idFile;
+	String roomFileStr;
 
 	private UserMap() {
-	    super();
+	    idFile = -1;
 	}
 
 	private boolean insertUser(String username, FcMessageInbound fmi) throws IOException {
 	    if (!username.isEmpty() && !users.containsKey(username)) {
 		users.put(username, fmi);
+		if (idFile > 0 && !roomFileStr.isEmpty()) {
+		    CharBuffer buffer = CharBuffer.wrap(roomFileStr);
+		    fmi.getWsOutbound().writeTextMessage(buffer);
+		}
 		return true;
 	    } else {
 		return false;
@@ -88,6 +92,19 @@ public class RoomManager {
 	private int getNum() {
 	    return users.size();
 	}
+
+	private int getIdFile() {
+	    return idFile;
+	}
+
+	private String getRoomFileStr() {
+	    return roomFileStr;
+	}
+
+	private void setEnterFile(int idFile, String roomFileStr) {
+	    this.idFile = idFile;
+	    this.roomFileStr = roomFileStr;
+	}
     }
 
     public RoomManager() {
@@ -97,11 +114,11 @@ public class RoomManager {
     public boolean loginRoom(int idRoom, String username, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (maps.containsKey(idRoom)) {
-	    Gson gson = new Gson();
 	    UserMap m = maps.get(idRoom);
 	    System.out.println("user " + username + " enter Room " + idRoom + ";");
 	    requestPic rp = new requestPic();
 	    rp.setFrom(username);
+	    rp.setUsage("updatePic");
 	    randomSend(idRoom, gson.toJson(rp));
 	    return m.insertUser(username, fmi);
 	} else {
@@ -205,6 +222,46 @@ public class RoomManager {
 	    }
 	}
 	return false;
+    }
 
+    public void oneByOne(List<Object> messages, int idRoom) throws IOException {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    List<String> rmArray = new ArrayList<String>();
+
+	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
+	    int i = 0;
+	    while (iter.hasNext() && i < messages.size()) {
+		Map.Entry<String, FcMessageInbound> entry = iter.next();
+		FcMessageInbound val = entry.getValue();
+		CharBuffer buffer = CharBuffer.wrap(gson.toJson(messages.get(i)));
+		val.getWsOutbound().writeTextMessage(buffer);
+		System.out.println("hello");
+		i++;
+	    }
+	}
+    }
+
+    public int getIdFile(int idRoom) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    return m.getIdFile();
+	}
+	return -1;
+    }
+
+    public String getRoomFileStr(int idRoom) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    return m.getRoomFileStr();
+	}
+	return "";
+    }
+
+    public void setEnterFile(int idRoom, int idFile, String roomFileStr) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    m.setEnterFile(idFile, roomFileStr);
+	}
     }
 }

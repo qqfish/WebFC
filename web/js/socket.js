@@ -43,28 +43,37 @@ connection.connect = (function(host) {
 	    }	    
 	}
 	else if(socketData.type == "requestPic"){
-	    connection.sendMessage(doodle.getDoodlePic(socketData.from));
+	    if(socketData.usage == "updatePic"){
+		connection.sendMessage(doodle.getDoodlePic(socketData));
+	    } else if(socketData.usage == "saveDoodle"){
+		doodle.saveDoodle();
+	    }
+	}
+	else if(socketData.type == "clearTable"){
+	    note.clear();
+	    drag.clear();
+	    
 	}
 	else if(socketData.type == "doodlePic"){
 	    doodle.restorePic(socketData.data);
 	}
-        else if(socketData.type == "OpenFile"){
+	else if(socketData.type == "OpenFile"){
 	    $("#openfile").attr("src",socketData.url);
 	}
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
 	}
 	else if (socketData.type == "offer"){
-		 do_Offer(socketData);
+	    do_Offer(socketData);
 	}
 	else if (socketData.type == "answer" && started){
-		 do_Answer(socketData);
+	    do_Answer(socketData);
 	}
 	else if (socketData.type =="candidate" && started){
-		 do_Candidate(socketData);
+	    do_Candidate(socketData);
 	}
 	else if ( socketData.type == "bye" && started ){
-		 onRemoteHangup();
+	    onRemoteHangup();
 	}
 	else if (socketData.type == "AlertMessage"){
 	    alert(socketData.alertWord);

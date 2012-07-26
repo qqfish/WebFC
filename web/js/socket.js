@@ -51,8 +51,7 @@ connection.connect = (function(host) {
 	else if(socketData.type == "ClearTable"){
 	    note.clear();
 	    drag.clear();
-	    doodle.clear();
-	    
+	    doodle.clear();	    
 	}
 	else if(socketData.type == "doodlePic"){
 	    doodle.restorePic(socketData.data);

@@ -15,6 +15,7 @@
 	<script src="js/drag.js"></script>
 	<script src="js/login.js"></script>
 	<script src="js/note.js"></script>
+	<script src="js/socket.js"></script>
     <script type="text/javascript" src="js/drawCanvas.js"></script>
 	<link rel="stylesheet" href="css/default.css">
 	<link rel="stylesheet" href="css/toolbar.css">
@@ -24,24 +25,16 @@
 	<link rel="stylesheet" href="css/note.css">
     </head>
     <body>
-	<script src="js/socket.js"></script>
-	<script src="js/mediaStream.js"></script>
 	<div id="mainTable" class="body">
 	    <canvas id="canvas"> </canvas>
 	    <canvas id="canvasTop"> </canvas>
-	</div>
-	<div id="video" class="body">
-		 <video id="local" autoplay></video>
-		 <video id="remote" autoplay></video><br/>
-		 <div id="footer">
-		 </div>
 	</div>
 	<div id="toolbox" class="body">
 	    <ul id="content">
 		<li class="paint"><img src="image/mainMenu/drawing.png"></li>
 		<li class="newTag"><img src="image/mainMenu/tag.png"></li>
 		<li class="filelist"><img src="image/mainMenu/fileList.png"></li>
-		<li><img id="user" src="image/mainMenu/userList.png"></li>
+		<li><img src="image/mainMenu/userList.png"></li>
 		<li class="upload"><img src="image/mainMenu/upload.png"></li>
 		<li>麦克风</li>
 		<li>音量</li>

@@ -2,44 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-$(function() {
-	 $("#user").click(function(){
-	    initialize();
-	    maybeStart();
-	    var message={};
-	    message.type = "connect";
-           sendMessage(message);
-        }
-   )
-});
 
 var localVideo;
-var remoteVideo;
+var remoteVideo = new Array();
 var localStream;
-var pc;
+var pc = new Array();
+var currentPc;
 var socket;
 var started = false;
-var mediaStream={};
     
 function initialize() {
 	 console.log("Initializing...");
 	 localVideo = document.getElementById("local");
-	 remoteVideo = document.getElementById("remote");
-	 resetStatus();
 	 getUserMedia();
-}
-    
-function resetStatus() {
-	 if(started){
-		  setStatus("Waiting for someone to join");
-	 }
-	 else {
-		  setStatus("Initializing...");
-	 }
-}
-
-function setStatus(state) {
-	 document.getElementById("footer").innerHTML = state;
+	 maybeStart();
 }
 	
 function getUserMedia(){
@@ -78,45 +54,53 @@ function onUserMediaError(error){
 // Caller creates Peerconnection.
 function maybeStart(){
 	 if( !started && localStream ) {
-		  setStatus("Connecting...");
-		  console.log("Create peerconnection.");
-		  createPeerconnection();
-		  console.log("Add local stream.");
-		  pc.addStream(localStream);
+		  console.log("Connecting...");
+		  currentPc = createPeerconnection();
+		  console.log("Index of current pc is " + currentPc);
 		  started = true;
 		  //Caller initiates offer to peer.
+	 }
+	 else{
+		  setTimeout(maybeStart,500);
 	 }
 }
 	
 function createPeerconnection(){
+	 console.log("Create peerconnection.");
+	 var i = pc.length;
+	 remoteVideo[ i ] = document.getElementById("remote" + i );
 	 try {
-		  pc = new webkitPeerConnection00('ws://' + window.location.host + '/WebFc/WebFcSocketServlet',onIceCandidate);
+		  pc[ i ] = new webkitPeerConnection00('ws://' + window.location.host + '/WebFc/WebFcSocketServlet',onIceCandidate);
 		  console.log("Create webkitPeerConnection");
 	 } catch( e ){
 		  console.log("Failed to create PeerConnection, exception: " + e.message);
 		  alert("Cannot create PeerConnection object; Is the 'PeerConnection' flag enabled in about:flags?");
 		  return;
 	 }
-	 pc.onconnecting = onSessionConnecting;
-	 pc.onopen = onSessionOpened;
-	 pc.onaddstream = onRemoteStreamAdded;
-	 pc.onremovestream = onRemoteStreamRemoved;
+	 pc[ i ].onconnecting = onSessionConnecting;
+	 pc[ i ].onopen = onSessionOpened;
+	 pc[ i ].onaddstream = onRemoteStreamAdded;
+	 pc[ i ].onremovestream = onRemoteStreamRemoved;
+	 console.log("Add local stream.");
+	 pc[ i ].addStream(localStream);
+	 return i;
 }
 	
-function doCall(){
+function doCall( i ){
 	 console.log("Send offer to peer");
-	 remoteVideo.style.opacity = 1;
-	 var offer = pc.createOffer({
+	 var offer = pc[i].createOffer({
 		  audio:true, 
 		  video:true
 	 });
-	 pc.setLocalDescription(pc.SDP_OFFER, offer);
+	 pc[i].setLocalDescription(pc[i].SDP_OFFER, offer);
 	 console.log(offer);
 	 var message = {};
 	 message.type = "offer";
+	 message.sendFrom = login.username;
+	 message.sendTo = "abc";
 	 message.sdp = offer.toSdp();
 	 sendMessage(message);
-	 pc.startIce();
+	 pc[i].startIce();
 }
 
 function sendMessage(message) {
@@ -131,6 +115,8 @@ function onIceCandidate(candidate, moreToFollow) {
 	 if (candidate) {
 		  var message = {};
 		  message.type = "candidate";
+		  message.sendTo = "abc";
+		  message.sendFrom = login.username;
 		  message.label = candidate.label;
 		  message.candidate = candidate.toSdp();
 		  sendMessage(message);
@@ -150,7 +136,7 @@ function onSessionOpened(message) {
 function onRemoteStreamAdded(event) {
 	 console.log("Remote stream added.");
 	 var url = webkitURL.createObjectURL(event.stream);
-	 remoteVideo.src = url;
+	 remoteVideo[currentPc].src = url;
 	 waitForRemoteVideo(); 
 }
 
@@ -159,7 +145,7 @@ function onRemoteStreamRemoved(event) {
 }
 	
 function waitForRemoteVideo(){
-	 if (remoteVideo.currentTime > 0) {
+	 if (remoteVideo[currentPc].currentTime > 0) {
 		  transitionToActive();
 	 } else {
 		  setTimeout(waitForRemoteVideo, 100);
@@ -167,88 +153,67 @@ function waitForRemoteVideo(){
 }
 	
 function transitionToActive(){
-	 setStatus("<input type=\"button\" id=\"hangup\" value=\"Hang up\" onclick=\"onHangup()\" />");
+	 console.log("<input type=\"button\" id=\"hangup\" value=\"Hang up\" onclick=\"onHangup()\" />");
 }
 	
 function onHangup() {
 	 console.log("Hanging up.");
-	 localVideo.style.opacity = 0;
-	 remoteVideo.style.opacity = 0;
 	 started = false;    // Stop processing any message
 	 transitionToDone();
-	 pc.close();
+	 var len = pc.length;
+	 for(var i=0; i < len;i++){
+	 pc[i].close();
 	 // will trigger BYE from server
-	 pc = null;
+	 pc[i] = null;
+	 }
 }
 	
 function transitionToDone(){
-	 setStatus("You have left the call.");
+	 console.log("You have left the call.");
 }
 	
-/*	function getMessage(message){
-		 console.log("get message");
-		 processSignalingMessage(message);
-	}
-	
-	function processSignalingMessage(message) {
-		 var msg = message;
-		 console.log(msg);
-		  console.log("???");
-		 
-		 if (msg.type === 'offer') {
-			  // Callee creates PeerConnection
-			  if (!started)
-					maybeStart();
-			  pc.setRemoteDescription(pc.SDP_OFFER, new SessionDescription(msg.sdp));
-			  doAnswer();
-		 } else if (msg.type === 'answer' && started) {
-			  pc.setRemoteDescription(pc.SDP_ANSWER, new SessionDescription(msg.sdp));
-		 } else if (msg.type === 'candidate' && started) {
-			  var candidate = new IceCandidate(msg.label, msg.candidate);
-			  pc.processIceMessage(candidate);
-		 } else if (msg.type === 'bye' && started) {
-			  onRemoteHangup();
-		 }
-	}
-	*/
 function do_Offer(socketData){
 	 if (!started)
-		  maybeStart();
+		  initialize();
 	 var sdp = new SessionDescription(socketData.sdp);
-	 pc.setRemoteDescription(pc.SDP_OFFER, sdp);
-	 doAnswer();
+	 pc[currentPc].setRemoteDescription(pc[currentPc].SDP_OFFER, sdp);
+	 doAnswer(socketData.sendFrom);
 }
 	
 function do_Answer(socketData){
-	 pc.setRemoteDescription(pc.SDP_ANSWER, new SessionDescription(socketData.sdp));
+	 pc[currentPc].setRemoteDescription(pc[currentPc].SDP_ANSWER, new SessionDescription(socketData.sdp));
 }
 	
 function do_Candidate(socketData){
 	 var candidate = new IceCandidate(socketData.label, socketData.candidate);
-	 pc.processIceMessage(candidate);
+	 pc[currentPc].processIceMessage(candidate);
 }
 	
-function doAnswer() {
+function doAnswer(sendFrom) {
 	 console.log("Send answer to peer");
-	 var offer = pc.remoteDescription;
-	 var answer = pc.createAnswer(offer.toSdp(), {
+	 var offer = pc[currentPc].remoteDescription;
+	 var answer = pc[currentPc].createAnswer(offer.toSdp(), {
 		  audio:true,
 		  video:true
 	 });
-	 pc.setLocalDescription(pc.SDP_ANSWER, answer);
+	 pc[currentPc].setLocalDescription(pc[currentPc].SDP_ANSWER, answer);
 	 var message = {};
 	 message.type = "answer";
+	 message.sendTo = sendFrom;
+	 message.sendFrom = login.username;
 	 message.sdp = answer.toSdp();
 	 sendMessage(message);
-	 pc.startIce();
+	 pc[currentPc].startIce();
 }
 	
 function onRemoteHangup() {
 	 console.log('Session terminated.');
 	 started = false;    // Stop processing any message
-	 resetStatus();
-	 pc.close();
-	 pc = null;
+	 var len = pc.length;
+	 for(var i=0; i < len;i++){
+	     pc[i].close();
+	     pc[i] = null;
+	 }
 }
 
 

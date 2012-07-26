@@ -12,11 +12,11 @@
 	<script src="js/jquery/ui/jquery.ui.droppable.js"></script>
 	<script src="js/jquery/ui/jquery.ui.progressbar.js"></script>
 	<script src="js/toolbar.js"></script>
+        <script src="js/file.js"></script>
 	<script src="js/socket.js"></script>
-	<script src="js/drag.js"></script>
 	<script src="js/login.js"></script>
         <script type="text/javascript" src="js/drawCanvas.js"></script>
-	<link rel="stylesheet" href="css/default.css">
+	
 	<link rel="stylesheet" href="css/toolbar.css">
 	<link rel="stylesheet" href="css/doodle.css">
 	<link rel="stylesheet" href="css/chat.css">
@@ -49,10 +49,12 @@
 		<li><img id="back" src="image/drawingTools/panel.png"></li>
 	    </ul>
 	    <ul id="filelist">
-
+                <li idFile="1">hahah</li>
 	    </ul>
+            
+	<script src="js/drag.js"></script>
 	    <div id="upload">
-                <form>
+                <form>      
                     <input type="file" id="file">
                     <input type="button" id="sub" value="上传">
                     <div id="progressbar"></div>
@@ -62,10 +64,10 @@
 	    <div id="display">
 	    </div>
 	</div>
-        
+        <div class="chatWindow">
 	<fieldset id="frame" name="frame">
 	    <div id="tab">
-		<table width="359" height="201" id="dialog">
+                <table width="355" height="221" id="dialog">
 		    <tbody style="overflow:auto">
 			<tr class="dia1">
 			    <td></td>
@@ -104,12 +106,14 @@
 		<option>red</option>
 		<option>blue</option>
 	    </select>
-	    <input id="input" placeholder="Input area" name="input" type="text">
-	    <input id="send" name="send" type="button" value="send">
+	    <input id="input" placeholder="Input area" name="input" type="text"/>
+	    <input id="send" name="send" type="button" value="send"/>
 	</fieldset>
-	<canvas id="chatButton" ></canvas>
-        <script type="text/javascript" src="js/doodle.js"></script>
         
+	<canvas id="chatButton" ></canvas>
+        </div>
+        <script type="text/javascript" src="js/doodle.js"></script>
+        <script src="js/chat.js"></script>
         
         
         

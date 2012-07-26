@@ -5,10 +5,7 @@
 package com.webFc.socket;
 
 import com.google.gson.Gson;
-import com.webFc.data.Data;
-import com.webFc.data.LoginRoom;
-import com.webFc.data.Response;
-import com.webFc.data.UploadFileInfo;
+import com.webFc.data.*;
 import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
 import com.webFc.socket.MessageType.*;
@@ -16,8 +13,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.sql.SQLException;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.catalina.websocket.MessageInbound;
@@ -154,7 +149,15 @@ public class FcMessageInbound extends MessageInbound {
 		    } else {
 			roomBroadcast(str);
 		    }
-		} else {
+		}else if (textData.getType().equals("chatMessage")) {
+		    ChatMessage c = gson.fromJson(str, ChatMessage.class);
+                    System.out.println(c.getMessage());
+                    if(c.getPeopleTo() == null)
+                       roomBroadcast(c.getMessage());
+                    else
+                        roomToUser(c.getPeopleTo(),c.getMessage());
+		}
+                else {
 		    //System.out.println("hello");
 		    roomBroadcast(str);
 		}

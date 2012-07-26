@@ -184,3 +184,20 @@ $(document).ready(function () {
     drag.initDrag();
     drag.enableDrag();
 });
+
+
+$("#filelist>li").draggable({
+    revert: true, 
+    helper: "clone",
+    stop: function(ev){
+        var newEle = $("<div>");
+        newEle.html($(this).html()).appendTo($("body"));
+        newEle.addClass("dragElement");
+        newEle.attr("idFile",$(this).attr("idFile"));
+        newEle.css("left",($(this).attr("left")));
+        newEle.css("top",($(this).attr("top")));
+    } 
+});
+$("body").not("#toolbox").droppable({
+    accept: "#filelist>li"
+});

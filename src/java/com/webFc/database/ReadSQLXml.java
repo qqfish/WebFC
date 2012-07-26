@@ -18,6 +18,10 @@ public class ReadSQLXml {
     private String host;
     private String username;
     private String password;
+    
+    public ReadSQLXml(){
+	
+    }
 
     public void getInfo() {
 	DocumentBuilderFactory domfac = DocumentBuilderFactory.newInstance();

@@ -508,13 +508,14 @@ doodle.sendDrawShape = function(index, shapeClick)
     connection.sendMessage(JSON.stringify(tmp));    
 }
 
-doodle.getDoodlePic = function(from){
+doodle.getDoodlePic = function(request){
     var result = {};
     result.type = "doodlePic";
     var data = doodle.canvasTop.toDataURL();
     //var b64 = data.substring( 22 ); 
     result.data = data;
-    result.to = from;
+    result.to = request.from;
+    result.usage = request.usage;
     return JSON.stringify(result);
 }
 
@@ -528,8 +529,9 @@ doodle.restorePic = function(data){
 
 doodle.saveDoodle = function(){
     var result = {};
-    result.type = "SaveDoodle";
-    result.doodleOfTable = doodle.canvasTop.toDataURL();
+    result.type = "doodlePic";
+    result.usage = "saveDoodle";
+    result.data = doodle.canvasTop.toDataURL();
     connection.sendMessage(JSON.stringify(result));
 }
 

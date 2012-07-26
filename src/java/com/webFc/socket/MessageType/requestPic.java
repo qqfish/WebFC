@@ -13,9 +13,18 @@ import com.webFc.data.Data;
 public class requestPic extends Data {
 
     private String from;
+    private String usage;
 
     public requestPic() {
 	type = "requestPic";
+    }
+
+    public String getUsage() {
+	return usage;
+    }
+
+    public void setUsage(String usage) {
+	this.usage = usage;
     }
     
     public String getFrom() {

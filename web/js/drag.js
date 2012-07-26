@@ -11,7 +11,7 @@
 	$(this).attr("moving",0);
 	$(this).attr("locking",1);
 	$(this).attr("selfMove",0);
-	//logg($(this).attr("idFile"));
+    //logg($(this).attr("idFile"));
     }
     
     $.fn.enableDrag = function () {
@@ -155,7 +155,7 @@ drag.sendSaveDragFile = function(id, x, y, rotate, onTable){
     result.movement ="save";
     result.id = id;
     result.x = x;
-    result.y = y;
+    result.y = y
     result.element = "file";
     result.rotate = rotate;
     result.onTable = onTable;
@@ -174,62 +174,62 @@ drag.sendSaveDragNote = function (id, x, y) {
 }
 
 drag.onmessage = function(message){
-if(message.movement == "begin"){
-    if(message.element == "file"){
-	drag.beginFile(message.id);
-    } else if(message.element == "note"){
-	drag.beginNote(message.id);
+    if(message.movement == "begin"){
+	if(message.element == "file"){
+	    drag.beginFile(message.id);
+	} else if(message.element == "note"){
+	    drag.beginNote(message.id);
+	}
     }
-}
-else if(message.movement == "stop"){
-    if(message.element == "file"){
-	drag.stopFile(message.id);
-    } else if(message.element == "note"){
-	drag.stopNote(message.id);
+    else if(message.movement == "stop"){
+	if(message.element == "file"){
+	    drag.stopFile(message.id);
+	} else if(message.element == "note"){
+	    drag.stopNote(message.id);
+	}
     }
-}
-else if(message.movement == "move"){
-    if(message.element == "file"){
-	drag.moveFile(message.id, message.x, message.y);
-    } else if(message.element == "note"){
-	drag.moveNote(message.id, message.x, message.y);
+    else if(message.movement == "move"){
+	if(message.element == "file"){
+	    drag.moveFile(message.id, message.x, message.y);
+	} else if(message.element == "note"){
+	    drag.moveNote(message.id, message.x, message.y);
+	}
     }
-}
 }
 
 drag.setFilePosition = function(file){
-var r = "rotate(" + file.rotate + "deg";
-if(file.onTable){
-    var newEle = $("<div class='dragElement'>")
-    newEle.html(file.fileName).appendTo($("#mainTable")).css({
-	left:file.xFile,
-	top:file.yFile,
-	'-webkit-transform':r,
-	'-moz-transform':r
-    })
-    newEle.attr("idFile",file.idFile);
-    //logg(newEle.attr("idFile"));
-    newEle.initDrag();
-    newEle.enableDrag();
-}
+    var r = "rotate(" + file.rotate + "deg";
+    if(file.onTable){
+	var newEle = $("<div class='dragElement'>")
+	newEle.html(file.fileName).appendTo($("#mainTable")).css({
+	    left:file.xFile,
+	    top:file.yFile,
+	    '-webkit-transform':r,
+	    '-moz-transform':r
+	})
+	newEle.attr("idFile",file.idFile);
+	//logg(newEle.attr("idFile"));
+	newEle.initDrag();
+	newEle.enableDrag();
+    }
 }
 
 drag.initDrag = function(){
-$(".dragElement").initDrag();
-$(".noteButton").initDrag();
+    $(".dragElement").initDrag();
+    $(".noteButton").initDrag();
 }
 
 drag.enableDrag = function(){
-$(".dragElement").enableDrag();
-$(".noteButton").enableDrag();
+    $(".dragElement").enableDrag();
+    $(".noteButton").enableDrag();
 }
 
 drag.disableDrag = function(){
-$(".dragElement").disableDrag();
-$("noteButton").disableDrag();
+    $(".dragElement").disableDrag();
+    $("noteButton").disableDrag();
 }
 
 $(document).ready(function () {
-drag.initDrag();
-drag.enableDrag();
+    drag.initDrag();
+    drag.enableDrag();
 });

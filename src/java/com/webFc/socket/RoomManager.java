@@ -25,6 +25,7 @@ import java.util.logging.Logger;
  */
 public class RoomManager {
 
+
     Map<Integer, UserMap> maps = new TreeMap();
     Gson gson;
 
@@ -96,6 +97,7 @@ public class RoomManager {
     public boolean loginRoom(int idRoom, String username, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (maps.containsKey(idRoom)) {
+	    Gson gson = new Gson();
 	    UserMap m = maps.get(idRoom);
 	    System.out.println("user " + username + " enter Room " + idRoom + ";");
 	    requestPic rp = new requestPic();

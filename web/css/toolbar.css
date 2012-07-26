@@ -33,7 +33,9 @@ h1,p,span,li{font-family:clumsy,"Microsoft YaHei";}
     font-size: 80%;
     width: 10%;
     height:95%;
-    z-index: 3;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    z-index: 10;
 }
 ul{
     height: 100%;

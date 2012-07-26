@@ -81,13 +81,7 @@ public class FcMessageInbound extends MessageInbound {
 		    if (dp.getUsage().equals("updatePic")) {
 			roomToUser(dp.getTo(), str);
 		    } else if (dp.getUsage().equals("saveDoodle")) {
-			if (saveDoodle(dp)) {
-			    AlertMessage e = new AlertMessage("save complete");
-			    sendBack(gson.toJson(e));
-			} else {
-			    ErrorMessage e = new ErrorMessage("failed to save");
-			    sendBack(gson.toJson(e));
-			}
+			saveDoodle(dp);
 		    }
 		} else if (textData.getType().equals("uploadFile")) {
 		    int r = newFile(str);
@@ -228,8 +222,8 @@ public class FcMessageInbound extends MessageInbound {
 
     private boolean firstEnterRoom() throws IOException {
 	try {
-	    //String clearTable = "{'type':'clearTable'}";
-	    //sendBack(clearTable);
+	    ClearTable ct = new ClearTable();
+	    sendBack(gson.toJson(ct));
 	    IData itf = new DataProxy();
 	    Room result = itf.getRoomInfo(idRoom);
 	    if (result.getRoomName().isEmpty()) {
@@ -279,13 +273,13 @@ public class FcMessageInbound extends MessageInbound {
 	    }
 	    doodlePic dp = new doodlePic();
 	    dp.setData(result.getDoodleOfFile());
-	    CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
-	    this.getWsOutbound().writeTextMessage(buffer);
+	    sendBack(gson.toJson(dp));
+	    roomBroadcast(gson.toJson(dp));
 
 	    List<FileNoteInfo> rni = result.getFileNotes();
 	    for (int i = 0; i < rni.size(); i++) {
-		CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(rni.get(i)));
-		this.getWsOutbound().writeTextMessage(buffer1);
+		sendBack(gson.toJson(rni.get(i)));
+		roomBroadcast(gson.toJson(rni.get(i)));
 	    }
 	} catch (SQLException ex) {
 	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
@@ -344,6 +338,9 @@ public class FcMessageInbound extends MessageInbound {
 	    String roomFileStr = gson.toJson(res.getResponse());
 	    sendBack(roomFileStr);
 	    roomBroadcast(roomFileStr);
+	    ClearTable ct = new ClearTable();
+	    sendBack(gson.toJson(ct));
+	    roomBroadcast(gson.toJson(ct));
 	    rooms.setEnterFile(idRoom, idFile, roomFileStr);
 	    firstEnterFile();
 	} catch (SQLException ex) {

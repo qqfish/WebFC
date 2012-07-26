@@ -48,9 +48,10 @@ connection.connect = (function(host) {
 		doodle.saveDoodle();
 	    }
 	}
-	else if(socketData.type == "clearTable"){
+	else if(socketData.type == "ClearTable"){
 	    note.clear();
 	    drag.clear();
+	    doodle.clear();
 	    
 	}
 	else if(socketData.type == "doodlePic"){

@@ -499,6 +499,10 @@ doodle.sendReDraw = function (index, click){
 //logg(JSON.stringify(tmp));
 }
 
+doodle.clear = function(){
+    doodle.contextTop.clearRect(0,0,doodle.canvasTop.width,doodle.canvasTop.height);
+}
+
 doodle.sendDrawShape = function(index, shapeClick)
 {
     var tmp = shapeClick;

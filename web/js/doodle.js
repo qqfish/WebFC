@@ -23,6 +23,7 @@ doodle.init = function(){
     doodle.contextTop=doodle.canvasTop.getContext("2d");
     var width=$(window).width();
     var height=$(window).height();
+    logg(height);
     doodle.canvas.width=width-20;
     doodle.canvas.height=height-20;
     doodle.canvasTop.width=width-20;
@@ -497,6 +498,10 @@ doodle.sendReDraw = function (index, click){
     tmp.index = index;
     connection.sendMessage(JSON.stringify(tmp));
 //logg(JSON.stringify(tmp));
+}
+
+doodle.clear = function(){
+    doodle.contextTop.clearRect(0,0,doodle.canvasTop.width,doodle.canvasTop.height);
 }
 
 doodle.sendDrawShape = function(index, shapeClick)

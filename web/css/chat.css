@@ -1,11 +1,20 @@
-iframe {
-	height: 200px;
-	width: 350px;
-	background-color: transparent;
+#canvas{
 	position: absolute;
-	top: 83px;
-	left: 20px;
-	z-index:1;
+	z-index: 0;
+	top: 10px;
+	left: 10px;
+	bottom: 10px;
+	right: 10px;
+	border: 1px solid #c3c3c3;
+}
+#canvasTop{
+	position: absolute;
+	z-index: 1;
+	left: 10px;
+	top:10px;
+	left:10px;
+        right: 10px;
+	border:1px solid #c3c3c3;
 }
 #nameList{
 	width: 79px;
@@ -13,27 +22,30 @@ iframe {
 	height: 203px;
 	left: 371px;
 	top: 3px;
-	position: absolute;
+	z-index:2;
 }
 #input{
 	position: absolute;
-	width: 270px;
+	width: 304px;
 	height: 24px;
-	left: 20px;
-	top: 229px;
+	left: 6px;
+	top: 228px;
+	z-index: 2;
 }
 select {
 	left: 298px;
 	top: 228px;
 	height: 20px;
 	position: absolute;
+	z-index:2;
 }
 #send {
 	position: absolute;
-	left: 379px;
-	top: 227px;
+	left: 390px;
+	top: 230px;
 	width: 80px;
 	height: 21px;
+	z-index: 2;
 }
 #title {
 	position: absolute;
@@ -41,6 +53,7 @@ select {
 	top: 10px;
 	width: 175px;
 	height: 41px;
+	z-index:2;
 }
 
 #tab {
@@ -50,49 +63,63 @@ select {
 	top: 39px;
 	width: 380px;
 	height: 200px;
+	z-index:2;
 }
 #dialog tbody .dia1 {
 	background-color:#CCC;
 	height:23px;
+	z-index:2;
 }
 #dialog tbody .dia2 {
 	background-color:#FFF;
 	height:23px;
+	z-index:2;
 }
 .chatWindow{
-	position:absolute;
-	bottom:0px;
-	left:0px;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	z-index: 2;
+	width: 331px;
+	height: 184px;
 }
-.chatWindow #chatButton {
-	left: 23px;
-	top: 31px;
+#chatButton {
+	position: absolute;
+	left: 7px;
+	bottom: -67px;
 	height: 21px;
 	width: 86px;
-	background-color: #36C;
-}
-.chatWindow #chatButton:hover{
-	background-color:#F00;
-}
-.chatWindow #chatButton:hover #fieldset{
-	left: 29px;
+	z-index: 2;
 }
 #frame{
-	display:none;
-	width: 453px;
+        position: absolute;
+	display:block;
+	width: 460px;
 	height: 254px;
-	left: 19px;
-	top: 53px;
-	background-image: url(../../Documents/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%AB%99%E7%82%B9%202/QQ%E6%88%AA%E5%9B%BE20120710163539.png);
+	left:10px;
+        bottom: 10px;
+	z-index:2;
 }
 .namelist {
 	position: absolute;
-	left: 370px;
-	top: 18px;
-	width: 65px;
-	height: 171px;
+	left: 389px;
+	top: 2px;
+	width: 59px;
+	height: 217px;
 	overflow-y: scroll;
 	widows: 355px;
 	list-style: none;
 	margin: 0px;
+	z-index: 2;
+}
+#colors{
+	position: absolute;
+	left: 314px;
+	top: 228px;
+	width: 69px;
+	height: 25px;
+	overflow-y: scroll;
+	list-style: none;
+	margin: 0px;
+	z-index: 2;
 }

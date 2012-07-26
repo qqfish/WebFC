@@ -65,77 +65,71 @@ public class FcMessageInbound extends MessageInbound {
 		  throw new UnsupportedOperationException("Not supported yet.");
 	 }
 
-	 @Override
-	 protected void onTextMessage(CharBuffer cb) throws IOException {
-		  String str = cb.toString();
-		  System.out.println(str);
-		  if (str != null && !str.isEmpty()) {
-				Data textData = gson.fromJson(str, Data.class);
-				//System.out.println(textData.getType());
-				//System.out.println(idRoom + " " + username);
-				if (textData.getType().equals("LoginRoom")) {
-					 loginRome(str);
-				} else if (idRoom > 0 && !username.isEmpty()) {
-					 if (textData.getType().equals("doodlePic")) {
-						  doodlePic dp = gson.fromJson(str, doodlePic.class);
-						  if (dp.getUsage().equals("updatePic")) {
-								roomToUser(dp.getTo(), str);
-						  } else if (dp.getUsage().equals("saveDoodle")) {
-								if (saveDoodle(dp)) {
-									 AlertMessage e = new AlertMessage("save complete");
-									 sendBack(gson.toJson(e));
-								} else {
-									 ErrorMessage e = new ErrorMessage("failed to save");
-									 sendBack(gson.toJson(e));
-								}
-						  }
-					 } else if (textData.getType().equals("uploadFile")) {
-						  int r = newFile(str);
-						  openFile(r);
-					 } else if (textData.getType().equals("dragMessage")) {
-						  SaveDrag sdf = gson.fromJson(str, SaveDrag.class);
-						  if (sdf.getMovement().equals("save")) {
-								try {
-									 IData itf = new DataProxy();
-									 if (sdf.getElement().equals("file")) {
-										  itf.updateTableFile(sdf.getId(), sdf.isOnTable(), sdf.getX(), sdf.getY(), sdf.getRotate());
-									 } else if (sdf.getElement().equals("note")) {
-										  if (rooms.getIdFile(idRoom) > 0) {
-												itf.updateFileNote(sdf.getId(), sdf.getX(), sdf.getY());
-										  } else {
-												itf.updateRoomNote(sdf.getId(), sdf.getX(), sdf.getY());
-										  }
-									 }
-								} catch (SQLException ex) {
-									 Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-								}
-						  } else {
-								roomBroadcast(str);
-						  }
-					 } else if (textData.getType().equals("NewNote")) {
-						  NewNote nn = gson.fromJson(str, NewNote.class);
-						  try {
-								IData itf = new DataProxy();
-								int idNote;
-								if (rooms.getIdFile(idRoom) > 0) {
-									 idNote = itf.newFileNote(nn.getContext(), nn.getX(), nn.getY(), rooms.getIdFile(idRoom));
-									 FileNoteInfo result = new FileNoteInfo();
-									 result.setIdFileNote(idNote);
-									 result.setNoteContext(nn.getContext());
-									 result.setX(nn.getX());
-									 result.setY(nn.getY());
-									 sendBack(gson.toJson(result));
-									 roomBroadcast(gson.toJson(result));
-								} else {
-									 idNote = itf.newRoomNote(nn.getContext(), nn.getX(), nn.getY(), idRoom);
-									 RoomNoteInfo result = new RoomNoteInfo();
-									 result.setIdRoomNote(idNote);
-									 result.setNoteContext(nn.getContext());
-									 result.setX(nn.getX());
-									 result.setY(nn.getY());
-									 sendBack(gson.toJson(result));
-									 roomBroadcast(gson.toJson(result));
-								}
+    @Override
+    protected void onTextMessage(CharBuffer cb) throws IOException {
+	String str = cb.toString();
+	System.out.println(str);
+	if (str != null && !str.isEmpty()) {
+	    Data textData = gson.fromJson(str, Data.class);
+	    //System.out.println(textData.getType());
+	    //System.out.println(idRoom + " " + username);
+	    if (textData.getType().equals("LoginRoom")) {
+		loginRome(str);
+	    } else if (idRoom > 0 && !username.isEmpty()) {
+		if (textData.getType().equals("doodlePic")) {
+		    doodlePic dp = gson.fromJson(str, doodlePic.class);
+		    if (dp.getUsage().equals("updatePic")) {
+			roomToUser(dp.getTo(), str);
+		    } else if (dp.getUsage().equals("saveDoodle")) {
+			saveDoodle(dp);
+		    }
+		} else if (textData.getType().equals("uploadFile")) {
+		    int r = newFile(str);
+		    openFile(r);
+		} else if (textData.getType().equals("dragMessage")) {
+		    SaveDrag sdf = gson.fromJson(str, SaveDrag.class);
+		    if (sdf.getMovement().equals("save")) {
+			try {
+			    IData itf = new DataProxy();
+			    if (sdf.getElement().equals("file")) {
+				itf.updateTableFile(sdf.getId(), sdf.isOnTable(), sdf.getX(), sdf.getY(), sdf.getRotate());
+			    } else if (sdf.getElement().equals("note")) {
+				if (rooms.getIdFile(idRoom) > 0) {
+				    itf.updateFileNote(sdf.getId(), sdf.getX(), sdf.getY());
+				} else {
+				    itf.updateRoomNote(sdf.getId(), sdf.getX(), sdf.getY());
+				}
+			    }
+			} catch (SQLException ex) {
+			    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		    } else {
+			roomBroadcast(str);
+		    }
+		} else if (textData.getType().equals("NewNote")) {
+		    NewNote nn = gson.fromJson(str, NewNote.class);
+		    try {
+			IData itf = new DataProxy();
+			int idNote;
+			if (rooms.getIdFile(idRoom) > 0) {
+			    idNote = itf.newFileNote(nn.getContext(), nn.getX(), nn.getY(), rooms.getIdFile(idRoom));
+			    FileNoteInfo result = new FileNoteInfo();
+			    result.setIdFileNote(idNote);
+			    result.setNoteContext(nn.getContext());
+			    result.setX(nn.getX());
+			    result.setY(nn.getY());
+			    sendBack(gson.toJson(result));
+			    roomBroadcast(gson.toJson(result));
+			} else {
+			    idNote = itf.newRoomNote(nn.getContext(), nn.getX(), nn.getY(), idRoom);
+			    RoomNoteInfo result = new RoomNoteInfo();
+			    result.setIdRoomNote(idNote);
+			    result.setNoteContext(nn.getContext());
+			    result.setX(nn.getX());
+			    result.setY(nn.getY());
+			    sendBack(gson.toJson(result));
+			    roomBroadcast(gson.toJson(result));
+			}
 
 						  } catch (SQLException ex) {
 								Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
@@ -235,19 +229,19 @@ public class FcMessageInbound extends MessageInbound {
 		  }
 	 }
 
-	 private boolean firstEnterRoom() throws IOException {
-		  try {
-				//String clearTable = "{'type':'clearTable'}";
-				//sendBack(clearTable);
-				IData itf = new DataProxy();
-				Room result = itf.getRoomInfo(idRoom);
-				if (result.getRoomName().isEmpty()) {
-					 return false;
-				}
-				doodlePic dp = new doodlePic();
-				dp.setData(result.getTableDoodle());
-				CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
-				this.getWsOutbound().writeTextMessage(buffer);
+    private boolean firstEnterRoom() throws IOException {
+	try {
+	    ClearTable ct = new ClearTable();
+	    sendBack(gson.toJson(ct));
+	    IData itf = new DataProxy();
+	    Room result = itf.getRoomInfo(idRoom);
+	    if (result.getRoomName() == null || result.getRoomName().isEmpty()) {
+		return false;
+	    }
+	    doodlePic dp = new doodlePic();
+	    dp.setData(result.getTableDoodle());
+	    CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
+	    this.getWsOutbound().writeTextMessage(buffer);
 
 				List<FileShortInfo> fsi = result.getFiles();
 				List<RoomNoteInfo> rni = result.getNotes();
@@ -279,28 +273,28 @@ public class FcMessageInbound extends MessageInbound {
 		  }
 	 }
 
-	 private boolean firstEnterFile() throws IOException {
-		  try {
-				IData itf = new DataProxy();
-				FileDetailInfo result = itf.getDetailFile(rooms.getIdFile(idRoom));
-				if (result.getFileName().isEmpty()) {
-					 return false;
-				}
-				doodlePic dp = new doodlePic();
-				dp.setData(result.getDoodleOfFile());
-				CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
-				this.getWsOutbound().writeTextMessage(buffer);
+    private boolean firstEnterFile() throws IOException {
+	try {
+	    IData itf = new DataProxy();
+	    FileDetailInfo result = itf.getDetailFile(rooms.getIdFile(idRoom));
+	    if (result.getFileName().isEmpty()) {
+		return false;
+	    }
+	    doodlePic dp = new doodlePic();
+	    dp.setData(result.getDoodleOfFile());
+	    sendBack(gson.toJson(dp));
+	    roomBroadcast(gson.toJson(dp));
 
-				List<FileNoteInfo> rni = result.getFileNotes();
-				for (int i = 0; i < rni.size(); i++) {
-					 CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(rni.get(i)));
-					 this.getWsOutbound().writeTextMessage(buffer1);
-				}
-		  } catch (SQLException ex) {
-				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-		  }
-		  return false;
-	 }
+	    List<FileNoteInfo> rni = result.getFileNotes();
+	    for (int i = 0; i < rni.size(); i++) {
+		sendBack(gson.toJson(rni.get(i)));
+		roomBroadcast(gson.toJson(rni.get(i)));
+	    }
+	} catch (SQLException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return false;
+    }
 
 	 private int newFile(String str) throws IOException {
 		  int result = -1;
@@ -314,52 +308,55 @@ public class FcMessageInbound extends MessageInbound {
 		  return result;
 	 }
 
-	 private void openFile(int idFile) throws IOException {
-		  try {
-				IData itf = new DataProxy();
-				FileDetailInfo fdi = itf.getDetailFile(idFile);
-				String pathname = "D:\\Temp\\" + fdi.getFileName() + "." + fdi.getFileType();
-				FileOutputStream fos = new FileOutputStream(pathname);
-				StringReader sr = new StringReader(fdi.getFileData());
-				int data = sr.read();
-				while (data != -1) {
-					 fos.write(data);
-					 data = sr.read();
-				}
-				fos.close();
-				HttpClient client = new DefaultHttpClient();
-				HttpPost post = new HttpPost("https://viewer.zoho.com/api/view.do");
-				FileBody bin = new FileBody(new File(pathname));
-				StringBody apikey = new StringBody("e276fa67375967fc635f4e007ed81aaf");
-				MultipartEntity reqEntity = new MultipartEntity();
-				reqEntity.addPart("file", bin);
-				reqEntity.addPart("apikey", apikey);
-				post.setEntity(reqEntity);
-				HttpResponse response = client.execute(post);
-				HttpEntity resEntity = response.getEntity();
-				StringBuilder result = new StringBuilder();
-				InputStream inputStream = resEntity.getContent();
-				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-				BufferedReader reader = new BufferedReader(inputStreamReader);// 读字符串用的。
-				String s;
-				while (((s = reader.readLine()) != null)) {
-					 result.append(s);
-				}
-				reader.close();// 关闭输入流
-				//System.out.println(result);
-				Response res = gson.fromJson(result.toString(), Response.class);
-				res.getResponse().setType();
-				//System.out.println(gson.toJson(res.getResponse()));
-				String roomFileStr = gson.toJson(res.getResponse());
-				sendBack(roomFileStr);
-				roomBroadcast(roomFileStr);
-				rooms.setEnterFile(idRoom, idFile, roomFileStr);
-				firstEnterFile();
-		  } catch (SQLException ex) {
-				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-		  } catch (FileNotFoundException ex) {
-				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-		  }
+    private void openFile(int idFile) throws IOException {
+	try {
+	    IData itf = new DataProxy();
+	    FileDetailInfo fdi = itf.getDetailFile(idFile);
+	    String pathname = "D:\\Temp\\" + fdi.getFileName() + "." + fdi.getFileType();
+	    FileOutputStream fos = new FileOutputStream(pathname);
+	    StringReader sr = new StringReader(fdi.getFileData());
+	    int data = sr.read();
+	    while (data != -1) {
+		fos.write(data);
+		data = sr.read();
+	    }
+	    fos.close();
+	    HttpClient client = new DefaultHttpClient();
+	    HttpPost post = new HttpPost("https://viewer.zoho.com/api/view.do");
+	    FileBody bin = new FileBody(new File(pathname));
+	    StringBody apikey = new StringBody("e276fa67375967fc635f4e007ed81aaf");
+	    MultipartEntity reqEntity = new MultipartEntity();
+	    reqEntity.addPart("file", bin);
+	    reqEntity.addPart("apikey", apikey);
+	    post.setEntity(reqEntity);
+	    HttpResponse response = client.execute(post);
+	    HttpEntity resEntity = response.getEntity();
+	    StringBuilder result = new StringBuilder();
+	    InputStream inputStream = resEntity.getContent();
+	    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+	    BufferedReader reader = new BufferedReader(inputStreamReader);// 读字符串用的。
+	    String s;
+	    while (((s = reader.readLine()) != null)) {
+		result.append(s);
+	    }
+	    reader.close();// 关闭输入流
+	    //System.out.println(result);
+	    Response res = gson.fromJson(result.toString(), Response.class);
+	    res.getResponse().setType();
+	    //System.out.println(gson.toJson(res.getResponse()));
+	    String roomFileStr = gson.toJson(res.getResponse());
+	    sendBack(roomFileStr);
+	    roomBroadcast(roomFileStr);
+	    ClearTable ct = new ClearTable();
+	    sendBack(gson.toJson(ct));
+	    roomBroadcast(gson.toJson(ct));
+	    rooms.setEnterFile(idRoom, idFile, roomFileStr);
+	    firstEnterFile();
+	} catch (SQLException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (FileNotFoundException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	}
 
 	 }
 

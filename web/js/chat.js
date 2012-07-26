@@ -1,13 +1,25 @@
 var data={};
-
-data.init = function(){
-    data.type="ChatInformations";
+data.init = function()
+{
+    //data.type="ChatInformations";
     data.message="";
     data.color="#000000";
+    var width=document.body.clientWidth;
+    var height=document.body.clientHeight;
+    var canvas=document.getElementById("canvas");
+    var canvasTop=document.getElementById("canvasTop");	
+    canvas.width=width-20;
+    canvas.height=height-20;
+    canvasTop.width=width-20;
+    canvasTop.height=height-20;
+}
+data.init();
     $("#send").click(function(event){
-	if (event.keyCode == 13) {
-	    Chat.sendMessage();
-	}
+        var z=document.getElementById("tab");
+        var results = {};
+        results.type = "ChatMessage";
+        results.message = document.getElementById("input").value;
+	connection.sendMessage(JSON.stringify(results));
 	var T=document.getElementById("dialog");
 	var x=T.insertRow(T.rows.length);
 	if ((T.rows.length%2)!=0)
@@ -15,14 +27,19 @@ data.init = function(){
 	else
 	    x.className="dia2";
 	var y=x.insertCell(0);
-	y.innerHTML="<a style=\"color:"+dialog.color+"\">"+message.data+"</a>";
+	y.innerHTML="<a >"+document.getElementById("input").value+"</a>";
 	var z=document.getElementById("tab");
 	document.getElementById("input").value="";
 	z.scrollTop=z.scrollHeight;
     });
-    $("#chatButton").mousedown(function(){
-	$("#frame").slideToggle("slow");
+    $("#chatButton").mouseenter(function(){
+	$('#frame').fadeIn();
     });
+
+    $("#canvasTop").mousedown(function(){
+	$('#frame').fadeOut();
+    });
+    
     $(".namelist").mousedown(function(){
 	document.getElementById("input").value="To "+event.srcElement.name+":";
     });
@@ -44,7 +61,8 @@ data.init = function(){
 		    data.color="#000000";
 	    }
 	});
-} 
+        
+        
 
 data.sendMessage = function(){
     var T=document.getElementById("dialog");
@@ -63,55 +81,3 @@ data.sendMessage = function(){
 data.writeMessage = function(message){
     
 }
-var Chat = {};
-Chat.socket = null;
-Chat.connect = (function(host) {
-    if ('WebSocket' in window) {
-	Chat.socket = new WebSocket(host);
-    } else if ('MozWebSocket' in window) {
-	Chat.socket = new MozWebSocket(host);
-    } else {
-	alert('Error: WebSocket is not supported by this browser.');
-	return;
-    }
-    Chat.socket.onopen = function () {
-	// alert('Info: WebSocket connection opened.'); 
-	document.getElementById('input').onkeydown = function(event) {
-	    if (event.keyCode == 13) {
-		Chat.sendMessage();
-	    }
-	};
-    };
-
-    Chat.socket.onclose = function () {
-	document.getElementById('input').onkeydown = null;
-	alert('Info: WebSocket closed.');
-    };
-
-    Chat.socket.onmessage = function (message) {
-	var T=document.getElementById("dialog");
-	var x=T.insertRow(T.rows.length);
-	if ((T.rows.length%2)!=0)
-	    x.className="dia1";
-	else 
-	    x.className="dia2";
-	var y=x.insertCell(0);
-	y.innerHTML="<a style=\"color:"+dialog.color+"\">"+message.data+"</a>";
-	var z=document.getElementById("tab");
-	z.scrollTop=z.scrollHeight;
-	document.getElementById("input").value="";
-    };
-});
-Chat.initialize = function() {
-    //Chat.connect('ws://' + window.location.host + '/examples/websocket/chat');
-    Chat.connect('ws://' + window.location.host + '/ChatWebSocketServlet');
-};
-Chat.sendMessage = (function() {
-    data.message = document.getElementById('input').value;
-    if (message != '') {
-	Chat.socket.send(JSON.stringfy(data));
-	document.getElementById('input').value = '';
-    }
-});
-Chat.initialize();
-

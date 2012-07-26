@@ -82,7 +82,7 @@ connection.connect = (function(host) {
 	}
 	else if(socketData.type == "FileShortInfo"){
 	    drag.setFilePosition(socketData);
-	    file.addFile(socketData);
+	    fileInfo.addFile(socketData);
 	}
 	else if(socketData.type == "RoomNoteInfo" || socketData.type == "FileNoteInfo"){
 	    note.setNotePosition(socketData);

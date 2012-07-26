@@ -26,7 +26,7 @@ fileInfo.init = function(){
 fileInfo.addFile = function(data){
     var newEle = $("<li>")
     newEle.html(data.fileName).appendTo($("#filelist"));
-    newEle.attr("idFile",file.idFile);
+    newEle.attr("idFile",data.idFile);
     
 } 
 

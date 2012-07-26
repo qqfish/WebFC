@@ -226,7 +226,7 @@ public class FcMessageInbound extends MessageInbound {
 	    sendBack(gson.toJson(ct));
 	    IData itf = new DataProxy();
 	    Room result = itf.getRoomInfo(idRoom);
-	    if (result.getRoomName().isEmpty()) {
+	    if (result.getRoomName() == null || result.getRoomName().isEmpty()) {
 		return false;
 	    }
 	    doodlePic dp = new doodlePic();

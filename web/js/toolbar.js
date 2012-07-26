@@ -3,46 +3,64 @@
  * and open the template in the editor.
  */
 
-$(function() {
-    //滑过显示,滑出隐藏
-    $('#display').live('mouseenter',function (){
+function changeShowContent(id){
+    $('#content').hide();
+    $(id).fadeIn();
+    $('#display').unbind('mouseenter')
+    $('#toolbox').unbind('mouseleave')
+    $('#display').bind('mouseenter',function (){
+	$(id).fadeIn();
+    });
+    $('#toolbox').bind('mouseleave',function () {
+	$(id).fadeOut();
+    });
+}
+
+function restoreShowContent(id){
+    $(id).hide();
+    $('#content').fadeIn();
+    $('#display').unbind('mouseenter');
+    $('#toolbox').unbind('mouseleave');
+    $('#display').bind('mouseenter',function (){
 	$('#content').fadeIn();
     });
-    $('#toolbox').live('mouseleave',function () {
+    $('#toolbox').bind('mouseleave',function () {
+	$('#content').fadeOut();
+    });
+}
+
+$(function() {
+    var curContent = '#content';
+    
+    //滑过显示,滑出隐藏
+    $('#display').bind('mouseenter',function (){
+	$('#content').fadeIn();
+    });
+    $('#toolbox').bind('mouseleave',function () {
 	$('#content').fadeOut();
     });
 		
     //点击
     $('.paint').click(function(){
-	$('#content').hide();
-	$('#paint').fadeIn();
+        curContent = '#paint';
+        changeShowContent(curContent);
     })
 		
     $('.content').click(function(){
-	$('#paint').hide();
-	$('#content').fadeIn();
+	restoreShowContent(curContent);
+        curContent = '#content';
     })
 		
     $('.filelist').click(function(){
-	$('#filelist').load('',{
-	    action:'file'
-	});
+	curContent = '#filelist';
+        changeShowContent(curContent);
     })
 		
     $('.upload').click(function(){
 	$('#toolbox').width('20%');
-	$('#content').hide();
-	$('#upload').fadeIn();
+	curContent = '#upload';
+        changeShowContent(curContent);
     })
-		
-    //拖动
-    $( "#draggable" ).draggable({
-	//appendTo: "body",
-	//helper: "clone"
-	})
-		
-    //droppable
-    $("#droppable").droppable({
-	accept:'.droppable'
-    })
+
+    
 });

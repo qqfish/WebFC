@@ -1,0 +1,15 @@
+/* 
+    Document   : drag
+    Created on : Jul 23, 2012, 3:54:13 PM
+    Author     : fish
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.dragElement{
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    z-index: 2;
+}
+

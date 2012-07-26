@@ -23,3 +23,7 @@ requestPic : when a new user enter the room, the server send this message to a u
 		from -- the user name of the requesting from
 
 SaveTableDoodle : save the current doodle of table
+
+drageMessage : message about drag
+		movement : begin or stop or move or save
+

@@ -5,6 +5,7 @@
 package com.webFc.socket;
 
 import com.google.gson.Gson;
+import com.webFc.data.FileShortInfo;
 import com.webFc.data.Room;
 import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
  */
 public class RoomManager {
 
+
     Map<Integer, UserMap> maps = new TreeMap();
 
     private class UserMap {
@@ -34,7 +36,7 @@ public class RoomManager {
 	}
 
 	private boolean insertUser(String username, FcMessageInbound fmi) throws IOException {
-	    if (!users.containsKey(username)) {
+	    if (!username.isEmpty() && !users.containsKey(username)) {
 		users.put(username, fmi);
 		return true;
 	    } else {
@@ -62,15 +64,18 @@ public class RoomManager {
 	    }
 	}
 
-	private void broadcast(String message) throws IOException {
+	private void broadcast(String message, FcMessageInbound current) throws IOException {
 	    List<String> rmArray = new ArrayList<String>();
 
 	    Iterator<Map.Entry<String, FcMessageInbound>> iter = users.entrySet().iterator();
 	    while (iter.hasNext()) {
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
 		FcMessageInbound val = entry.getValue();
-		CharBuffer buffer = CharBuffer.wrap(message);
-		val.getWsOutbound().writeTextMessage(buffer);
+		System.out.println(current.equals(val));
+		if (!val.equals(current)) {
+		    CharBuffer buffer = CharBuffer.wrap(message);
+		    val.getWsOutbound().writeTextMessage(buffer);
+		}
 	    }
 	}
 
@@ -86,13 +91,13 @@ public class RoomManager {
     public boolean loginRoom(int idRoom, String username, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (maps.containsKey(idRoom)) {
+	    Gson gson = new Gson();
 	    UserMap m = maps.get(idRoom);
 	    //System.out.println("hello");
 	    List<String> rmArray = new ArrayList<String>();
 
 	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
 	    if (iter.hasNext()) {
-		Gson gson = new Gson();
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
 		FcMessageInbound val = entry.getValue();
 		requestPic rp = new requestPic();
@@ -100,6 +105,21 @@ public class RoomManager {
 		CharBuffer buffer = CharBuffer.wrap(gson.toJson(rp));
 		val.getWsOutbound().writeTextMessage(buffer);
 	    }
+
+	    try {
+		IData itf = new DataProxy();
+		Room r = itf.getRoomInfo(idRoom);
+		List<FileShortInfo> fsi = r.getFiles();
+		for (int i = 0; i < fsi.size(); i++) {
+		    if (fsi.get(i).isOnTable()) {
+			CharBuffer buffer = CharBuffer.wrap(gson.toJson(fsi.get(i)));
+			fmi.getWsOutbound().writeTextMessage(buffer);
+		    }
+		}
+	    } catch (SQLException ex) {
+		Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
+	    }
+
 	    return m.insertUser(username, fmi);
 	} else {
 	    return false;
@@ -112,7 +132,7 @@ public class RoomManager {
 	    try {
 		IData itf = new DataProxy();
 		Room result = itf.getRoomInfo(idRoom);
-		if(result.getRoomName().isEmpty()){
+		if (result.getRoomName().isEmpty()) {
 		    return false;
 		}
 		doodlePic dp = new doodlePic();
@@ -120,6 +140,16 @@ public class RoomManager {
 		Gson gson = new Gson();
 		CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
 		fmi.getWsOutbound().writeTextMessage(buffer);
+
+		List<FileShortInfo> fsi = result.getFiles();
+
+		for (int i = 0; i < fsi.size(); i++) {
+		    if (fsi.get(i).isOnTable()) {
+			CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(fsi.get(i)));
+			fmi.getWsOutbound().writeTextMessage(buffer1);
+		    }
+		}
+
 		maps.put(idRoom, new UserMap());
 		//System.out.println(maps.containsKey(idRoom));
 		UserMap m = maps.get(idRoom);
@@ -131,8 +161,7 @@ public class RoomManager {
 	return false;
     }
 
-    
-    public int createRoom(String roomname, String username){
+    public int createRoom(String roomname, String username) {
 	try {
 	    IData itf = new DataProxy();
 	    return itf.newRoom(roomname, username);
@@ -141,8 +170,8 @@ public class RoomManager {
 	}
 	return -1;
     }
-    
-    public boolean saveRoomDoodle(int idRoom, String doodleOfTable){
+
+    public boolean saveRoomDoodle(int idRoom, String doodleOfTable) {
 	try {
 	    IData itf = new DataProxy();
 	    itf.saveRoom(idRoom, doodleOfTable);
@@ -152,7 +181,7 @@ public class RoomManager {
 	}
 	return false;
     }
-    
+
     private boolean closeRoom(int idRoom) throws IOException {
 	if (maps.containsKey(idRoom)) {
 	    maps.remove(idRoom);
@@ -189,10 +218,10 @@ public class RoomManager {
 	}
     }
 
-    public boolean broadcast(int idRoom, String message) throws IOException {
+    public boolean broadcast(int idRoom, String message, FcMessageInbound current) throws IOException {
 	if (maps.containsKey(idRoom)) {
 	    UserMap m = maps.get(idRoom);
-	    m.broadcast(message);
+	    m.broadcast(message, current);
 	    return true;
 	} else {
 	    return false;

@@ -53,8 +53,26 @@ connection.connect = (function(host) {
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
 	}
+	else if (socketData.type == "offer"){
+		 do_Offer(socketData);
+	}
+	else if (socketData.type == "answer" && started){
+		 do_Answer(socketData);
+	}
+	else if (socketData.type =="candidate" && started){
+		 do_Candidate(socketData);
+	}
+	else if ( socketData.type == "bye" && started ){
+		 onRemoteHangup();
+	}
 	else if (socketData.type == "AlertMessage"){
 	    alert(socketData.alertWord);
+	}
+	else if (socketData.type == "dragMessage"){
+	    drag.onmessage(socketData);
+	}
+	else if(socketData.type == "FileShortInfo"){
+	    drag.setFilePosition(socketData)
 	}
     };
 });

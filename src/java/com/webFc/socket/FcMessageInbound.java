@@ -5,20 +5,19 @@
 package com.webFc.socket;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.webFc.data.Data;
 import com.webFc.data.LoginRoom;
 import com.webFc.data.Response;
 import com.webFc.data.UploadFileInfo;
-import com.webFc.socket.MessageType.AlertMessage;
-import com.webFc.socket.MessageType.ErrorMessage;
-import com.webFc.socket.MessageType.SaveTableDoodle;
-import com.webFc.socket.MessageType.doodlePic;
+import com.webFc.database.DataProxy;
+import com.webFc.global.IData;
+import com.webFc.socket.MessageType.*;
 import java.io.*;
-import java.lang.reflect.Type;
-import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.sql.SQLException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.catalina.websocket.MessageInbound;
@@ -38,39 +37,40 @@ import org.apache.http.impl.client.DefaultHttpClient;
  */
 public class FcMessageInbound extends MessageInbound {
 
-    private static RoomManager rooms = new RoomManager();
-    String username;
-    int idRoom;
+	 private static RoomManager rooms = new RoomManager();
+	 String username;
+	 int idRoom;
 
-    public FcMessageInbound() {
-	username = "";
-	idRoom = -1;
-    }
+	 public FcMessageInbound() {
+		  username = "";
+		  idRoom = -1;
+	 }
 
-    @Override
-    protected void onOpen(WsOutbound outbound) {
-	System.out.println(this.toString() + " ,new connection created");
-    }
+	 @Override
+	 protected void onOpen(WsOutbound outbound) {
+		  System.out.println(this.toString() + " ,new connection created");
+	 }
 
-    @Override
-    protected void onClose(int status) {
-	try {
-	    System.out.println(this.toString() + "closed");
-	    rooms.logoutRoom(idRoom, username);
-	} catch (IOException ex) {
-	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
+	 @Override
+	 protected void onClose(int status) {
+		  try {
+				System.out.println(this.toString() + "closed");
+				rooms.logoutRoom(idRoom, username);
+		  } catch (IOException ex) {
+				Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+	 }
 
-    @Override
-    protected void onBinaryMessage(ByteBuffer bb) throws IOException {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
+	 @Override
+	 protected void onBinaryMessage(ByteBuffer bb) throws IOException {
+		  throw new UnsupportedOperationException("Not supported yet.");
+	 }
+
 
     @Override
     protected void onTextMessage(CharBuffer cb) throws IOException {
 	String str = cb.toString();
-	//System.out.println(str);
+	System.out.println(str);
 	if (str != null && !str.isEmpty()) {
 	    Gson gson = new Gson();
 	    Data textData = gson.fromJson(str, Data.class);
@@ -106,8 +106,8 @@ public class FcMessageInbound extends MessageInbound {
 			CharBuffer buffer = CharBuffer.wrap(gson.toJson(e));
 			this.getWsOutbound().writeTextMessage(buffer);
 		    }
-		} else if(textData.getType().equals("uploadFile")){
-                    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
+		} else if (textData.getType().equals("uploadFile")) {
+		    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
                     
                     String pathname = "D:\\Temp\\" + upi.getName() + "." + upi.getFiletype();
                     FileOutputStream fos = new FileOutputStream(pathname);
@@ -142,7 +142,19 @@ public class FcMessageInbound extends MessageInbound {
                     res.getResponse().setType();
                     System.out.println(gson.toJson(res.getResponse()));
                     roomBroadcast(gson.toJson(res.getResponse()));
-                } else {
+		} else if (textData.getType().equals("dragMessage")) {
+		    SaveDragFile sdf = gson.fromJson(str, SaveDragFile.class);
+		    if (sdf.getMovement().equals("save")) {
+			try {
+			    IData itf = new DataProxy();
+			    itf.updateTableFile(sdf.getId(), sdf.isOnTable(), sdf.getX(), sdf.getY(), sdf.getRotate());
+			} catch (SQLException ex) {
+			    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		    } else {
+			roomBroadcast(str);
+		    }
+		} else {
 		    //System.out.println("hello");
 		    roomBroadcast(str);
 		}
@@ -152,13 +164,13 @@ public class FcMessageInbound extends MessageInbound {
 
     private void roomBroadcast(String message) throws IOException {
 	if (idRoom > 0) {
-	    rooms.broadcast(idRoom, message);
+	    rooms.broadcast(idRoom, message, this);
 	}
     }
 
-    private void roomToUser(String username, String message) throws IOException {
-	if (idRoom > 0) {
-	    rooms.sendUserMessage(idRoom, username, message);
-	}
-    }
+	 private void roomToUser(String username, String message) throws IOException {
+		  if (idRoom > 0) {
+				rooms.sendUserMessage(idRoom, username, message);
+		  }
+	 }
 }

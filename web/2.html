@@ -16,13 +16,10 @@
 	<script src="js/socket_2.js"></script>
 	<script src="js/mediaStream.js"></script>
 	<video id="local" autoplay></video>
-	<video id="remote" autoplay></video><br/>
+	<video id="remote0" autoplay></video>
+	<video id="remote1" autoplay></video><br/>
 	<input type="button" value="login" onclick="login.init();"/>
 	<input type="button" value="initialize" onclick="initialize()"/>
-	<input type="button" value="maybeStart" onclick="maybeStart()"/>
-	<input type="button" value="call" onclick="doCall()"/>
-	<input type="button" value="mediaStream.send()" onclick="mediaStream.send();"/>
-	<div id="footer">
-	</div>
+	<input type="button" value="call" onclick="doCall(currentPc)"/>
     </body>
 </html>

@@ -2,6 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+$(function() {
+	 $("#user").click(function(){
+	    initialize();
+	    maybeStart();
+	    var message={};
+	    message.type = "connect";
+           sendMessage(message);
+        }
+   )
+});
 
 var localVideo;
 var remoteVideo;
@@ -34,6 +44,7 @@ function setStatus(state) {
 	
 function getUserMedia(){
 	 try {
+		  localVideo.style.opacity = 1;
 		  navigator.webkitGetUserMedia( {
 				audio:true, 
 				video:true
@@ -94,6 +105,7 @@ function createPeerconnection(){
 	
 function doCall(){
 	 console.log("Send offer to peer");
+	 remoteVideo.style.opacity = 1;
 	 var offer = pc.createOffer({
 		  audio:true, 
 		  video:true
@@ -160,6 +172,8 @@ function transitionToActive(){
 	
 function onHangup() {
 	 console.log("Hanging up.");
+	 localVideo.style.opacity = 0;
+	 remoteVideo.style.opacity = 0;
 	 started = false;    // Stop processing any message
 	 transitionToDone();
 	 pc.close();

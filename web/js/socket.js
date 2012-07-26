@@ -9,6 +9,8 @@ var logg = function(s) {
 
 var connection = {};
 
+var num = 0;
+
 connection.socket = null;
 
 connection.connect = (function(host) {
@@ -23,6 +25,7 @@ connection.connect = (function(host) {
 
     connection.socket.onopen = function () {
 	logg('Info: WebSocket connection opened.');
+	//每隔10秒发送一条空信息，防止websocket自动断开。
 	setInterval("connection.sendMessage('')",1000 * 10);
     };
 
@@ -32,7 +35,7 @@ connection.connect = (function(host) {
 
     connection.socket.onmessage = function (message) {
 	var socketData = JSON.parse(message.data);
-	logg(socketData);
+	console.log('S->C: ' + message.data);
 	if(socketData.type == "doodleTable"){
 	    if(socketData.drawElement == "freeDraw"){
 		doodle.redraw(socketData.index, socketData);
@@ -70,6 +73,12 @@ connection.connect = (function(host) {
 	}
 	else if(socketData.type == "FileShortInfo"){
 	    drag.setFilePosition(socketData)
+	}else if(socketData.type == "connect"){
+	    num = num +1;
+		 logg(num);
+	    if(num>=2){
+			  doCall();
+		 }
 	}
     };
 });

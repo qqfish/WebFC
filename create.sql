@@ -178,6 +178,7 @@ CREATE  TABLE IF NOT EXISTS `WebFc`.`File` (
   `rotate` INT NOT NULL DEFAULT 0 ,
   `preview` MEDIUMBLOB NULL ,
   `editTime` DATETIME NOT NULL ,
+  `doodleOfFile` MEDIUMINT NULL ,
   PRIMARY KEY (`idFile`) ,
   INDEX `fk_File_User1` (`fileOwner` ASC) ,
   INDEX `fk_File_Room1` (`idRoom` ASC) ,

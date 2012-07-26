@@ -7,6 +7,7 @@ package com.webFc.socket;
 import com.google.gson.Gson;
 import com.webFc.data.FileShortInfo;
 import com.webFc.data.Room;
+import com.webFc.data.RoomNoteInfo;
 import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
 import com.webFc.socket.MessageType.doodlePic;
@@ -24,20 +25,26 @@ import java.util.logging.Logger;
  */
 public class RoomManager {
 
-
     Map<Integer, UserMap> maps = new TreeMap();
+    Gson gson;
 
     private class UserMap {
 
 	Map<String, FcMessageInbound> users = new TreeMap();
+	int idFile;
+	String roomFileStr;
 
 	private UserMap() {
-	    super();
+	    idFile = -1;
 	}
 
 	private boolean insertUser(String username, FcMessageInbound fmi) throws IOException {
 	    if (!username.isEmpty() && !users.containsKey(username)) {
 		users.put(username, fmi);
+		if (idFile > 0 && !roomFileStr.isEmpty()) {
+		    CharBuffer buffer = CharBuffer.wrap(roomFileStr);
+		    fmi.getWsOutbound().writeTextMessage(buffer);
+		}
 		return true;
 	    } else {
 		return false;
@@ -71,7 +78,6 @@ public class RoomManager {
 	    while (iter.hasNext()) {
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
 		FcMessageInbound val = entry.getValue();
-		System.out.println(current.equals(val));
 		if (!val.equals(current)) {
 		    CharBuffer buffer = CharBuffer.wrap(message);
 		    val.getWsOutbound().writeTextMessage(buffer);
@@ -82,44 +88,38 @@ public class RoomManager {
 	private boolean isEmpty() {
 	    return users.isEmpty();
 	}
+
+	private int getNum() {
+	    return users.size();
+	}
+
+	private int getIdFile() {
+	    return idFile;
+	}
+
+	private String getRoomFileStr() {
+	    return roomFileStr;
+	}
+
+	private void setEnterFile(int idFile, String roomFileStr) {
+	    this.idFile = idFile;
+	    this.roomFileStr = roomFileStr;
+	}
     }
 
     public RoomManager() {
-	super();
+	gson = new Gson();
     }
 
     public boolean loginRoom(int idRoom, String username, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (maps.containsKey(idRoom)) {
-	    Gson gson = new Gson();
 	    UserMap m = maps.get(idRoom);
-	    //System.out.println("hello");
-	    List<String> rmArray = new ArrayList<String>();
-
-	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
-	    if (iter.hasNext()) {
-		Map.Entry<String, FcMessageInbound> entry = iter.next();
-		FcMessageInbound val = entry.getValue();
-		requestPic rp = new requestPic();
-		rp.setFrom(username);
-		CharBuffer buffer = CharBuffer.wrap(gson.toJson(rp));
-		val.getWsOutbound().writeTextMessage(buffer);
-	    }
-
-	    try {
-		IData itf = new DataProxy();
-		Room r = itf.getRoomInfo(idRoom);
-		List<FileShortInfo> fsi = r.getFiles();
-		for (int i = 0; i < fsi.size(); i++) {
-		    if (fsi.get(i).isOnTable()) {
-			CharBuffer buffer = CharBuffer.wrap(gson.toJson(fsi.get(i)));
-			fmi.getWsOutbound().writeTextMessage(buffer);
-		    }
-		}
-	    } catch (SQLException ex) {
-		Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
-	    }
-
+	    System.out.println("user " + username + " enter Room " + idRoom + ";");
+	    requestPic rp = new requestPic();
+	    rp.setFrom(username);
+	    rp.setUsage("updatePic");
+	    randomSend(idRoom, gson.toJson(rp));
 	    return m.insertUser(username, fmi);
 	} else {
 	    return false;
@@ -129,34 +129,12 @@ public class RoomManager {
     public boolean firstLoginRoom(int idRoom, String username, FcMessageInbound fmi) throws IOException {
 	//System.out.println(maps.containsKey(idRoom));
 	if (!maps.containsKey(idRoom)) {
-	    try {
-		IData itf = new DataProxy();
-		Room result = itf.getRoomInfo(idRoom);
-		if (result.getRoomName().isEmpty()) {
-		    return false;
-		}
-		doodlePic dp = new doodlePic();
-		dp.setData(result.getTableDoodle());
-		Gson gson = new Gson();
-		CharBuffer buffer = CharBuffer.wrap(gson.toJson(dp));
-		fmi.getWsOutbound().writeTextMessage(buffer);
-
-		List<FileShortInfo> fsi = result.getFiles();
-
-		for (int i = 0; i < fsi.size(); i++) {
-		    if (fsi.get(i).isOnTable()) {
-			CharBuffer buffer1 = CharBuffer.wrap(gson.toJson(fsi.get(i)));
-			fmi.getWsOutbound().writeTextMessage(buffer1);
-		    }
-		}
-
-		maps.put(idRoom, new UserMap());
-		//System.out.println(maps.containsKey(idRoom));
-		UserMap m = maps.get(idRoom);
-		return m.insertUser(username, fmi);
-	    } catch (SQLException ex) {
-		Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
-	    }
+	    maps.put(idRoom, new UserMap());
+	    System.out.println("Room " + idRoom + " opened;");
+	    System.out.println("user " + username + " enter Room " + idRoom + ";");
+	    //System.out.println(maps.containsKey(idRoom));
+	    UserMap m = maps.get(idRoom);
+	    return m.insertUser(username, fmi);
 	}
 	return false;
     }
@@ -171,20 +149,10 @@ public class RoomManager {
 	return -1;
     }
 
-    public boolean saveRoomDoodle(int idRoom, String doodleOfTable) {
-	try {
-	    IData itf = new DataProxy();
-	    itf.saveRoom(idRoom, doodleOfTable);
-	    return true;
-	} catch (SQLException ex) {
-	    Logger.getLogger(RoomManager.class.getName()).log(Level.SEVERE, null, ex);
-	}
-	return false;
-    }
-
-    private boolean closeRoom(int idRoom) throws IOException {
+    public boolean closeRoom(int idRoom) throws IOException {
 	if (maps.containsKey(idRoom)) {
 	    maps.remove(idRoom);
+	    System.out.println("Room " + idRoom + " closed;");
 	    return true;
 	} else {
 	    return false;
@@ -195,6 +163,7 @@ public class RoomManager {
 	if (maps.containsKey(idRoom)) {
 	    UserMap m = maps.get(idRoom);
 	    boolean result = m.quitUser(username);
+	    System.out.println("user " + username + " leave Room " + idRoom + ";");
 	    if (result) {
 		if (m.isEmpty()) {
 		    return closeRoom(idRoom);
@@ -225,6 +194,74 @@ public class RoomManager {
 	    return true;
 	} else {
 	    return false;
+	}
+    }
+
+    public int getNum(int idRoom) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    return m.getNum();
+	} else {
+	    return 0;
+	}
+    }
+
+    public boolean randomSend(int idRoom, String message) throws IOException {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    List<String> rmArray = new ArrayList<String>();
+
+	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
+	    if (iter.hasNext()) {
+		Map.Entry<String, FcMessageInbound> entry = iter.next();
+		FcMessageInbound val = entry.getValue();
+		CharBuffer buffer = CharBuffer.wrap(message);
+		val.getWsOutbound().writeTextMessage(buffer);
+		System.out.println("hello");
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    public void oneByOne(List<Object> messages, int idRoom) throws IOException {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    List<String> rmArray = new ArrayList<String>();
+
+	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
+	    int i = 0;
+	    while (iter.hasNext() && i < messages.size()) {
+		Map.Entry<String, FcMessageInbound> entry = iter.next();
+		FcMessageInbound val = entry.getValue();
+		CharBuffer buffer = CharBuffer.wrap(gson.toJson(messages.get(i)));
+		val.getWsOutbound().writeTextMessage(buffer);
+		System.out.println("hello");
+		i++;
+	    }
+	}
+    }
+
+    public int getIdFile(int idRoom) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    return m.getIdFile();
+	}
+	return -1;
+    }
+
+    public String getRoomFileStr(int idRoom) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    return m.getRoomFileStr();
+	}
+	return "";
+    }
+
+    public void setEnterFile(int idRoom, int idFile, String roomFileStr) {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    m.setEnterFile(idFile, roomFileStr);
 	}
     }
 }

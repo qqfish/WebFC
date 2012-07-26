@@ -18,13 +18,17 @@ public class ReadSQLXml {
     private String host;
     private String username;
     private String password;
+    
+    public ReadSQLXml(){
+	
+    }
 
     public void getInfo() {
 	DocumentBuilderFactory domfac = DocumentBuilderFactory.newInstance();
 	try {
 	    DocumentBuilder dombuilder = domfac.newDocumentBuilder();
 	    System.out.println(System.getProperty("user.dir"));
-	    InputStream is = new FileInputStream("E:/WebFC/sql.xml");
+	    InputStream is = new FileInputStream("/home/fish/work/java/WebFC/sql.xml");
 	    Document doc = dombuilder.parse(is);
 	    Element root = doc.getDocumentElement();
 	    NodeList sql = root.getChildNodes();

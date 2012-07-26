@@ -26,10 +26,14 @@ public interface IData {
     
     int newRoomNote(String context, int x, int y, int idRoom);
     void updateRoomNote(int idRoomNote, String context, int x, int y);
+    void updateRoomNote(int idRoomNote, int x, int y);
+    void updateRoomNote(int idRoomNote, String context);
     void rmRoomNote(int idRoomNote);
     
     int newFileNote(String context, int x, int y, int idFile);
     void updateFileNote(int idFileNote, String context, int x, int y);
+    void updateFileNote(int idFileNote, int x, int y);
+    void updateFileNote(int idFileNote, String context);
     void rmFileNote(int idFileNote);
     
     int newFile(String filename, String data, String user, String fileType, int idRoom);
@@ -37,5 +41,6 @@ public interface IData {
     void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate, String preview);
     void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate);
     void rmFile(int idFile);
+    void saveFileDoodle(int idFile, String doodle);
     
 }

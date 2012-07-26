@@ -95,7 +95,7 @@ public class DataProxy implements IData {
 		    String noteContext = rs2.getString("noteContext");
 		    int x = rs2.getInt("x");
 		    int y = rs2.getInt("y");
-		    int idNote = rs2.getInt("idRoomNote");
+		    int idNote = rs2.getInt("idNote");
 		    result.addNote(idNote, noteContext, x, y);
 		}
 		while (rs3.next()) {
@@ -152,7 +152,7 @@ public class DataProxy implements IData {
 	    ps.setInt(1, idFileNote);
 	    ResultSet rs = ps.executeQuery();
 	    if (rs.next()) {
-		result.setIdFileNote(rs.getInt("idFileNote"));
+		result.setIdFileNote(rs.getInt("idRoomNote"));
 		result.setNoteContext(rs.getString("noteContext"));
 		result.setX(rs.getInt("x"));
 		result.setY(rs.getInt("y"));
@@ -284,7 +284,7 @@ public class DataProxy implements IData {
 	    ps.setString(1, context);
 	    ps.setInt(2, x);
 	    ps.setInt(3, y);
-	    ps.setInt(4, idRoomNote);
+	    ps.setInt(3, idRoomNote);
 	    ps.executeUpdate();
 	} catch (SQLException ex) {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -387,7 +387,7 @@ public class DataProxy implements IData {
 	    ps.setBlob(1, b);
 	    ps.setString(2, filename);
 	    ps.setInt(4, idFile);
-	    java.util.Date date = new java.util.Date();
+	     java.util.Date date = new java.util.Date();
 	    Timestamp st = new Timestamp(date.getTime());
 	    ps.setTimestamp(3, st);
 	    ps.executeUpdate();
@@ -413,9 +413,9 @@ public class DataProxy implements IData {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
-
+    
     @Override
-    public void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate) {
+    public void updateTableFile(int idFile, boolean onTable, int xFile, int yFile, int rotate){
 	try {
 	    String sql = "UPDATE File SET onTable=?, xFile=?, yFile=?, rotate=? WHERE idFile=?";
 	    PreparedStatement ps = con.prepareStatement(sql);
@@ -441,7 +441,7 @@ public class DataProxy implements IData {
 	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
-
+    
     @Override
     public FileShortInfo getTableFile(int idFIle) {
 	FileShortInfo result = new FileShortInfo();
@@ -450,7 +450,7 @@ public class DataProxy implements IData {
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    ps.setInt(1, idFIle);
 	    ResultSet rs = ps.executeQuery();
-	    if (rs.next()) {
+	    if(rs.next()){
 		result.setEditTime(rs.getDate("editTime"));
 		result.setFileName(rs.getString("fileName"));
 		result.setFileType(rs.getString("fileType"));
@@ -468,78 +468,10 @@ public class DataProxy implements IData {
 	return result;
     }
 
-    @Override
-    public void updateRoomNote(int idRoomNote, int x, int y) {
-	try {
-	    String sql = "UPDATE RoomNote SET x=?, y=? WHERE idRoomNote=?";
-	    PreparedStatement ps = con.prepareStatement(sql);
-	    ps.setInt(1, x);
-	    ps.setInt(2, y);
-	    ps.setInt(3, idRoomNote);
-	    ps.executeUpdate();
-	} catch (SQLException ex) {
-	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-
-    @Override
-    public void updateRoomNote(int idRoomNote, String context) {
-	try {
-	    String sql = "UPDATE RoomNote SET noteContext=? WHERE idRoomNote=?";
-	    PreparedStatement ps = con.prepareStatement(sql);
-	    ps.setString(1, context);
-	    ps.setInt(2, idRoomNote);
-	    ps.executeUpdate();
-	} catch (SQLException ex) {
-	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-
-    @Override
-    public void updateFileNote(int idFileNote, int x, int y) {
-	try {
-	    String sql = "UPDATE FileNote SET x=?, y=? WHERE idFileNote=?";
-	    PreparedStatement ps = con.prepareStatement(sql);
-	    ps.setInt(1, x);
-	    ps.setInt(2, y);
-	    ps.setInt(3, idFileNote);
-	    ps.executeUpdate();
-	} catch (SQLException ex) {
-	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-
-    @Override
-    public void updateFileNote(int idFileNote, String context) {
-	try {
-	    String sql = "UPDATE FileNote SET noteContext=? WHERE idFileNote=?";
-	    PreparedStatement ps = con.prepareStatement(sql);
-	    ps.setString(1, context);
-	    ps.setInt(2, idFileNote);
-	    ps.executeUpdate();
-	} catch (SQLException ex) {
-	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-
-    @Override
-    public void saveFileDoodle(int idFile, String doodle) {
-	try {
-	    String sql = "UPDATE File SET doodleOfFile=? WHERE idFile=?";
-	    PreparedStatement ps = con.prepareStatement(sql);
-	    Blob b = new SerialBlob(doodle.getBytes());
-	    ps.setBlob(1, b);
-	    ps.setInt(2, idFile);
-	    ps.executeUpdate();
-	} catch (SQLException ex) {
-	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
-	}
-    }
-
-    public static void main(String arg[]) throws SQLException {
+    /*public static void main(String arg[]) throws SQLException {
 	DataProxy d = new DataProxy();
-	int id = d.newRoom("123", "2b");
+	int id = d.newRoom("123", "123");
 	d.saveRoom(id, "haha");
 	System.out.println(d.getRoomInfo(id).getTableDoodle());
-    }
+    }*/
 }

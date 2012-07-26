@@ -13,18 +13,9 @@ import com.webFc.data.Data;
 public class doodlePic extends Data{
     private String data;
     private String to;
-    private String usage;
 
     public doodlePic() {
 	type = "doodlePic";
-    }
-
-    public String getUsage() {
-	return usage;
-    }
-
-    public void setUsage(String usage) {
-	this.usage = usage;
     }
     
     

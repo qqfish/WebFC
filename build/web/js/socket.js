@@ -47,6 +47,9 @@ connection.connect = (function(host) {
 	else if(socketData.type == "doodlePic"){
 	    doodle.restorePic(socketData.data);
 	}
+        else if(socketData.type == "OpenFile"){
+	    $("#openfile").attr("src",socketData.url);
+	}
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
 	}

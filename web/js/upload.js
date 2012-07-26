@@ -15,11 +15,11 @@
     
     $("#sub").click(function(){
         $("#progressbar").progressbar("value",0);
-        var s;
         var file = document.getElementById("file").files[0];
         var pos = file.name.lastIndexOf(".");
         var name = file.name.substring(0,pos);
         var type = file.name.substring(pos+1,file.name.length);
+        var result = {};
         if (file.webkitSlice){
             var blob = file.webkitSlice();
         }
@@ -38,14 +38,12 @@
         }
         reader.onload = function loaded(evt) {
             $("#progressbar").progressbar("value",100);
-            s = evt.target.result;
+            result.type = "uploadFile";
+            result.name = name;
+            result.Filetype = type;
+            result.content = evt.target.result;
+            logg(JSON.stringify(result));
+            connection.sendMessage(JSON.stringify(result))
         }
-        var f = {
-            "type":"uploadFile",
-            "name":name,
-            "Filetype":type,
-            "content":s
-        }
-        connection.sendMessage(JSON.stringify(f));
     });
 

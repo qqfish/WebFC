@@ -4,6 +4,8 @@
  */
 package com.webFc.data;
 
+import java.io.FileInputStream;
+
 /**
  *
  * @author hp

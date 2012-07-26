@@ -1,0 +1,41 @@
+/* 
+    Document   : note
+    Created on : Jul 25, 2012, 6:49:13 PM
+    Author     : fish
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.noteButton{
+    position: absolute;
+    z-index: 2;
+}
+
+.noteMessage{ 
+    height:100px; 
+    margin-bottom:30px; 
+    padding-left:2em; 
+    background:#F3961C; 
+    position:relative;
+    border: 1.5px inset #F3961C;
+    border-radius: 5px ;
+    moz-border-radius: 5px;
+    width: 500px;
+    left: 200px;
+    display:none;
+    z-index: 2;
+} 
+.noteMessageCor{ 
+    width:0; 
+    height:0; 
+    font-size:0; 
+    border-width:10px 5px; 
+    border-style:solid;
+    _border-color:#f3961c white white; 
+    overflow:hidden; 
+    position:absolute; 
+    left:-20px; 
+    bottom:5px; 
+    z-index: 2;
+}
+

@@ -15,7 +15,6 @@ $("#file").change(function(){
     
 $("#sub").click(function(){
     $("#progressbar").progressbar("value",0);
-    var s;
     var file = document.getElementById("file").files[0];
     var pos = file.name.lastIndexOf(".");
     var name = file.name.substring(0,pos);
@@ -47,4 +46,3 @@ $("#sub").click(function(){
 	connection.sendMessage(JSON.stringify(result))
     }
 });
-

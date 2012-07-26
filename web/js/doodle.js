@@ -21,8 +21,8 @@ doodle.init = function(){
     doodle.canvasTop=document.getElementById("canvasTop");
     doodle.context=doodle.canvas.getContext("2d");
     doodle.contextTop=doodle.canvasTop.getContext("2d");
-    var width=document.body.clientWidth;
-    var height=document.body.clientHeight;
+    var width=$(window).width();
+    var height=$(window).height();
     doodle.canvas.width=width-20;
     doodle.canvas.height=height-20;
     doodle.canvasTop.width=width-20;
@@ -526,9 +526,9 @@ doodle.restorePic = function(data){
     }
 }
 
-doodle.saveTableDoodle = function(){
+doodle.saveDoodle = function(){
     var result = {};
-    result.type = "SaveTableDoodle";
+    result.type = "SaveDoodle";
     result.doodleOfTable = doodle.canvasTop.toDataURL();
     connection.sendMessage(JSON.stringify(result));
 }

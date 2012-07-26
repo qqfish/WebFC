@@ -11,4 +11,3 @@ login.init = function(){
     login.idRoom = prompt("输入房间id");
     connection.sendMessage(JSON.stringify(login));
 }
-

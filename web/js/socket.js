@@ -9,8 +9,6 @@ var logg = function(s) {
 
 var connection = {};
 
-var num = 0;
-
 connection.socket = null;
 
 connection.connect = (function(host) {
@@ -50,6 +48,9 @@ connection.connect = (function(host) {
 	else if(socketData.type == "doodlePic"){
 	    doodle.restorePic(socketData.data);
 	}
+        else if(socketData.type == "OpenFile"){
+	    $("#openfile").attr("src",socketData.url);
+	}
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
 	}
@@ -73,12 +74,12 @@ connection.connect = (function(host) {
 	}
 	else if(socketData.type == "FileShortInfo"){
 	    drag.setFilePosition(socketData)
-	}else if(socketData.type == "connect"){
-	    num = num +1;
-		 logg(num);
-	    if(num>=2){
-			  doCall();
-		 }
+	}
+	else if(socketData.type == "RoomNoteInfo" || socketData.type == "FileNoteInfo"){
+	    note.setNotePosition(socketData);
+	}
+	else if(socketData.type == "OpenFile"){
+	    $("#openfile").attr("src",socketData.url);
 	}
     };
 });

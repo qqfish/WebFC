@@ -77,6 +77,9 @@ connection.connect = (function(host) {
 	else if(socketData.type == "RoomNoteInfo" || socketData.type == "FileNoteInfo"){
 	    note.setNotePosition(socketData);
 	}
+	else if(socketData.type == "OpenFile"){
+	    $("#openfile").attr("src",socketData.url);
+	}
     };
 });
 

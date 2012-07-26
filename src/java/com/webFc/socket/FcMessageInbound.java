@@ -90,41 +90,8 @@ public class FcMessageInbound extends MessageInbound {
 			sendBack(gson.toJson(e));
 		    }
 		} else if (textData.getType().equals("uploadFile")) {
-		    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
-
-		    String pathname = "D:\\Temp\\" + upi.getName() + "." + upi.getFiletype();
-		    FileOutputStream fos = new FileOutputStream(pathname);
-		    StringReader sr = new StringReader(upi.getContent());
-		    int data = sr.read();
-		    while (data != -1) {
-			fos.write(data);
-			data = sr.read();
-		    }
-		    fos.close();
-		    HttpClient client = new DefaultHttpClient();
-		    HttpPost post = new HttpPost("https://viewer.zoho.com/api/view.do");
-		    FileBody bin = new FileBody(new File(pathname));
-		    StringBody apikey = new StringBody("e276fa67375967fc635f4e007ed81aaf");
-		    MultipartEntity reqEntity = new MultipartEntity();
-		    reqEntity.addPart("file", bin);
-		    reqEntity.addPart("apikey", apikey);
-		    post.setEntity(reqEntity);
-		    HttpResponse response = client.execute(post);
-		    HttpEntity resEntity = response.getEntity();
-		    StringBuilder result = new StringBuilder();
-		    InputStream inputStream = resEntity.getContent();
-		    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-		    BufferedReader reader = new BufferedReader(inputStreamReader);// 读字符串用的。
-		    String s;
-		    while (((s = reader.readLine()) != null)) {
-			result.append(s);
-		    }
-		    reader.close();// 关闭输入流
-		    System.out.println(result);
-		    Response res = gson.fromJson(result.toString(), Response.class);
-		    res.getResponse().setType();
-		    System.out.println(gson.toJson(res.getResponse()));
-		    roomBroadcast(gson.toJson(res.getResponse()));
+		    int r = newFile(str);
+		    openFile(r);
 		} else if (textData.getType().equals("dragMessage")) {
 		    SaveDrag sdf = gson.fromJson(str, SaveDrag.class);
 		    if (sdf.getMovement().equals("save")) {
@@ -236,7 +203,6 @@ public class FcMessageInbound extends MessageInbound {
     }
 
     private void enterRoom() throws IOException {
-
 	try {
 	    IData itf = new DataProxy();
 	    Room r = itf.getRoomInfo(idRoom);
@@ -281,5 +247,64 @@ public class FcMessageInbound extends MessageInbound {
 	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	return false;
+    }
+
+    private int newFile(String str) throws IOException {
+	int result = -1;
+	try {
+	    UploadFileInfo upi = gson.fromJson(str, UploadFileInfo.class);
+	    IData itf = new DataProxy();
+	    result = itf.newFile(upi.getName(), upi.getContent(), username, upi.getFiletype(), idRoom);
+	} catch (SQLException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
+    }
+
+    private void openFile(int idFile) throws IOException {
+	try {
+	    IData itf = new DataProxy();
+	    FileDetailInfo fdi = itf.getDetailFile(idFile);
+	    String pathname = "D:\\Temp\\" + fdi.getFileName() + "." + fdi.getFileType();
+	    FileOutputStream fos = new FileOutputStream(pathname);
+	    StringReader sr = new StringReader(fdi.getFileData());
+	    int data = sr.read();
+	    while (data != -1) {
+		fos.write(data);
+		data = sr.read();
+	    }
+	    fos.close();
+	    HttpClient client = new DefaultHttpClient();
+	    HttpPost post = new HttpPost("https://viewer.zoho.com/api/view.do");
+	    FileBody bin = new FileBody(new File(pathname));
+	    StringBody apikey = new StringBody("e276fa67375967fc635f4e007ed81aaf");
+	    MultipartEntity reqEntity = new MultipartEntity();
+	    reqEntity.addPart("file", bin);
+	    reqEntity.addPart("apikey", apikey);
+	    post.setEntity(reqEntity);
+	    HttpResponse response = client.execute(post);
+	    HttpEntity resEntity = response.getEntity();
+	    StringBuilder result = new StringBuilder();
+	    InputStream inputStream = resEntity.getContent();
+	    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+	    BufferedReader reader = new BufferedReader(inputStreamReader);// 读字符串用的。
+	    String s;
+	    while (((s = reader.readLine()) != null)) {
+		result.append(s);
+	    }
+	    reader.close();// 关闭输入流
+	    System.out.println(result);
+	    Response res = gson.fromJson(result.toString(), Response.class);
+	    res.getResponse().setType();
+	    System.out.println(gson.toJson(res.getResponse()));
+	    sendBack(gson.toJson(res.getResponse()));
+	    roomBroadcast(gson.toJson(res.getResponse()));
+	    this.idFile = idFile;
+	} catch (SQLException ex) {
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (FileNotFoundException ex){
+	    Logger.getLogger(FcMessageInbound.class.getName()).log(Level.SEVERE, null, ex);
+	}
+
     }
 }

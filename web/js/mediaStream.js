@@ -10,6 +10,8 @@ var pc = new Array();
 var currentPc;
 var socket;
 var started = false;
+var sendto;
+var needCreate = false;
     
 function initialize() {
 	 console.log("Initializing...");
@@ -60,7 +62,7 @@ function maybeStart(){
 		  started = true;
 		  //Caller initiates offer to peer.
 	 }
-	 else{
+	 else if(!localStream){
 		  setTimeout(maybeStart,500);
 	 }
 }
@@ -96,8 +98,9 @@ function doCall( i ){
 	 console.log(offer);
 	 var message = {};
 	 message.type = "offer";
-	 message.sendFrom = login.username;
 	 message.sendTo = "abc";
+	 message.sendFrom = login.username;
+	 sendto = message.sendTo;
 	 message.sdp = offer.toSdp();
 	 sendMessage(message);
 	 pc[i].startIce();
@@ -115,7 +118,7 @@ function onIceCandidate(candidate, moreToFollow) {
 	 if (candidate) {
 		  var message = {};
 		  message.type = "candidate";
-		  message.sendTo = "abc";
+		  message.sendTo = sendto;
 		  message.sendFrom = login.username;
 		  message.label = candidate.label;
 		  message.candidate = candidate.toSdp();
@@ -174,23 +177,31 @@ function transitionToDone(){
 	
 function do_Offer(socketData){
 	 if (!started)
-		  initialize();
+		  maybeStart();
+	 console.log(needCreate);
+	 if(needCreate)
+		  currentPc = createPeerconnection();
 	 var sdp = new SessionDescription(socketData.sdp);
 	 pc[currentPc].setRemoteDescription(pc[currentPc].SDP_OFFER, sdp);
+	 console.log(socketData.sendFrom);
 	 doAnswer(socketData.sendFrom);
 }
 	
 function do_Answer(socketData){
+	 console.log(currentPc);
 	 pc[currentPc].setRemoteDescription(pc[currentPc].SDP_ANSWER, new SessionDescription(socketData.sdp));
 }
 	
 function do_Candidate(socketData){
+	  console.log(currentPc);
 	 var candidate = new IceCandidate(socketData.label, socketData.candidate);
 	 pc[currentPc].processIceMessage(candidate);
 }
 	
 function doAnswer(sendFrom) {
+	  console.log(currentPc);
 	 console.log("Send answer to peer");
+	 needCreate = true;
 	 var offer = pc[currentPc].remoteDescription;
 	 var answer = pc[currentPc].createAnswer(offer.toSdp(), {
 		  audio:true,
@@ -201,6 +212,7 @@ function doAnswer(sendFrom) {
 	 message.type = "answer";
 	 message.sendTo = sendFrom;
 	 message.sendFrom = login.username;
+	 sendto = message.sendTo;
 	 message.sdp = answer.toSdp();
 	 sendMessage(message);
 	 pc[currentPc].startIce();

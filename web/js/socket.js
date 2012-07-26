@@ -82,6 +82,7 @@ connection.connect = (function(host) {
 	}
 	else if(socketData.type == "FileShortInfo"){
 	    drag.setFilePosition(socketData);
+	    file.addFile(socketData);
 	}
 	else if(socketData.type == "RoomNoteInfo" || socketData.type == "FileNoteInfo"){
 	    note.setNotePosition(socketData);
@@ -89,6 +90,21 @@ connection.connect = (function(host) {
 	else if(socketData.type == "OpenFile"){
 	    $("#openfile").attr("src",socketData.url);
 	}
+        else if(socketData.type == "ChatMessage"){
+            if (typeof(socketData.peopleTo)=="undefined"){
+                var mes=socketData.peopleFrom+" To all: "+socketData.message;        
+	        var T=document.getElementById("dialog");
+	        var x=T.insertRow(T.rows.length);
+	        if ((T.rows.length%2)!=0)
+	            x.className="dia1";
+	        else
+	            x.className="dia2";
+	        var y=x.insertCell(0);
+	        y.innerHTML="<a>"+mes+"</a>";
+	        var z=document.getElementById("tab");
+	        z.scrollTop=z.scrollHeight;
+            }
+        }
     };
 });
 

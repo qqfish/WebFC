@@ -75,15 +75,19 @@ public class FcMessageInbound extends MessageInbound {
 	    //System.out.println(idRoom + " " + username);
 	    if (textData.getType().equals("LoginRoom")) {
 		loginRome(str);
+		rooms.getUserList(idRoom,username);
+		roomBroadcast(str);
 	    } else if (idRoom > 0 && !username.isEmpty()) {
 		if (textData.getType().equals("doodlePic")) {
 		    doodlePic dp = gson.fromJson(str, doodlePic.class);
-		    if (dp.getUsage().equals("updatePic")) {
+		    if (dp.getUsage().equals("replyDoodle")) {
 			roomToUser(dp.getTo(), str);
 		    } else if (dp.getUsage().equals("saveDoodle")) {
 			saveDoodle(dp);
 		    }
-		} else if (textData.getType().equals("uploadFile")) {
+		}/* else if (textData.getType().equals("getUserList")){
+			rooms.getUserList();
+		}*/else if (textData.getType().equals("uploadFile")) {
 		    int r = newFile(str);
 		    openFile(r);
 		} else if (textData.getType().equals("dragMessage")) {
@@ -367,3 +371,4 @@ public class FcMessageInbound extends MessageInbound {
 		  rooms.oneByOne(messages, idRoom);
 	 }
 }
+

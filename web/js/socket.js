@@ -17,47 +17,57 @@ connection.connect = (function(host) {
     } else if ('MozWebSocket' in window) {
 	connection.socket = new MozWebSocket(host);
     } else {
-	logg('Error: WebSocket is not supported by this browser.');
+	console.log('Error: WebSocket is not supported by this browser.');
 	return;
     }
 
     connection.socket.onopen = function () {
-	logg('Info: WebSocket connection opened.');
+	    console.log('Info: WebSocket connection opened.');
 	//每隔10秒发送一条空信息，防止websocket自动断开。
-	setInterval("connection.sendMessage('')",1000 * 10);
+	    setInterval("connection.sendMessage('')",1000 * 10);
     };
 
     connection.socket.onclose = function () {
-	logg('Info: WebSocket closed.');
+	    console.log('Info: WebSocket closed.');
     };
 
     connection.socket.onmessage = function (message) {
 	var socketData = JSON.parse(message.data);
 	console.log('S->C: ' + message.data);
-	if(socketData.type == "doodleTable"){
-	    if(socketData.drawElement == "freeDraw"){
-		doodle.redraw(socketData.index, socketData);
-	    }
-	    else if(socketData.drawElement == "shape"){
-		doodle.drawToCanvasGraph(socketData.index, socketData);
-	    }	    
+	if(socketData.type == "LoginRoom"){
+		userListFunction.innerHTML = userListFunction.innerHTML + "&nbsp"+socketData.username+"&nbsp<br/>";
 	}
-	else if(socketData.type == "requestPic"){
-	    if(socketData.usage == "updatePic"){
-		connection.sendMessage(doodle.getDoodlePic(socketData));
-	    } else if(socketData.usage == "saveDoodle"){
-		doodle.saveDoodle();
-	    }
+	else if(socketData.type == "doodleTable"){
+		if(socketData.drawElement == "P"){
+			doodle.DrawPLD(socketData);
+		}
+		else if(socketData.drawElement == "shape"){
+			doodle.DrawShapeLD(socketData);
+		}
+		else if(socketData.drawElement == "word"){
+			doodle.DrawWordLD(socketData);
+		}
 	}
-	else if(socketData.type == "ClearTable"){
+	else if(socketData.type == "doodlePic"){
+	    if(socketData.usage == "saveDoodle"){
+		    doodle.restorePic(socketData.data);
+		}
+		else if(socketData.usage == "replyDoodle"){
+			doodle.restorePic(socketData.data);
+		}else { //第三种情况即为第一个登陆房间的人直接获取保存值
+			doodle.restorePic(socketData.data);
+		}
+	}else if(socketData.type == "requestPic"){
+		doodle.getDoodlePic(socketData);
+	}else if(socketData.type == "getUserList"){
+		mediaStream.getUserList(socketData);
+	}
+	/*else if(socketData.type == "ClearTable"){
 	    note.clear();
 	    drag.clear();
 	    doodle.clear();	    
-	}
-	else if(socketData.type == "doodlePic"){
-	    doodle.restorePic(socketData.data);
-	}
-	else if(socketData.type == "OpenFile"){
+	}*/
+	/*else if(socketData.type == "OpenFile"){
 	    $("#openfile").attr("src",socketData.url);
 	}
 	else if (socketData.type == "ErrorMessage"){
@@ -105,7 +115,7 @@ connection.connect = (function(host) {
 	        var z=document.getElementById("tab");
 	        z.scrollTop=z.scrollHeight;
             }
-        }
+        }*/
     };
 });
 

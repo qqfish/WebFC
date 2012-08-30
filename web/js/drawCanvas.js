@@ -1,17 +1,17 @@
-/*
-Ãû³Æ£ºHTML5 Canvas ×÷Í¼º¯Êı¿â
-°æ±¾£º2.0
-×÷Õß£º½ğº£Áú(ÌìÖ÷½Ì)
-²©¿Í£ºhttp://bigengineer.blog.163.com/
-GoogleËÑË÷£ºÈí¼ş¹¤³ÌÊ¦ ½ğº£Áú
-ÀàĞÍ£ºWebÓ¦ÓÃ/»æÍ¼/Ô´´úÂë
-¿ª·¢Æ½Ì¨£ºWinXP+Googleä¯ÀÀÆ÷
-¹¦ÄÜ£ºÎª¸öÈË¿ª·¢ÕßÌá¹©¼òµ¥µÄ×÷Í¼º¯Êı£¬
-·²ÊÇÖ§³ÖHTML5µÄä¯ÀÀÆ÷£¬¶¼ÄÜÊ¹ÓÃÕâĞ©º¯Êı¡£
+ï»¿/*
+åç§°ï¼šHTML5 Canvas ä½œå›¾å‡½æ•°åº“
+ç‰ˆæœ¬ï¼š2.0
+ä½œè€…ï¼šé‡‘æµ·é¾™(å¤©ä¸»æ•™)
+åšå®¢ï¼šhttp://bigengineer.blog.163.com/
+Googleæœç´¢ï¼šè½¯ä»¶å·¥ç¨‹å¸ˆ é‡‘æµ·é¾™
+ç±»å‹ï¼šWebåº”ç”¨/ç»˜å›¾/æºä»£ç 
+å¼€å‘å¹³å°ï¼šWinXP+Googleæµè§ˆå™¨
+åŠŸèƒ½ï¼šä¸ºä¸ªäººå¼€å‘è€…æä¾›ç®€å•çš„ä½œå›¾å‡½æ•°ï¼Œ
+å‡¡æ˜¯æ”¯æŒHTML5çš„æµè§ˆå™¨ï¼Œéƒ½èƒ½ä½¿ç”¨è¿™äº›å‡½æ•°ã€‚
 */
 function ABLen(A,B)
 {
-//¹¦ÄÜ£º¼ÆËãA¡¢BÁ½µãÖ®¼äµÄ¾àÀë¡£
+//åŠŸèƒ½ï¼šè®¡ç®—Aã€Bä¸¤ç‚¹ä¹‹é—´çš„è·ç¦»ã€‚
 var i;
 i=Math.pow((B[0]-A[0]),2)+Math.pow((B[1]-A[1]),2);
 i=Math.floor(Math.sqrt(i));
@@ -20,21 +20,27 @@ return i;
 
 function DrawP(Canvas,P)
 {
-//ÔÚµãP´¦»­Ò»¸öµã
+//åœ¨ç‚¹På¤„ç”»ä¸€ä¸ªç‚¹
 with (Canvas)
 {
+beginPath();
 moveTo(P[0],P[1]);
 lineTo(P[0]+1,P[1]+1);
+closePath();
+stroke();
 }
 }
 
 function DrawLine(Canvas,A,B)
 {
-//»­Ò»ÌõÏß¶Î,¡°A¡¢B¡±ÊÇÕâÌõÏß¶ÎµÄ¶Ëµã
+//ç”»ä¸€æ¡çº¿æ®µ,â€œAã€Bâ€æ˜¯è¿™æ¡çº¿æ®µçš„ç«¯ç‚¹
 with (Canvas)
  {
+ beginPath();
  moveTo(A[0],A[1]);
  lineTo(B[0],B[1]);
+ closePath();
+ stroke();
  }
 }
 
@@ -42,7 +48,7 @@ function GetSmallest(A,B)
 {
 var i,co,i1,i2;
 var R=new Array(2);
-//·µ»ØPÖĞX×îĞ¡ºÍY×îĞ¡µÄÊı£¬È»ºó×é³ÉĞÂµÄµã·µ»Ø
+//è¿”å›Pä¸­Xæœ€å°å’ŒYæœ€å°çš„æ•°ï¼Œç„¶åç»„æˆæ–°çš„ç‚¹è¿”å›
 R[0]=A[0];
 R[1]=A[1];
 
@@ -74,7 +80,7 @@ function GetBiggest(A,B)
 {
 var i,co,i1,i2;
 var R=new Array(2);
-//·µ»ØPÖĞX×îĞ¡ºÍY×îĞ¡µÄÊı£¬È»ºó×é³ÉĞÂµÄµã·µ»Ø
+//è¿”å›Pä¸­Xæœ€å°å’ŒYæœ€å°çš„æ•°ï¼Œç„¶åç»„æˆæ–°çš„ç‚¹è¿”å›
 R[0]=A[0];
 R[1]=A[1];
 
@@ -104,19 +110,22 @@ return(R);
 
 function DrawRect(Canvas,A,C)
 {
-//»­¸ö¾ØĞÎ,¡°A¡¢C¡±ÊÇ¶Ô¶¥µã
+//ç”»ä¸ªçŸ©å½¢,â€œAã€Câ€æ˜¯å¯¹é¡¶ç‚¹
 var p1,p2=new Array(2);
 p1=GetSmallest(A,C);
 p2=GetBiggest(A,C);
 with (Canvas)
  {
+ beginPath();
  rect(p1[0],p1[1],p2[0]-p1[0],p2[1]-p1[1]);
+ closePath();
+ stroke();
  }
 }
 
 function DrawTriangle(Canvas,A,B,C)
 {
-//»­¸öÈı½ÇĞÎ,¡°A¡¢B¡¢C¡±ÊÇ¶¥µã
+//ç”»ä¸ªä¸‰è§’å½¢,â€œAã€Bã€Câ€æ˜¯é¡¶ç‚¹
 with (Canvas)
  {
  moveTo(A[0],A[1]);
@@ -128,7 +137,7 @@ with (Canvas)
 
 function DrawAOB(Canvas,A,O,B)
 {
-//»­¸ö½Ç,¡°O¡±ÊÇ¶¥µã,OA¡¢OBÊÇÁ½Ìõ±ß
+//ç”»ä¸ªè§’,â€œOâ€æ˜¯é¡¶ç‚¹,OAã€OBæ˜¯ä¸¤æ¡è¾¹
 with (Canvas)
  {
  moveTo(A[0],A[1]);
@@ -139,7 +148,7 @@ with (Canvas)
 
 function DrawRoundRect(Canvas,P1,P2,Radius)
 {
-//»­¸öÔ²½Ç¾ØĞÎ
+//ç”»ä¸ªåœ†è§’çŸ©å½¢
 var A=new Array(Math.min(P1[0],P2[0]),Math.min(P1[1],P2[1]));
 var C=new Array(Math.max(P1[0],P2[0]),Math.max(P1[1],P2[1]));
 var B=new Array(A[0],C[1]);
@@ -168,7 +177,7 @@ Canvas.endPath();
 
 function DrawAOBArc(Canvas,A,O,B,Radius)
 {
-//»­Ô²½Ç
+//ç”»åœ†è§’
 /* example:
 var A=new Array(50,50);
 var O=new Array(50,150);
@@ -190,7 +199,7 @@ lineTo(B[0],B[1]);
 
 function DrawQuadraticCurveTo(Canvas,A,O,B)
 {
-//»­¶ş´ÎÑùÌõÇúÏßÂ·¾¶,A:Æğµã£»B:ÖÕµã£»O:¿ØÖÆµã
+//ç”»äºŒæ¬¡æ ·æ¡æ›²çº¿è·¯å¾„,A:èµ·ç‚¹ï¼›B:ç»ˆç‚¹ï¼›O:æ§åˆ¶ç‚¹
 with (Canvas)
  {
 moveTo(A[0],A[1]);
@@ -200,7 +209,7 @@ moveTo(A[0],A[1]);
 
 function DrawbezierCurveTo(Canvas,A,O1,O2,B)
 {
-//»­±´Èû¶ûÇúÏßÂ·¾¶,O1ºÍO2ÊÇ¿ØÖÆµã
+//ç”»è´å¡å°”æ›²çº¿è·¯å¾„,O1å’ŒO2æ˜¯æ§åˆ¶ç‚¹
 with (Canvas)
  {
 moveTo(A[0],A[1]);
@@ -210,7 +219,7 @@ moveTo(A[0],A[1]);
 
 function DrawArcTo(Canvas,A,O,B,Radius)
 {
-//»­¶Î»¡Ïß
+//ç”»æ®µå¼§çº¿
 with (Canvas)
  {
 moveTo(A[0],A[1]);
@@ -220,9 +229,9 @@ moveTo(A[0],A[1]);
 
 function DrawArc(Canvas,O,Radius,startAngle, endAngle, anticlockwise)
 {
-//»­¶Î»¡Ïß,startAngle:ÆğÊ¼½Ç¶È£» endAngle£ºÖÕÖ¹½Ç¶È
-//Example: DrawArc(hb,B,50,0,-90,true);//ÄæÊ±Õë»­»¡Ïß
-//Example: DrawArc(hb,B,50,0,-90,false);//Ë³Ê±Õë»­»¡Ïß
+//ç”»æ®µå¼§çº¿,startAngle:èµ·å§‹è§’åº¦ï¼› endAngleï¼šç»ˆæ­¢è§’åº¦
+//Example: DrawArc(hb,B,50,0,-90,true);//é€†æ—¶é’ˆç”»å¼§çº¿
+//Example: DrawArc(hb,B,50,0,-90,false);//é¡ºæ—¶é’ˆç”»å¼§çº¿
 with (Canvas)
  {
   arc(O[0],O[1],Radius,startAngle*Math.PI/180, endAngle*Math.PI/180, anticlockwise);
@@ -231,25 +240,21 @@ with (Canvas)
 
 function DrawCircle(Canvas,O,Radius)
 {
-//»­Ô²£¬Àı×Ó£ºvar B=new Array(150,150); DrawCircle(hb,B,50);
+//ç”»åœ†ï¼Œä¾‹å­ï¼švar B=new Array(150,150); DrawCircle(hb,B,50);
 with (Canvas)
  {
-var x=O[0]+Radius;
-var y=O[1];
-moveTo(x,y);
-for (var i=0;i<=360;i++)
-{
-var ii=i*Math.PI/180;
-x=O[0]+Radius*Math.cos(ii);
-y=O[1]-Radius*Math.sin(ii);
-lineTo(x,y);
-}//over for
- }//over with
-}//finished!
+	var x=O[0];
+	var y=O[1];
+    beginPath();
+    arc(x, y, Radius, 0, Math.PI*2, true);
+    closePath();
+    stroke();
+ }
+}
 
 function DrawEllipse(Canvas,O,OA,OB)
 {
-//»­ÍÖÔ²£¬Àı×Ó£ºvar B=new Array(150,150); DrawEllipse(hb,B,50,30);
+//ç”»æ¤­åœ†ï¼Œä¾‹å­ï¼švar B=new Array(150,150); DrawEllipse(hb,B,50,30);
 with (Canvas)
  {
 var x=O[0]+OA;
@@ -267,7 +272,7 @@ lineTo(x,y);
 
 function DrawPolyline(Canvas,P)
 {
-//»æÖÆ²»±ÕºÏµÄÏß£¬PµÄ³¤¶È±ØĞëÊÇÅ¼Êı
+//ç»˜åˆ¶ä¸é—­åˆçš„çº¿ï¼ŒPçš„é•¿åº¦å¿…é¡»æ˜¯å¶æ•°
 /*
 var P=new Array(12);
 P[0]=10;
@@ -299,7 +304,7 @@ i=i+2;
 
 function DrawPolygon(Canvas,P)
 {
-//»­±ÕºÏµÄ¶à±ßĞÎ
+//ç”»é—­åˆçš„å¤šè¾¹å½¢
 /* example :
 var P=new Array(12);
 P[0]=10;

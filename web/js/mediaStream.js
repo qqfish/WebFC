@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 
+var mediaStream = {};
 var localVideo;
 var remoteVideo = new Array();
 var localStream;
@@ -228,6 +229,16 @@ function onRemoteHangup() {
 	 }
 }
 
+mediaStream.getUserList = function(message){
+	var userlist = new Array();
+	userlist = message.userList;
+	var i = 0;
+	while(userlist[i]){
+		console.log(userlist[i]);
+		userListFunction.innerHTML = userListFunction.innerHTML + "&nbsp"+userlist[i]+"&nbsp<br/>";
+		i = i+1;
+	}
+}
 
 /*
 mediaStream.type = "mediaStream";

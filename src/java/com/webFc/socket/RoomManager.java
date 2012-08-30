@@ -12,6 +12,7 @@ import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
 import com.webFc.socket.MessageType.doodlePic;
 import com.webFc.socket.MessageType.requestPic;
+import com.webFc.socket.MessageType.getUserList;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.sql.SQLException;
@@ -73,7 +74,7 @@ public class RoomManager {
 
 	private void broadcast(String message, FcMessageInbound current) throws IOException {
 	    List<String> rmArray = new ArrayList<String>();
-
+		
 	    Iterator<Map.Entry<String, FcMessageInbound>> iter = users.entrySet().iterator();
 	    while (iter.hasNext()) {
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
@@ -264,4 +265,20 @@ public class RoomManager {
 	    m.setEnterFile(idFile, roomFileStr);
 	}
     }
+	
+	public void getUserList(int idRoom , String username) throws IOException{
+		if (maps.containsKey(idRoom)) {
+			UserMap m = maps.get(idRoom);
+			Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
+			List<String> userList = new ArrayList<String>();
+			while (iter.hasNext()) {
+				Map.Entry<String, FcMessageInbound> entry = iter.next();
+				String str = entry.getKey();
+				userList.add(str);
+			}
+			getUserList gUlist = new getUserList();
+			gUlist.setUserList(userList);
+			sendUserMessage(idRoom, username, gson.toJson(gUlist));
+		}
+	}
 }

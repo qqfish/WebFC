@@ -1,38 +1,139 @@
-#canvas{
+#canvasBottom{
     position: absolute;
-    z-index: 0;
+    z-index: -3;
+	width: 1200px;
+	height: 600px;
     top:10px;
     left:10px;
-    bottom: 10px;
-    right: 10px;
-    border:1px solid #c3c3c3;
+	border: 3px solid #cccccc;
+	border-radius: 10px;
+	display: none;
 }
 #canvasTop{
     position: absolute;
-    z-index: 1;
-    left: 10px;
+    z-index: -2;
+	width: 1200px;
+	height: 600px;
     top:10px;
     left:10px;
-    right: 10px;
-    border:1px solid #c3c3c3;
+	border: 3px solid #cccccc;
+	border-radius: 10px;
+	display: none;
 }
-#clearButton{
-    position:absolute;
-    left: 0px;
-    top: 700px;
+#canvasTemp{
+    position: absolute;
+    z-index: -1;
+	width: 1200px;
+	height: 600px;
+    top:10px;
+    left:10px;
+	border: 3px solid #cccccc;
+	border-radius: 10px;
+	display: none;
 }
-#Type{
-    position:absolute;
-    left: 100px;
-    top: 701px;
+#wordArea{
+	position: absolute;
+    z-index: 0;
+	width: 250px;
+	height: 150px;
+	display: none;
 }
-#Colors{
-    position:absolute;
-    left: 200px;
-    top: 701px;
+#textArea{
+	margin:0px 10px 10px 0px;
 }
-#Sizes{
-    position:absolute;
-    left: 300px;
-    top: 701px;
+#wordOk{
+	width:28px;
+	display: inline;
+}
+#wordCancel{
+	width:28px;
+	display: inline;
+}
+#colorArea{
+	position: absolute;
+	background: white;
+    z-index: 0;
+	width: 240px;
+	height: 260px;
+	display: none;
+	border: 3px solid #cccccc;
+	border-radius: 24px;
+    top: 300px;
+    left: 80px;
+}
+#colorDemo{
+	margin: 12px 0px 0px 20px;
+	border: 2px solid #cccccc;
+}
+#colorAlert{
+	margin: 0px 0px 0px 10px;
+	color:#f6931f;
+	border:0;
+	font-weight:bold;
+	width:130px;
+}
+#red{
+	margin: 8px 0px 8px 20px;
+	width:200px;
+}
+#green{
+	margin: 8px 0px 8px 20px;
+	width:200px;
+}
+#blue{
+	margin: 8px 0px 8px 20px;
+	width:200px;
+}
+#Vred{
+	color:red;
+	border:0;
+	font-weight:bold;
+	width:40px;
+}
+#Vgreen{
+	color:green;
+	border:0;
+	font-weight:bold;
+	width:40px;
+}
+#Vblue{
+	color:blue;
+	border:0;
+	font-weight:bold;
+	width:40px;
+}
+#colorClose{
+	margin: 8px 0px 8px 80px;
+	width:40px;
+}
+#lineWidthArea{
+	position: absolute;
+	background: white;
+    z-index: 0;
+	width: 235px;
+	height: 130px;
+	display: none;
+	border: 3px solid #cccccc;
+	border-radius: 24px;
+    top: 325px;
+    left: 80px;
+}
+#lineWidthAlert{
+	margin: 8px 0px 8px 20px;
+	color:#f6931f;
+	border:0;
+	font-weight:bold;
+}
+#lineWidthSelect{
+	margin: 8px 0px 8px 20px;
+	width:200px;
+}
+#VlineWidth{
+	border:0;
+	font-weight:bold;
+	width:40px;
+}
+#lineWidthClose{
+	margin: 8px 0px 8px 80px;
+	width:40px;
 }

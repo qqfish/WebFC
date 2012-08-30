@@ -1,0 +1,89 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Web Free Communication</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<!-- 引入javascript库 -->
+		<script src="jquery-ui-1.8.23/js/jquery-1.7.2.min.js"></script>
+		<script src="jquery-ui-1.8.23/js/jquery-ui-1.8.23.custom.min.js"></script>
+		<script src="js/button.js"></script>
+		<script src="js/toolbar.js"></script>
+		<script src="js/drawCanvas.js"></script>
+		<script src="js/doodle2.0.js"></script>
+		<script src="js/login.js"></script>
+		<script src="js/socket.js"></script>
+		<script src="js/mediaStream.js"></script>
+		<!-- 引入样式表 -->
+		<link type="text/css" href="jquery-ui-1.8.23/css/smoothness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/doodle.css">
+		<link rel="stylesheet" href="css/toolbar.css">
+		<link rel="stylesheet" href="css/button.css">
+		<link rel="stylesheet" href="css/login.css">
+	 </head>
+	 <body>
+		 <div id="loginAll">
+		    <img id="titlePic" src="image/title.jpg"/><br/>
+			<div id="loginForm">
+				<input type="text" id="roomId" placeholder="房间号"/>
+				<input type="text" id="username" placeholder="用户名"/>
+				<div class="button" id="loginButton">login</div>
+			</div>
+		</div>
+		 <div id="doodleBoard">
+			 <canvas id="canvasBottom"></canvas><!--用于显示文件、图片-->
+			 <canvas id="canvasTop"></canvas><!--用于保存画布的实际涂鸦状态-->
+			 <canvas id="canvasTemp"></canvas><!--用于保存直线、圆形、矩形的暂时状态-->
+		  </div>
+		 <div class="button" id="menuButton"><b>Web Free Communication</b></div>
+		 <div id="toolbar">
+			 <div id="mainFunction">
+				 <div class="button" id="paintTools">绘图工具</div>
+				 <div class="button">标签工具</div>
+				 <div class="button" id="userList">用户列表</div>
+				 <div class="button">文件列表</div>
+				 <div class="button">上传文件</div>
+				 <div class="button" id="saveDoodle">保存修改</div>
+				 <div class="button">音量</div>
+			 </div>
+			 <div id="paintFunction">
+				 <div class="button" id="pointer">指针</div>
+				 <div class="button" id="pen">画笔</div>
+				 <div class="button" id="rubber">橡皮</div>
+				 <div class="button" id="line">直线</div>
+				 <div class="button" id="rectangle">矩形</div>
+				 <div class="button" id="circle">圆形</div>
+				 <div class="button" id="word">文字</div>
+				 <div class="button" id="color">颜色</div>
+				 <div class="button" id="lineWidth">线条</div>
+			 </div>
+			 <div id="userListFunction">
+			 </div>
+		 </div>
+		 <div id="wordArea">
+			 <input type="text" id="textArea" value="1" placeholder="请输入想要显示的文字"/><br/>
+		     <div class="button" id="wordOk">OK</div> 
+			 <div class="button" id="wordCancel">Cancel</div>
+		 </div>
+		 <div id="colorArea">
+			 <canvas id="colorDemo" height="30" width="30"></canvas>
+			 <input type="text" id="colorAlert" value="拖动或直接输入数值"/><br/>
+			 <b style="color:red">&nbsp RED : </b><input type="text" id="Vred"/>
+			 <div id="red"></div>
+			 <b style="color:green">&nbsp GREEN : </b><input type="text" id="Vgreen"/>
+			 <div id="green"></div>
+			 <b style="color:blue">&nbsp BLUE : </b><input type="text" id="Vblue"/>
+			 <div id="blue"></div>
+		     <div class="button" id="colorClose">Close</div>
+		 </div>
+		 <div id="lineWidthArea">
+			 <input type="text" id="lineWidthAlert" value="拖动或直接输入数值"/><br/>
+			 <b>&nbsp Line Width : </b><input type="text" id="VlineWidth"/>
+			 <div id="lineWidthSelect"></div>
+		     <div class="button" id="lineWidthClose">Close</div>
+		 </div>
+	 </body>
+</html>

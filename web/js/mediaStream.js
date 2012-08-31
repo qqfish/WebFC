@@ -3,22 +3,99 @@
  * and open the template in the editor.
  */
 
+var currentVideoId;
+var currentUsername;
+
+var userlist = new Array();
+var videolist = new Array();
+
+for(var i=0;i<10;i++){
+	videolist[i] = false;
+}
+
+$(document).ready(function(){
+	$(".user").click(function(){
+		var message = {};
+		message.type = "videoRequest";
+		message.username = $(this).html();
+		sendMessage(message);
+	})
+	
+	mediaStream.doRequest = function(data){
+		currentUsername = data.username;
+		var vid = mediaStream.findUser(currentUsername);
+		var localvid = mediaStream.findUser(login.username);
+		localVideoId = "video" + localvid;
+		if(vid==-1){
+			console.log("Not find the username..");
+		}
+		currentVideoId = "video" + vid;
+		if(currentUsername == login.username && videolist[localvid] == false){ //远端即为本地，本地媒体没打开
+			console.log("way 1");
+			console.log("videoId: " + currentVideoId);
+			mediaStream.initialize(currentVideoId);
+			$("#"+currentVideoId).fadeIn();
+			videolist[localvid] = true;
+		}
+		else if(currentUsername == login.username && videolist[localvid] == true){ //远端即为本地，本地媒体已打开
+			console.log("way 2");
+			$("#"+localVideoId).fadeIn();
+		}
+		else if(currentUsername != login.username && videolist[localvid] == false){ //本地媒体没打开，与远端无连接
+			console.log("way 3");
+			mediaStream.initialize(localVideoId);
+			maybeStart();
+			$("#videoAlert").fadeIn();
+			videolist[localvid] = true;
+			videolist[vid] = true;
+		}
+		else if(currentUsername != login.username && videolist[localvid] == true  && videolist[vid] == true ){
+			//本地媒体已打开，与远端有连接
+			console.log("way 4");
+			$("#"+currentVideoId).fadeIn();
+		}
+		else if(currentUsername != login.username && videolist[localvid] == true  && videolist[vid] == false ){
+			//本地媒体已打开，与远端无连接
+			console.log("way 5");
+			$("#"+currentVideoId).fadeIn();
+			currentPc = createPeerconnection();
+			doCall(currentPc, currentUsername);
+		}
+	}
+	
+	$("#videoAlertOk").click(function(){
+		$("#videoAlert").fadeOut();
+		doCall(currentPc, currentUsername);
+		$("#"+currentVideoId).fadeIn();
+	})
+	
+	mediaStream.getUserList = function(message){
+		userlist = message.userList;
+		currentUser = 0;
+		while(userlist[currentUser]){
+			console.log(userlist[currentUser]);
+			$("#user"+currentUser).html(userlist[currentUser]);
+			currentUser = currentUser + 1;
+		}
+	}
+})
+
 var mediaStream = {};
 var localVideo;
 var remoteVideo = new Array();
 var localStream;
 var pc = new Array();
 var currentPc;
+var currentUser = 0;
 var socket;
 var started = false;
 var sendto;
 var needCreate = false;
     
-function initialize() {
+mediaStream.initialize = function(videoId) {
 	 console.log("Initializing...");
-	 localVideo = document.getElementById("local");
+	 localVideo = document.getElementById(videoId);
 	 getUserMedia();
-	 maybeStart();
 }
 	
 function getUserMedia(){
@@ -71,7 +148,7 @@ function maybeStart(){
 function createPeerconnection(){
 	 console.log("Create peerconnection.");
 	 var i = pc.length;
-	 remoteVideo[ i ] = document.getElementById("remote" + i );
+	 remoteVideo[ i ] = document.getElementById( currentVideoId );
 	 try {
 		  pc[ i ] = new webkitPeerConnection00('ws://' + window.location.host + '/WebFc/WebFcSocketServlet',onIceCandidate);
 		  console.log("Create webkitPeerConnection");
@@ -89,7 +166,7 @@ function createPeerconnection(){
 	 return i;
 }
 	
-function doCall( i ){
+function doCall( i , username){
 	 console.log("Send offer to peer");
 	 var offer = pc[i].createOffer({
 		  audio:true, 
@@ -97,10 +174,12 @@ function doCall( i ){
 	 });
 	 pc[i].setLocalDescription(pc[i].SDP_OFFER, offer);
 	 console.log(offer);
+	 needCreate = true;
 	 var message = {};
 	 message.type = "offer";
-	 message.sendTo = "abc";
+	 message.sendTo = username;
 	 message.sendFrom = login.username;
+	 message.videoId = localVideoId;
 	 sendto = message.sendTo;
 	 message.sdp = offer.toSdp();
 	 sendMessage(message);
@@ -177,6 +256,10 @@ function transitionToDone(){
 }
 	
 function do_Offer(socketData){
+	 currentVideoId = socketData.videoId;
+	 var remotevid = currentVideoId.substring(5);
+	 console.log("remotevid: "+remotevid);
+	 videolist[remotevid] = true;
 	 if (!started)
 		  maybeStart();
 	 console.log(needCreate);
@@ -229,15 +312,13 @@ function onRemoteHangup() {
 	 }
 }
 
-mediaStream.getUserList = function(message){
-	var userlist = new Array();
-	userlist = message.userList;
-	var i = 0;
-	while(userlist[i]){
-		console.log(userlist[i]);
-		userListFunction.innerHTML = userListFunction.innerHTML + "&nbsp"+userlist[i]+"&nbsp<br/>";
-		i = i+1;
+mediaStream.findUser = function(username){
+	for(var i=0;i<10;i++){
+		if(userlist[i] == username){
+			return i;
+		} 
 	}
+	return -1;
 }
 
 /*

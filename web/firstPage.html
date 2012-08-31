@@ -23,6 +23,7 @@ and open the template in the editor.
 		<link rel="stylesheet" href="css/toolbar.css">
 		<link rel="stylesheet" href="css/button.css">
 		<link rel="stylesheet" href="css/login.css">
+		<link rel="stylesheet" href="css/video.css">
 	 </head>
 	 <body>
 		 <div id="loginAll">
@@ -47,7 +48,7 @@ and open the template in the editor.
 				 <div class="button">文件列表</div>
 				 <div class="button">上传文件</div>
 				 <div class="button" id="saveDoodle">保存修改</div>
-				 <div class="button">音量</div>
+				 <!--<div class="button">音量</div>-->
 			 </div>
 			 <div id="paintFunction">
 				 <div class="button" id="pointer">指针</div>
@@ -61,6 +62,16 @@ and open the template in the editor.
 				 <div class="button" id="lineWidth">线条</div>
 			 </div>
 			 <div id="userListFunction">
+				 <div class="user" id="user0"></div>
+				 <div class="user" id="user1"></div>
+				 <div class="user" id="user2"></div>
+				 <div class="user" id="user3"></div>
+				 <div class="user" id="user4"></div>
+				 <div class="user" id="user5"></div>
+				 <div class="user" id="user6"></div>
+				 <div class="user" id="user7"></div>
+				 <div class="user" id="user8"></div>
+				 <div class="user" id="user9"></div>
 			 </div>
 		 </div>
 		 <div id="wordArea">
@@ -84,6 +95,22 @@ and open the template in the editor.
 			 <b>&nbsp Line Width : </b><input type="text" id="VlineWidth"/>
 			 <div id="lineWidthSelect"></div>
 		     <div class="button" id="lineWidthClose">Close</div>
+		 </div>
+		 <div id="userVideo">
+			 <video id="video0" autoplay></video>
+			 <video id="video1" autoplay></video>
+			 <video id="video2" autoplay></video>
+			 <video id="video3" autoplay></video>
+			 <video id="video4" autoplay></video>
+			 <video id="video5" autoplay></video>
+			 <video id="video6" autoplay></video>
+			 <video id="video7" autoplay></video>
+			 <video id="video8" autoplay></video>
+			 <video id="video9" autoplay></video>
+		 </div>
+		 <div id="videoAlert">
+			 &nbsp;请在保证摄像头和麦克风开启的状态下，点击确定按钮。&nbsp;
+			 <div class="button" id="videoAlertOk">确定</div>
 		 </div>
 	 </body>
 </html>

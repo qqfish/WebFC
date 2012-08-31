@@ -75,7 +75,9 @@ public class FcMessageInbound extends MessageInbound {
 	    //System.out.println(idRoom + " " + username);
 	    if (textData.getType().equals("LoginRoom")) {
 		loginRome(str);
-		rooms.getUserList(idRoom,username);
+		String userList = rooms.getUserList(idRoom);
+		roomBroadcast(userList);
+		roomToUser(username, userList);
 		roomBroadcast(str);
 	    } else if (idRoom > 0 && !username.isEmpty()) {
 		if (textData.getType().equals("doodlePic")) {
@@ -151,6 +153,9 @@ public class FcMessageInbound extends MessageInbound {
 								System.out.println("2");
 								roomBroadcast(str);
 						  }
+					 } else if ( textData.getType().equals("videoRequest") ) {
+						 roomBroadcast(str);
+						 roomToUser(username,str);
 					 } else {
 						  //System.out.println("hello");
 						  roomBroadcast(str);

@@ -34,10 +34,7 @@ connection.connect = (function(host) {
     connection.socket.onmessage = function (message) {
 	var socketData = JSON.parse(message.data);
 	console.log('S->C: ' + message.data);
-	if(socketData.type == "LoginRoom"){
-		userListFunction.innerHTML = userListFunction.innerHTML + "&nbsp"+socketData.username+"&nbsp<br/>";
-	}
-	else if(socketData.type == "doodleTable"){
+	if(socketData.type == "doodleTable"){
 		if(socketData.drawElement == "P"){
 			doodle.DrawPLD(socketData);
 		}
@@ -69,6 +66,9 @@ connection.connect = (function(host) {
 	}*/
 	/*else if(socketData.type == "OpenFile"){
 	    $("#openfile").attr("src",socketData.url);
+	}*/
+	else if (socketData.type == "videoRequest"){
+		mediaStream.doRequest(socketData);
 	}
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
@@ -87,7 +87,7 @@ connection.connect = (function(host) {
 	}
 	else if (socketData.type == "AlertMessage"){
 	    alert(socketData.alertWord);
-	}
+	}/*
 	else if (socketData.type == "dragMessage"){
 	    drag.onmessage(socketData);
 	}

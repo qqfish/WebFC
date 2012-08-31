@@ -266,7 +266,7 @@ public class RoomManager {
 	}
     }
 	
-	public void getUserList(int idRoom , String username) throws IOException{
+	public String getUserList(int idRoom) throws IOException{
 		if (maps.containsKey(idRoom)) {
 			UserMap m = maps.get(idRoom);
 			Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
@@ -278,7 +278,8 @@ public class RoomManager {
 			}
 			getUserList gUlist = new getUserList();
 			gUlist.setUserList(userList);
-			sendUserMessage(idRoom, username, gson.toJson(gUlist));
+			return(gson.toJson(gUlist));
 		}
+		return null;
 	}
 }

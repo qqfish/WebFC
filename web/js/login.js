@@ -9,6 +9,30 @@ $(document).ready(function() {
 	$("#loginButton").click(function(){
 		login.init();
 	})
+	
+	$("#leaveRoom").click(function(){
+		var message = {};
+		message.type = "leaveRoom";
+		message.username = login.username;
+		sendMessage(message);
+		$("#menuButton").fadeOut();
+		$("#mainFunction").fadeOut();
+		$("#canvasButton").fadeOut();
+		$("#canvasTop").fadeOut();
+		$("#canvasTemp").fadeOut();
+		$("#safeLogOut").fadeIn();
+		$("#userListFunction").fadeOut();
+		$("#chatButton").fadeOut();
+		$("#chatWindow").fadeOut();
+		$("#userVideo").fadeOut();
+		$(".note").fadeOut();
+		$("#noteArea").fadeOut();
+		$("#wordArea").fadeOut();
+	})
+	
+	$("#logoutOk").click(function(){
+		$("#safeLogOut").fadeOut();
+	})
 })
 
 login.init = function(){
@@ -16,10 +40,11 @@ login.init = function(){
     login.username = username.value; 
     login.idRoom = roomId.value;
 	var message = JSON.stringify(login);
-	console.log(message);
+	console.log("C->S: " + message);
     connection.sendMessage(message);
 	$("#loginAll").fadeOut();
 	$("#menuButton").fadeIn();
+	$("#chatButton").fadeIn();
 	$("#canvasButton").fadeIn();
 	$("#canvasTop").fadeIn();
 	$("#canvasTemp").fadeIn();

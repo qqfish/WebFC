@@ -34,7 +34,11 @@ connection.connect = (function(host) {
     connection.socket.onmessage = function (message) {
 	var socketData = JSON.parse(message.data);
 	console.log('S->C: ' + message.data);
-	if(socketData.type == "doodleTable"){
+	if(socketData.type == "LoginRoom"){
+		mediaStream.getVideoState(socketData);
+	}else if(socketData.type == "leaveRoom"){
+		mediaStream.hideVideo(socketData.username);
+	}else if(socketData.type == "doodleTable"){
 		if(socketData.drawElement == "P"){
 			doodle.DrawPLD(socketData);
 		}
@@ -56,19 +60,25 @@ connection.connect = (function(host) {
 		}
 	}else if(socketData.type == "requestPic"){
 		doodle.getDoodlePic(socketData);
+	}else if(socketData.type == "sendUserList"){
+		mediaStream.sendUserList(socketData);
 	}else if(socketData.type == "getUserList"){
 		mediaStream.getUserList(socketData);
+		chat.getUserList(socketData);
+	}else if(socketData.type == "getFileList"){
+		fileInfo.addFile(socketData);
 	}
 	/*else if(socketData.type == "ClearTable"){
 	    note.clear();
 	    drag.clear();
 	    doodle.clear();	    
 	}*/
-	/*else if(socketData.type == "OpenFile"){
-	    $("#openfile").attr("src",socketData.url);
-	}*/
 	else if (socketData.type == "videoRequest"){
 		mediaStream.doRequest(socketData);
+	}else if(socketData.type == "getVideoState"){
+		mediaStream.maybeDoVideoRequest(socketData);
+	}else if (socketData.type == "videoDrag"){
+		mediaStream.move(socketData.id, socketData.start, socketData.stop);
 	}
 	else if (socketData.type == "ErrorMessage"){
 	    alert(socketData.errorWord);
@@ -100,22 +110,23 @@ connection.connect = (function(host) {
 	}
 	else if(socketData.type == "OpenFile"){
 	    $("#openfile").attr("src",socketData.url);
+	}*/
+	else if(socketData.type == "noteCreate"){
+		note.display(socketData.P, socketData.value);
 	}
-        else if(socketData.type == "ChatMessage"){
-            if (typeof(socketData.peopleTo)=="undefined"){
-                var mes=socketData.peopleFrom+" To all: "+socketData.message;        
-	        var T=document.getElementById("dialog");
-	        var x=T.insertRow(T.rows.length);
-	        if ((T.rows.length%2)!=0)
-	            x.className="dia1";
-	        else
-	            x.className="dia2";
-	        var y=x.insertCell(0);
-	        y.innerHTML="<a>"+mes+"</a>";
-	        var z=document.getElementById("tab");
-	        z.scrollTop=z.scrollHeight;
-            }
-        }*/
+	else if(socketData.type == "noteDrag"){
+		note.move(socketData.id, socketData.start, socketData.stop);
+	}else if(socketData.type == "requestNote"){
+		note.getNoteList(socketData.from);
+	}else if(socketData.type == "replyNote"){
+		note.drawAllNote(socketData);
+	}else if(socketData.type == "chatMessagePublic"){
+	   if($('#chatWindow').css('display') == "none"){$("#chatButton").addClass("Message");}
+        chat.printMessagePublic(socketData);
+     }else if(socketData.type == "chatMessagePrivate"){
+	   if($('#chatWindow').css('display') == "none"){$("#chatButton").addClass("Message");}
+        chat.printMessagePrivate(socketData,"receive");
+     }
     };
 });
 

@@ -12,8 +12,8 @@ import com.webFc.data.Data;
  */
 public class ChatMessage extends Data{
     private String message;
-    private String peopleTo;
-    private String peopleFrom;
+    private String to;
+    private String from;
 
     public ChatMessage() {
         type = "ChatMessage";
@@ -22,8 +22,8 @@ public class ChatMessage extends Data{
     public ChatMessage(String message, String peopleTo, String peopleFrom) {
         type = "ChatMessage";
         this.message = message;
-        this.peopleTo = peopleTo;
-        this.peopleFrom = peopleFrom;
+        this.to = peopleTo;
+        this.from = peopleFrom;
     }
 
     public String getMessage() {
@@ -34,20 +34,20 @@ public class ChatMessage extends Data{
         this.message = message;
     }
 
-    public String getPeopleFrom() {
-        return peopleFrom;
+    public String getFrom() {
+        return from;
     }
 
-    public void setPeopleFrom(String peopleFrom) {
-        this.peopleFrom = peopleFrom;
+    public void setFrom(String peopleFrom) {
+        this.from = peopleFrom;
     }
 
-    public String getPeopleTo() {
-        return peopleTo;
+    public String getTo() {
+        return to;
     }
 
-    public void setPeopleTo(String peopleTo) {
-        this.peopleTo = peopleTo;
+    public void setTo(String peopleTo) {
+        this.to = peopleTo;
     }
     
     

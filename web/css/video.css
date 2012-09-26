@@ -10,11 +10,22 @@ root {
 	display: block;
 }
 
-video {
-	  border:3px solid black;
-	  width:320px;
-	  height:240px;
-	  z-index:1;
+#userVideo{
+	z-index:0;
+	width:1px;
+	height:1px;
+	display: block;
+}
+
+.uservideo {
+	-webkit-user-select:none;
+    -moz-user-select:none;
+	border:3px solid black;
+	  width:240px;
+	  height:180px;
+	  left: 100px;
+	  top: 100px;
+	  z-index:0;
 	  display: none;
 }
 

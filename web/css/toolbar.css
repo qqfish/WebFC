@@ -74,6 +74,22 @@ h1,p,span,li{font-family:clumsy,"Microsoft YaHei";}
 	display: none;
 }
 
+#fileListArea{
+    position: absolute;
+    left: 113px;
+    top: 150px;
+	background: white;
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+    border: 3px solid #cccccc;
+	border-radius: 12px;
+    font-size: 100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+	display: none;
+}
+
 /*#message{
     left:2%;
     bottom:0;

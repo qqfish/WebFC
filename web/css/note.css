@@ -6,6 +6,52 @@
         Purpose of the stylesheet follows.
 */
 
+#noteAll{
+	z-index:0;
+	width:1px;
+	height:1px;
+	display: block;
+}
+
+#noteArea{
+	position: absolute;
+    z-index: 0;
+	width: 250px;
+	height: 150px;
+	display: none;
+}
+#ntextArea{
+	margin:0px 10px 10px 0px;
+}
+#noteOk{
+	width:28px;
+	display: inline;
+}
+#noteCancel{
+	width:28px;
+	display: inline;
+}
+
+.note{
+	-webkit-user-select:none;
+    -moz-user-select:none;
+	border: 3px solid #ffff00;
+	border-radius: 32px;
+	padding: 2px 8px 2px 8px;
+	background: -webkit-gradient(linear, center top, center bottom,from(#ffffff),to(#ffff60));
+	background: -webkit-linear-gradient (#ffffff,ffff60);
+	background: -moz-linear-gradient (#ffffff,#ffff60);
+	background: -o-linear-gradient (#ffffff,#ffff60);
+	background: -ms-linear-gradient (#ffffff,#ffff60);
+	background: linear-gradient (#ffffff,#ffff60);
+	margin-top: 0px !important;
+	margin-bottom: 5px;
+     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#917c4d', endColorstr='#ffffff',GradientType=0 );
+	font-family: Arial,sans-serif;
+	cursor: pointer;
+}
+
+/*
 .noteButton{
     position: absolute;
     z-index: 2;
@@ -38,4 +84,5 @@
     bottom:5px; 
     z-index: 2;
 }
+*/
 

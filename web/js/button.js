@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-$(document).ready(function() {
+$(document).ready(function() {	
 	 // What should happen to all .button elements when the mouse is over the element?
       $(".button").mouseover( function() {
                   // Add .Hover
@@ -21,7 +21,7 @@ $(document).ready(function() {
       // What should happen to all .button elements when the mouse button is pressed down?
        $(".button").mousedown( function() {
                   // Add class .Pressed
-                  $(this).addClass("Pressed");
+                  $(this).addClass("Pressed").removeClass("Message");
 				//console.log("pressed");
        })
  

@@ -17,6 +17,10 @@ and open the template in the editor.
 		<script src="js/login.js"></script>
 		<script src="js/socket.js"></script>
 		<script src="js/mediaStream.js"></script>
+		<script src="js/chat.js"></script>
+		<script src="js/note2.0.js"></script>
+		<script src="js/upload.js"></script>
+		<script src="js/file.js"></script>
 		<!-- 引入样式表 -->
 		<link type="text/css" href="jquery-ui-1.8.23/css/smoothness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
 		<link rel="stylesheet" href="css/doodle.css">
@@ -24,6 +28,9 @@ and open the template in the editor.
 		<link rel="stylesheet" href="css/button.css">
 		<link rel="stylesheet" href="css/login.css">
 		<link rel="stylesheet" href="css/video.css">
+		<link rel="stylesheet" href="css/chat.css">
+		<link rel="stylesheet" href="css/note.css">
+		<link rel="stylesheet" href="css/upload.css">
 	 </head>
 	 <body>
 		 <div id="loginAll">
@@ -43,12 +50,13 @@ and open the template in the editor.
 		 <div id="toolbar">
 			 <div id="mainFunction">
 				 <div class="button" id="paintTools">绘图工具</div>
-				 <div class="button">标签工具</div>
+				 <div class="button" id="addTag">标签工具</div>
 				 <div class="button" id="userList">用户列表</div>
-				 <div class="button">文件列表</div>
-				 <div class="button">上传文件</div>
+				 <div class="button" id="filelist">文件列表</div>
+				 <div class="button" id="uploadFile">上传文件</div>
+				 <div class="button" id="clearElement">清除元素</div>
 				 <div class="button" id="saveDoodle">保存修改</div>
-				 <!--<div class="button">音量</div>-->
+				 <div class="button" id="leaveRoom">退出登录</div>
 			 </div>
 			 <div id="paintFunction">
 				 <div class="button" id="pointer">指针</div>
@@ -79,6 +87,12 @@ and open the template in the editor.
 		     <div class="button" id="wordOk">OK</div> 
 			 <div class="button" id="wordCancel">Cancel</div>
 		 </div>
+		 <div id="noteArea">
+			 <input type="text" id="ntextArea" value="1" placeholder="请输入想要显示的标签"/><br/>
+		     <div class="button" id="noteOk">OK</div> 
+			 <div class="button" id="noteCancel">Cancel</div>
+		 </div>
+		 <div id="noteAll"></div>
 		 <div id="colorArea">
 			 <canvas id="colorDemo" height="30" width="30"></canvas>
 			 <input type="text" id="colorAlert" value="拖动或直接输入数值"/><br/>
@@ -97,20 +111,60 @@ and open the template in the editor.
 		     <div class="button" id="lineWidthClose">Close</div>
 		 </div>
 		 <div id="userVideo">
-			 <video id="video0" autoplay></video>
-			 <video id="video1" autoplay></video>
-			 <video id="video2" autoplay></video>
-			 <video id="video3" autoplay></video>
-			 <video id="video4" autoplay></video>
-			 <video id="video5" autoplay></video>
-			 <video id="video6" autoplay></video>
-			 <video id="video7" autoplay></video>
-			 <video id="video8" autoplay></video>
-			 <video id="video9" autoplay></video>
+			 <video class="uservideo" id="video0" autoplay></video>
+			 <video class="uservideo" id="video1" autoplay></video>
+			 <video class="uservideo" id="video2" autoplay></video>
+			 <video class="uservideo" id="video3" autoplay></video>
+			 <video class="uservideo" id="video4" autoplay></video>
+			 <video class="uservideo" id="video5" autoplay></video>
+			 <video class="uservideo" id="video6" autoplay></video>
+			 <video class="uservideo" id="video7" autoplay></video>
+			 <video class="uservideo" id="video8" autoplay></video>
+			 <video class="uservideo" id="video9" autoplay></video>
 		 </div>
 		 <div id="videoAlert">
-			 &nbsp;请在保证摄像头和麦克风开启的状态下，点击确定按钮。&nbsp;
+			 &nbsp;请在保证自己和对方摄像头和麦克风开启的状态下，点击确定按钮。&nbsp;
 			 <div class="button" id="videoAlertOk">确定</div>
+		 </div>
+		 <div id="uploadArea">
+                <form>      
+                    <input type="file" id="fileObject">
+                    <input type="button" id="uploadSub" value="上传">
+                    <div id="progressbar"></div>
+                </form>
+		 </div>
+		 <div id="fileListArea">
+			 <div class="file" id="file0"></div>
+			 <div class="file" id="file1"></div>
+			 <div class="file" id="file2"></div>
+			 <div class="file" id="file3"></div>
+			 <div class="file" id="file4"></div>
+			 <div class="file" id="file5"></div>
+			 <div class="file" id="file6"></div>
+			 <div class="file" id="file7"></div>
+			 <div class="file" id="file8"></div>
+			 <div class="file" id="file9"></div>
+		 </div>
+		 <div class="button" id="chatButton" >聊<br/>天<br/>窗</div>
+			<fieldset id="chatWindow">
+				<legend>聊天窗口：</legend>
+				<div id="chatContext"></div>
+				对象：
+				<select id="chatUserList">
+					<option>所有人</option>
+				</select>
+				&nbsp;字体颜色：
+				<select id="chatColors" name="colors">
+					<option>black</option>
+					<option style="color:red">red</option>
+					<option style="color:blue">blue</option>
+				</select><br/>
+				<input id="chatInput" placeholder="请输入要发送的内容" name="input" type="text"/>
+				<input id="chatSend" type="button" value="发送"/>
+			</fieldset>
+		 <div id="safeLogOut">
+			 &nbsp;你已安全退出&nbsp;
+			 <div class="button" id="logoutOk">确定</div>
 		 </div>
 	 </body>
 </html>

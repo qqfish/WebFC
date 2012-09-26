@@ -155,8 +155,8 @@ note.clear = function(){
 
 $(document).ready(function () {
     note.init();
-    $(".newTag").mouseup(function(event){
-	note.newNote();
+    $("#addTag").mouseup(function(event){
+		note.newNote();
     })
 })
 

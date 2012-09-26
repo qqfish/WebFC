@@ -5,6 +5,7 @@
 package com.webFc.global;
 
 import com.webFc.data.*;
+import java.util.List;
 
 /**
  *
@@ -20,6 +21,7 @@ public interface IData {
     FileNoteInfo getFileNote(int idFileNote);
     FileDetailInfo getDetailFile(int idFile);
     FileShortInfo getTableFile(int idFIle);
+	List<FileMinInfo> getFileList(int idRoom);
     
     int newRoom(String roomname, String user);
     void saveRoom(int idRoom, String doodleOfTable);

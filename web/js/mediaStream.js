@@ -5,21 +5,96 @@
 
 var currentVideoId;
 var currentUsername;
+var currentUser = 0;
 
 var userlist = new Array();
-var videolist = new Array();
+var videoConnectionlist = new Array();
+var videoState = new Array();
+var userlistQueue = new Array();
+userlistQueue.top = 0;
+userlistQueue.end = 0;
 
 for(var i=0;i<10;i++){
-	videolist[i] = false;
+	videoConnectionlist[i] = false;
+	videoState[i] = new Array(false, 0, 0);
 }
 
 $(document).ready(function(){
+	$(".uservideo").draggable({
+		start:function(e,ui){
+			console.log("start: "+(e.pageX) +", " +(e.pageY));
+			mediaStream.dragstart = new Array(e.pageX, e.pageY);
+		},
+		stop:function(e,ui){
+			console.log("stop: "+(e.pageX) +", " +(e.pageY));
+			mediaStream.dragstop = new Array(e.pageX, e.pageY);
+			mediaStream.dragSend($(this).attr("id"), mediaStream.dragstart, mediaStream.dragstop);
+			var vid = parseInt($(this).attr("id").substring(5));
+			videoState[vid] = new Array(true, $(this).css("left"), $(this).css("top"));
+		}
+	});
+	
+	mediaStream.dragSend = function(id, start, stop){
+		var message = {};
+		message.type = "videoDrag";
+		message.id = id;
+		message.start = start;
+		message.stop = stop;
+		var Jmessage = JSON.stringify(message);
+		console.log("C->S: " + Jmessage);
+		connection.sendMessage(Jmessage);
+	}
+	
+	mediaStream.move = function(id, start, stop){
+		var v = $("#"+id);
+		console.log(v);
+		var x = parseInt(v.css("left"));
+		console.log(x);
+		x = x - start[0] + stop[0];
+		console.log(x);
+		var y = parseInt(v.css("top"));
+		y = y  - start[1] + stop[1];
+		console.log(parseInt(v.css("left")));
+		console.log(y);
+		v.css("left", x);
+		v.css("top", y);
+		var subId = id.substring(5);
+		videoState[subId] = new Array(true, v.css("left"), v.css("top"));
+	}
+	
 	$(".user").click(function(){
 		var message = {};
 		message.type = "videoRequest";
 		message.username = $(this).html();
 		sendMessage(message);
 	})
+	
+	$('#userList').mousedown(function(){
+        doodle.type="userList";
+        document.getElementById("canvasTemp").style.cursor="default";
+    })
+		
+	mediaStream.getVideoState = function(data){
+		var message = {};
+		message.type = "getVideoState";
+		message.to = data.username;
+		message.videoState = videoState;
+		sendMessage(message);
+	}
+	
+	mediaStream.maybeDoVideoRequest = function(data){
+		videoState = data.videoState;
+		for(var i=0;i<10;i++){
+			if(videoState[i][0]==true){
+				$("#video"+i).css("left",videoState[i][1]);
+				$("#video"+i).css("top",videoState[i][2]);
+				var user = {};
+				user.username = $("#user"+i).html();
+				console.log(user);
+				mediaStream.doRequest(user);
+			}
+		}
+	}
 	
 	mediaStream.doRequest = function(data){
 		currentUsername = data.username;
@@ -30,36 +105,40 @@ $(document).ready(function(){
 			console.log("Not find the username..");
 		}
 		currentVideoId = "video" + vid;
-		if(currentUsername == login.username && videolist[localvid] == false){ //远端即为本地，本地媒体没打开
+		if(currentUsername == login.username && videoConnectionlist[localvid] == false){ //远端即为本地，本地媒体没打开
 			console.log("way 1");
 			console.log("videoId: " + currentVideoId);
 			mediaStream.initialize(currentVideoId);
 			$("#"+currentVideoId).fadeIn();
-			videolist[localvid] = true;
+			videoConnectionlist[localvid] = true;
+			videoState[localvid] = new Array(true, $("#"+currentVideoId).css("left"), $("#"+currentVideoId).css("top"));
 		}
-		else if(currentUsername == login.username && videolist[localvid] == true){ //远端即为本地，本地媒体已打开
+		else if(currentUsername == login.username && videoConnectionlist[localvid] == true){ //远端即为本地，本地媒体已打开
 			console.log("way 2");
 			$("#"+localVideoId).fadeIn();
 		}
-		else if(currentUsername != login.username && videolist[localvid] == false){ //本地媒体没打开，与远端无连接
+		else if(currentUsername != login.username && videoConnectionlist[localvid] == false){ //本地媒体没打开，与远端无连接
 			console.log("way 3");
 			mediaStream.initialize(localVideoId);
 			maybeStart();
 			$("#videoAlert").fadeIn();
-			videolist[localvid] = true;
-			videolist[vid] = true;
+			videoConnectionlist[localvid] = true;
+			videoConnectionlist[vid] = true;
+			videoState[vid] = new Array(true, $("#"+currentVideoId).css("left"), $("#"+currentVideoId).css("top"));
 		}
-		else if(currentUsername != login.username && videolist[localvid] == true  && videolist[vid] == true ){
+		else if(currentUsername != login.username && videoConnectionlist[localvid] == true  && videoConnectionlist[vid] == true ){
 			//本地媒体已打开，与远端有连接
 			console.log("way 4");
 			$("#"+currentVideoId).fadeIn();
+			videoState[vid] = new Array(true, $("#"+currentVideoId).css("left"), $("#"+currentVideoId).css("top"));
 		}
-		else if(currentUsername != login.username && videolist[localvid] == true  && videolist[vid] == false ){
+		else if(currentUsername != login.username && videoConnectionlist[localvid] == true  && videoConnectionlist[vid] == false ){
 			//本地媒体已打开，与远端无连接
 			console.log("way 5");
 			$("#"+currentVideoId).fadeIn();
 			currentPc = createPeerconnection();
-			doCall(currentPc, currentUsername);
+			$("#videoAlert").fadeIn();
+			videoState[lvid] = new Array(true, $("#"+currentVideoId).css("left"), $("#"+currentVideoId).css("top"));
 		}
 	}
 	
@@ -69,13 +148,75 @@ $(document).ready(function(){
 		$("#"+currentVideoId).fadeIn();
 	})
 	
+	mediaStream.sendUserList = function(data){
+		var message = {};
+		message.type = "getUserList";
+		message.usage = "reply";
+		message.userList = userlist;
+		message.to = data.from;
+		sendMessage(message);
+	}
+	
 	mediaStream.getUserList = function(message){
-		userlist = message.userList;
-		currentUser = 0;
-		while(userlist[currentUser]){
-			console.log(userlist[currentUser]);
-			$("#user"+currentUser).html(userlist[currentUser]);
-			currentUser = currentUser + 1;
+		if(message.usage=="reply"){
+			userlist = message.userList;
+			currentUser = 0;
+			while(userlist[currentUser]){
+				$("#user"+currentUser).html(userlist[currentUser]);
+				currentUser = currentUser + 1;
+			}
+		} else {
+			var userlist_temp = message.userList;
+			if(currentUser == 0){
+				while(userlist_temp[currentUser]){
+					$("#user"+currentUser).html(userlist_temp[currentUser]);
+					userlist[currentUser] = userlist_temp[currentUser];
+					currentUser = currentUser + 1;
+				}
+			} else {
+				var i;
+				var flag = new Array();
+				for(var k=0;k<10;k++){
+					flag[k] = 0;
+				}
+				for(i=0;i<10;i++){
+					for(var j=0;j<10;j++){
+						if(userlist_temp[i]==$("#user"+j).html()){
+							flag[i] = 1;
+						} 
+					}
+				}
+				for(var t=0;t<10;t++){
+					if(flag[t]==0 && userlist_temp[t]){
+						if(userlistQueue.top!=userlistQueue.end){
+							var id = userlistQueue[userlistQueue.top];
+							$("#user"+id).html(userlist_temp[t]);
+							userlist[id] = userlist_temp[t];
+							userlistQueue.top++;
+						} else {
+							$("#user"+currentUser).html(userlist_temp[t]);
+							userlist[currentUser] = userlist_temp[t];
+							currentUser = currentUser + 1;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	mediaStream.hideVideo = function(username){
+		var removeId = mediaStream.findUser(username);
+		userlist[removeId] = null;
+		$("#user"+removeId).html(null);
+		$("#video"+removeId).fadeOut();
+		if(removeId+1 == currentUser){
+			currentUser = currentUser - 1;
+		} else {
+			userlistQueue[userlistQueue.end] = removeId;
+			userlistQueue.end = userlistQueue.end + 1;
+			console.log(userlistQueue);
+			console.log(userlistQueue.top);
+			console.log(userlistQueue.end);
 		}
 	}
 })
@@ -86,7 +227,6 @@ var remoteVideo = new Array();
 var localStream;
 var pc = new Array();
 var currentPc;
-var currentUser = 0;
 var socket;
 var started = false;
 var sendto;
@@ -259,7 +399,7 @@ function do_Offer(socketData){
 	 currentVideoId = socketData.videoId;
 	 var remotevid = currentVideoId.substring(5);
 	 console.log("remotevid: "+remotevid);
-	 videolist[remotevid] = true;
+	 videoConnectionlist[remotevid] = true;
 	 if (!started)
 		  maybeStart();
 	 console.log(needCreate);

@@ -13,6 +13,17 @@ import com.webFc.data.Data;
  */
 public class getUserList extends Data{
 	private List<String> userList;
+	private String usage;
+	private String to;
+
+	public String getUsage() {
+		return usage;
+	}
+
+	public void setUsage(String usage) {
+		this.usage = usage;
+	}
+
 	
 	public getUserList() {
 	type = "getUserList";
@@ -23,6 +34,14 @@ public class getUserList extends Data{
 	}
 	public List<String> getUserList(){
 		return this.userList;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
 	}
 	
 }

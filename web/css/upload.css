@@ -1,0 +1,26 @@
+/* 
+    Document   : upload
+    Created on : 2012-9-9, 22:52:04
+    Author     : Administrator
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+	display: block;
+}
+
+#uploadArea{
+	border: 3px solid #cccccc;
+	border-radius: 10px;
+	top: 180px;
+	left: 113px;
+	z-index: 0;
+	position: absolute;
+	background: white;
+	display: none;
+}
+
+#fileObject{
+	width:120px;
+}

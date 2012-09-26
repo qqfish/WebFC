@@ -1,3 +1,126 @@
+var chat = {};
+
+$(document).ready(function() {
+	$(window).resize(function(){
+		chat.relocate();
+	})
+	$(window).scroll(function(){
+		chat.relocate();
+	})
+	$("#chatButton").click(function(){
+		if($('#chatWindow').css('display') == "block"){
+			$("#chatWindow").fadeOut();
+		}
+		else{
+			$("#chatWindow").fadeIn();
+		}
+	})	
+	$("#chatSend").click(function(){
+		var usernameTo = $("#chatUserList").val();
+		if(usernameTo =="所有人"){
+			chat.sendBroadcastMessage();
+		}
+		else{
+			chat.sendMessageTo(usernameTo);
+		}
+	})
+	$("#chatInput").keypress(function(e){
+		var key = e.which;
+		console.log(key);
+		if(key==13){
+			$("#chatSend").click();
+		}
+	})
+})
+
+chat.relocate = function(){
+	var height_b = Math.abs(document.documentElement.clientHeight + document.body.scrollTop - 85);
+	var width_b =Math.abs(document.documentElement.clientWidth + document.body.scrollLeft - 45);
+	var height_w = Math.abs(document.documentElement.clientHeight + document.body.scrollTop - 330);
+	var width_w =Math.abs(document.documentElement.clientWidth + document.body.scrollLeft - 387);
+	//window.status = document.documentElement.clientHeight + " " + document.body.scrollTop;
+	$("#chatButton").css("top", height_b);
+	$("#chatButton").css("left", width_b);
+	$("#chatWindow").css("top", height_w);
+	$("#chatWindow").css("left", width_w);
+}
+
+chat.sendBroadcastMessage = function() {
+	var chatMessage = $("#chatInput").val();
+	if (chatMessage != "") {
+		var message = {};
+		message.type = "chatMessagePublic";
+		message.from = login.username;
+		message.color = $("#chatColors").val();
+		message.context = chatMessage;
+		chat.printMessagePublic(message);
+		var Jmessage = JSON.stringify(message);
+		console.log("C->S: " + Jmessage);
+		connection.sendMessage(Jmessage);
+		$("#chatInput").val("");
+	}
+};
+
+chat.sendMessageTo = function(username) {
+	var chatMessage = $("#chatInput").val();
+	if (chatMessage != "") {
+		var message = {};
+		message.type = "chatMessagePrivate";
+		message.color = $("#chatColors").val();
+		message.from = login.username;
+		message.to = username;
+		message.context = chatMessage;
+		chat.printMessagePrivate(message,"send");
+		var Jmessage = JSON.stringify(message);
+		console.log("C->S: " + Jmessage);
+		connection.sendMessage(Jmessage);
+		$("#chatInput").val("");
+	}
+};
+
+chat.printMessagePublic = function(data) {
+	var chatContext = document.getElementById("chatContext");
+	var p = document.createElement('p');
+	p.style.wordWrap = 'break-word';
+	p.style.color = data.color;
+	p.innerHTML = data.from + " : " + data.context;
+	chatContext.appendChild(p);
+	/*while (chatContext.childNodes.length > 25) {
+		chatContext.removeChild(chatContext.firstChild);
+	}*/
+     chatContext.scrollTop = chatContext.scrollHeight;
+}
+
+chat.printMessagePrivate = function(data,type) {
+	var chatContext = document.getElementById("chatContext");
+	var p = document.createElement('p');
+	p.style.wordWrap = 'break-word';
+	p.style.color = data.color;
+	if(type == "send"){
+		p.innerHTML = "你悄悄地对" + data.to + "说 : " + data.context;
+	}
+	else{
+		p.innerHTML = data.from + "悄悄地对你说 : " + data.context;
+	}
+	chatContext.appendChild(p);
+	/*while (chatContext.childNodes.length > 25) {
+		chatContext.removeChild(chatContext.firstChild);
+	}*/
+     chatContext.scrollTop = chatContext.scrollHeight;
+}
+
+chat.getUserList = function(message){
+	var userlist_temp = message.userList;
+	$("#chatUserList").html("<option>所有人</option>");
+	currentUser = 0;
+	while(userlist_temp[currentUser]){
+		var inner = $("#chatUserList").html();
+		$("#chatUserList").html( inner +"<option>"+ userlist_temp[currentUser] +"</option>");
+		currentUser = currentUser + 1;
+	}
+}
+
+/*
 var data={};
 data.init = function()
 {
@@ -80,4 +203,4 @@ data.sendMessage = function(){
 
 data.writeMessage = function(message){
     
-}
+}*/

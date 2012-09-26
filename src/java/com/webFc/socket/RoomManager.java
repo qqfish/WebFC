@@ -12,6 +12,7 @@ import com.webFc.database.DataProxy;
 import com.webFc.global.IData;
 import com.webFc.socket.MessageType.doodlePic;
 import com.webFc.socket.MessageType.requestPic;
+import com.webFc.socket.MessageType.requestNote;
 import com.webFc.socket.MessageType.getUserList;
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -121,6 +122,9 @@ public class RoomManager {
 	    rp.setFrom(username);
 	    rp.setUsage("updatePic");
 	    randomSend(idRoom, gson.toJson(rp));
+		requestNote rn = new requestNote();
+	    rn.setFrom(username);
+	    randomSend(idRoom, gson.toJson(rn));
 	    return m.insertUser(username, fmi);
 	} else {
 	    return false;
@@ -215,11 +219,33 @@ public class RoomManager {
 	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
 	    if (iter.hasNext()) {
 		Map.Entry<String, FcMessageInbound> entry = iter.next();
+		System.out.println(entry.getKey());
+		System.out.println(entry.getKey());
 		FcMessageInbound val = entry.getValue();
 		CharBuffer buffer = CharBuffer.wrap(message);
 		val.getWsOutbound().writeTextMessage(buffer);
 		System.out.println("hello");
 		return true;
+	    }
+	}
+	return false;
+    }
+	
+	public boolean randomSendNotMe(int idRoom, String username, String message) throws IOException {
+	if (maps.containsKey(idRoom)) {
+	    UserMap m = maps.get(idRoom);
+	    List<String> rmArray = new ArrayList<String>();
+
+	    Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
+	    while (iter.hasNext()) {
+		Map.Entry<String, FcMessageInbound> entry = iter.next();
+		if(!entry.getKey().equals(username)){
+		FcMessageInbound val = entry.getValue();
+		CharBuffer buffer = CharBuffer.wrap(message);
+		val.getWsOutbound().writeTextMessage(buffer);
+		System.out.println("hello");
+		return true;
+		}
 	    }
 	}
 	return false;
@@ -275,6 +301,27 @@ public class RoomManager {
 				Map.Entry<String, FcMessageInbound> entry = iter.next();
 				String str = entry.getKey();
 				userList.add(str);
+			}
+			getUserList gUlist = new getUserList();
+			gUlist.setUserList(userList);
+			if(userList.size()==1){ gUlist.setUsage("first"); } 
+			else{ gUlist.setUsage("not first"); }
+			return(gson.toJson(gUlist));
+		}
+		return null;
+	}
+	
+	public String leaveUserList(int idRoom, String username) throws IOException{
+		if (maps.containsKey(idRoom)) {
+			UserMap m = maps.get(idRoom);
+			Iterator<Map.Entry<String, FcMessageInbound>> iter = m.users.entrySet().iterator();
+			List<String> userList = new ArrayList<String>();
+			while (iter.hasNext()) {
+				Map.Entry<String, FcMessageInbound> entry = iter.next();
+				String str = entry.getKey();
+				if(str == null ? username != null : !str.equals(username)){
+					userList.add(str);
+				}
 			}
 			getUserList gUlist = new getUserList();
 			gUlist.setUserList(userList);

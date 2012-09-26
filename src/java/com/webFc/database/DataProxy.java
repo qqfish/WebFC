@@ -7,6 +7,7 @@ package com.webFc.database;
 import com.webFc.data.*;
 import com.webFc.global.IData;
 import java.sql.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.rowset.serial.SerialBlob;
@@ -108,7 +109,7 @@ public class DataProxy implements IData {
 		    String fileType = rs3.getString("fileType");
 		    int rotate = rs3.getInt("rotate");
 		    String preview = rs3.getString("preview");
-		    Date editTime = rs3.getDate("editTime");
+		    java.sql.Date editTime = rs3.getDate("editTime");
 		    result.addFile(idFile, fileName, onTable, username, xFile, yFile, fileType, rotate, preview, editTime);
 		}
 		ps2.close();
@@ -194,6 +195,29 @@ public class DataProxy implements IData {
 		}
 		rs2.close();
 		ps2.close();
+	    }
+	    rs.close();
+	    ps.close();
+	} catch (SQLException ex) {
+	    Logger.getLogger(DataProxy.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return result;
+    }
+		
+	@Override
+    public List<FileMinInfo> getFileList(int idRoom) {
+	List<FileMinInfo> result = new ArrayList<FileMinInfo>();
+	try {
+	    String sql = "SELECT * FROM File where idRoom = ?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+		ps.setInt(1, idRoom);
+	    ResultSet rs = ps.executeQuery();
+	    while (rs.next()) {
+			FileMinInfo temp = new FileMinInfo();
+			temp.setFileName(rs.getString("fileName"));
+			temp.setIdFile(rs.getInt("idFile"));
+			temp.setFileType(rs.getString("fileType"));
+			result.add(temp);
 	    }
 	    rs.close();
 	    ps.close();
